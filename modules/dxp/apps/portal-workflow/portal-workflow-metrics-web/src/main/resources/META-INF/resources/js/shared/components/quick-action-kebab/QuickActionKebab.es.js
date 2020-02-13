@@ -12,7 +12,7 @@
 import ClayButton from '@clayui/button';
 import ClayDropDown from '@clayui/drop-down';
 import ClayIcon from '@clayui/icon';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 
 import {DropDownItem} from './DropDownItem.es';
 import {IconItem} from './IconItem';
@@ -41,23 +41,25 @@ const QuickActionKebab = ({
 			</div>
 
 			{dropDownItems.length > 0 && (
-				<KebabDropDown disabled={disabled}>
-					{dropDownItems.map((dropDownItem, index) => (
-						<DropDownItem
-							action={dropDownItem.action}
-							disabled={disabled}
-							key={index}
-							title={dropDownItem.title}
-						/>
-					))}
-				</KebabDropDown>
+				<KebabDropDown
+					disabled={disabled}
+					dropDownItems={dropDownItems}
+				/>
 			)}
 		</>
 	);
 };
 
-const KebabDropDown = ({children, disabled}) => {
+const KebabDropDown = ({disabled, dropDownItems}) => {
 	const [active, setActive] = useState(false);
+
+	const dropDownItemAction = useCallback(
+		dropDownItem => {
+			dropDownItem.action();
+			setActive(false);
+		},
+		[setActive]
+	);
 
 	return (
 		<ClayDropDown
@@ -74,7 +76,14 @@ const KebabDropDown = ({children, disabled}) => {
 				</ClayButton>
 			}
 		>
-			{children}
+			{dropDownItems.map((dropDownItem, index) => (
+				<DropDownItem
+					action={() => dropDownItemAction(dropDownItem)}
+					disabled={disabled}
+					key={index}
+					title={dropDownItem.title}
+				/>
+			))}
 		</ClayDropDown>
 	);
 };

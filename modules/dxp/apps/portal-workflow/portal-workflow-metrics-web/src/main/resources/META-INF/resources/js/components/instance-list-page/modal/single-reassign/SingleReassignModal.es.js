@@ -20,8 +20,8 @@ import LoadingState from '../../../../shared/components/loading/LoadingState.es'
 import PromisesResolver from '../../../../shared/components/promises-resolver/PromisesResolver.es';
 import {useFetch} from '../../../../shared/hooks/useFetch.es';
 import {usePost} from '../../../../shared/hooks/usePost.es';
-import {InstanceListContext} from '../../store/InstanceListPageStore.es';
-import {ModalContext} from '../ModalContext.es';
+import {InstanceListContext} from '../../InstanceListPageProvider.es';
+import {ModalContext} from '../ModalProvider.es';
 import {Table} from './SingleReassignModalTable.es';
 
 const ErrorView = ({onClick}) => {
@@ -50,21 +50,26 @@ const SingleReassignModal = () => {
 	const [sendingPost, setSendingPost] = useState(false);
 	const [successToast, setSuccessToast] = useState([]);
 
-	const {setSingleModal, singleModal} = useContext(ModalContext);
-	const {setSelectedItems} = useContext(InstanceListContext);
-	const {selectedItem = {}} = singleModal;
+	const {setVisibleModal, visibleModal} = useContext(ModalContext);
+	const {selectedItems, setSelectedItems} = useContext(InstanceListContext);
 
 	const {observer, onClose} = useModal({
 		onClose: () => {
-			setSingleModal({selectedItem: undefined, visible: false});
+			setSelectedItems([]);
+			setVisibleModal('');
 			setAssigneeId();
 		}
 	});
 
+	const selectedInstance = useMemo(
+		() => (selectedItems.length ? selectedItems[0] : {}),
+		[selectedItems]
+	);
+
 	const {data, fetchData} = useFetch({
 		admin: true,
 		params: {completed: false, page: 1, pageSize: 1},
-		url: `/workflow-instances/${selectedItem.id}/workflow-tasks`
+		url: `/workflow-instances/${selectedInstance.id}/workflow-tasks`
 	});
 
 	const taskId = useMemo(
@@ -98,8 +103,7 @@ const SingleReassignModal = () => {
 					setErrorToast(true);
 					setSendingPost(false);
 				});
-		}
-		else {
+		} else {
 			onClose();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -108,7 +112,7 @@ const SingleReassignModal = () => {
 	const promises = useMemo(() => {
 		setErrorToast(false);
 
-		if (singleModal.visible) {
+		if (visibleModal === 'singleReassign' && selectedInstance.id) {
 			return [
 				fetchData().catch(err => {
 					setErrorToast(true);
@@ -117,8 +121,10 @@ const SingleReassignModal = () => {
 				})
 			];
 		}
+
+		return [];
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [fetchData, retry]);
+	}, [fetchData, retry, selectedInstance.id, visibleModal]);
 
 	return (
 		<>
@@ -142,7 +148,7 @@ const SingleReassignModal = () => {
 			</ClayAlert.ToastContainer>
 
 			<PromisesResolver promises={promises}>
-				{singleModal.visible && (
+				{visibleModal === 'singleReassign' && (
 					<ClayModal
 						data-testid="reassignModal"
 						observer={observer}
@@ -186,7 +192,7 @@ const SingleReassignModal = () => {
 									<SingleReassignModal.Table
 										data={data}
 										setAssigneeId={setAssigneeId}
-										{...selectedItem}
+										{...selectedInstance}
 									/>
 								</PromisesResolver.Resolved>
 							</ClayModal.Body>

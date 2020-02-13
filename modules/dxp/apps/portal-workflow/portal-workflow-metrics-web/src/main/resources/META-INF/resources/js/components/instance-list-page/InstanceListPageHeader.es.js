@@ -23,8 +23,8 @@ import ProcessStatusFilter, {
 import ProcessStepFilter from '../filter/ProcessStepFilter.es';
 import SLAStatusFilter from '../filter/SLAStatusFilter.es';
 import TimeRangeFilter from '../filter/TimeRangeFilter.es';
-import {ModalContext} from './modal/ModalContext.es';
-import {InstanceListContext} from './store/InstanceListPageStore.es';
+import {InstanceListContext} from './InstanceListPageProvider.es';
+import {ModalContext} from './modal/ModalProvider.es';
 
 const Header = ({
 	filterKeys,
@@ -39,23 +39,18 @@ const Header = ({
 		setSelectAll,
 		setSelectedItems
 	} = useContext(InstanceListContext);
-	const {bulkModal, setBulkModal, setSingleModal} = useContext(ModalContext);
+	const {setVisibleModal} = useContext(ModalContext);
 
 	const kebabItems = [
 		{
 			action: () => {
-				if (
+				const bulkReassign =
 					selectedItems.length > 1 ||
-					selectedItems[0].taskNames.length > 1
-				) {
-					setBulkModal({...bulkModal, visible: true});
-				}
-				else {
-					setSingleModal({
-						selectedItem: selectedItems[0],
-						visible: true
-					});
-				}
+					selectedItems[0].taskNames.length > 1;
+
+				setVisibleModal(
+					bulkReassign ? 'bulkReassign' : 'singleReassign'
+				);
 			},
 			icon: 'change',
 			title: Liferay.Language.get('reassign-task')

@@ -16,19 +16,15 @@ import React, {useContext, useEffect, useState} from 'react';
 
 import moment from '../../../../shared/util/moment.es';
 import {AppContext} from '../../../AppContext.es';
-import {InstanceListContext} from '../../store/InstanceListPageStore.es';
-import {ModalContext} from '../ModalContext.es';
+import {InstanceListContext} from '../../InstanceListPageProvider.es';
+import {ModalContext} from '../ModalProvider.es';
 
 const InstanceDetailsModal = () => {
 	const [instance, setInstance] = useState({});
 
 	const {client} = useContext(AppContext);
 	const {instanceId} = useContext(InstanceListContext);
-	const {instanceDetailsModal, setInstanceDetailsModal} = useContext(
-		ModalContext
-	);
-
-	const {processId, visible} = instanceDetailsModal;
+	const {processId, setVisibleModal, visibleModal} = useContext(ModalContext);
 
 	useEffect(() => {
 		if (instanceId) {
@@ -67,11 +63,9 @@ const InstanceDetailsModal = () => {
 
 	if (empty) {
 		styleName = 'text-info';
-	}
-	else if (status === 'Completed') {
+	} else if (status === 'Completed') {
 		styleName = 'text-secondary';
-	}
-	else if (status === 'Pending' && slaStatus === 'OnTime') {
+	} else if (status === 'Pending' && slaStatus === 'OnTime') {
 		styleName = 'text-success';
 	}
 
@@ -79,23 +73,19 @@ const InstanceDetailsModal = () => {
 
 	if (empty) {
 		iconTitleName = 'hr';
-	}
-	else if (overdue) {
+	} else if (overdue) {
 		iconTitleName = 'exclamation-circle';
 	}
 
 	const {observer} = useModal({
 		onClose: () => {
-			setInstanceDetailsModal({
-				...instanceDetailsModal,
-				visible: false
-			});
+			setVisibleModal('');
 		}
 	});
 
 	return (
 		<>
-			{visible && (
+			{visibleModal === 'instanceDetails' && (
 				<ClayModal
 					className="instance-details-modal"
 					observer={observer}
@@ -261,8 +251,7 @@ const Item = ({dateOverdue, name, onTime, remainingTime, status}) => {
 
 	if (status === 'Paused') {
 		statusText = `(${Liferay.Language.get('sla-paused')})`;
-	}
-	else if (status === 'Running') {
+	} else if (status === 'Running') {
 		const remainingTimePositive = onTime
 			? remainingTime
 			: remainingTime * -1;
@@ -285,8 +274,7 @@ const Item = ({dateOverdue, name, onTime, remainingTime, status}) => {
 			.format(
 				Liferay.Language.get('mmm-dd-yyyy-lt')
 			)} (${durationText} ${onTimeText})`;
-	}
-	else if (status === 'Stopped' && onTime) {
+	} else if (status === 'Stopped' && onTime) {
 		statusText = `(${Liferay.Language.get('resolved-on-time')})`;
 	}
 

@@ -9,8 +9,10 @@
  * distribution rights of the Software.
  */
 
-import {createContext} from 'react';
+import React from 'react';
 
-const ModalContext = createContext();
+const SelectTransitionStep = () => {
+	return <></>;
+};
 
-export {ModalContext};
+export default SelectTransitionStep;

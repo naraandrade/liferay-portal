@@ -13,8 +13,8 @@ import {fireEvent, render} from '@testing-library/react';
 import React, {useState} from 'react';
 
 import InstanceListPage from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/InstanceListPage.es';
+import {InstanceListContext} from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/InstanceListPageProvider.es';
 import {ModalContext} from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/modal/ModalContext.es';
-import {InstanceListContext} from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/store/InstanceListPageStore.es';
 import {MockRouter} from '../../../../mock/MockRouter.es';
 
 import '@testing-library/jest-dom/extend-expect';
@@ -118,7 +118,7 @@ const clientMock = {
 };
 
 const ContainerMock = ({children}) => {
-	const [bulkModal, setBulkModal] = useState({
+	const [bulkReassign, setBulkReassign] = useState({
 		processId: '12345',
 		reassignedTasks: [],
 		reassigning: false,
@@ -131,7 +131,7 @@ const ContainerMock = ({children}) => {
 	return (
 		<MockRouter client={clientMock}>
 			<InstanceListContext.Provider value={{selectedItems}}>
-				<ModalContext.Provider value={{bulkModal, setBulkModal}}>
+				<ModalContext.Provider value={{bulkReassign, setBulkReassign}}>
 					{children}
 				</ModalContext.Provider>
 			</InstanceListContext.Provider>

@@ -16,8 +16,8 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 import Icon from '../../shared/components/Icon.es';
 import QuickActionKebab from '../../shared/components/quick-action-kebab/QuickActionKebab.es';
 import moment from '../../shared/util/moment.es';
-import {ModalContext} from './modal/ModalContext.es';
-import {InstanceListContext} from './store/InstanceListPageStore.es';
+import {InstanceListContext} from './InstanceListPageProvider.es';
+import {ModalContext} from './modal/ModalProvider.es';
 
 const getSLAStatusIcon = slaStatus => {
 	const items = {
@@ -48,9 +48,7 @@ const Item = ({totalCount, ...taskItem}) => {
 		setSelectAll,
 		setSelectedItems
 	} = useContext(InstanceListContext);
-	const {instanceDetailsModal, setInstanceDetailsModal} = useContext(
-		ModalContext
-	);
+	const {setVisibleModal} = useContext(ModalContext);
 
 	const [checked, setChecked] = useState(false);
 
@@ -127,10 +125,7 @@ const Item = ({totalCount, ...taskItem}) => {
 					onClick={() => {
 						setInstanceId(id);
 
-						setInstanceDetailsModal(() => ({
-							...instanceDetailsModal,
-							visible: true
-						}));
+						setVisibleModal('instanceDetail');
 					}}
 					tabIndex="-1"
 				>
@@ -163,31 +158,27 @@ const Item = ({totalCount, ...taskItem}) => {
 			</ClayTable.Cell>
 
 			<ClayTable.Cell style={{paddingRight: '0rem'}}>
-				<QuickActionMenu disabled={completed} taskItem={taskItem} />
+				<QuickActionMenu disabled={completed} instance={taskItem} />
 			</ClayTable.Cell>
 		</ClayTable.Row>
 	);
 };
 
-const QuickActionMenu = ({disabled, taskItem}) => {
-	const {bulkModal, setBulkModal, setSingleModal} = useContext(ModalContext);
+const QuickActionMenu = ({disabled, instance}) => {
+	const {setVisibleModal} = useContext(ModalContext);
+	const {setSelectedItems} = useContext(InstanceListContext);
 
 	const handleClickReassignTask = useCallback(
 		() => {
-			if (taskItem.taskNames.length > 1) {
-				setBulkModal({...bulkModal, visible: true});
-
-				setSingleModal({selectedItem: taskItem});
-			}
-			else {
-				setSingleModal({
-					selectedItem: taskItem,
-					visible: true
-				});
-			}
+			setSelectedItems([instance]);
+			setVisibleModal(
+				instance.taskNames.length > 1
+					? 'bulkReassign'
+					: 'singleReassign'
+			);
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[taskItem]
+		[instance]
 	);
 
 	const kebabItems = [

@@ -12,9 +12,9 @@
 import {fireEvent, render} from '@testing-library/react';
 import React, {useState} from 'react';
 
+import {InstanceListContext} from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/InstanceListPageProvider.es';
 import {ModalContext} from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/modal/ModalContext.es';
 import {SingleReassignModal} from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/modal/single-reassign/SingleReassignModal.es';
-import {InstanceListContext} from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/store/InstanceListPageStore.es';
 import {MockRouter} from '../../../../mock/MockRouter.es';
 
 import '@testing-library/jest-dom/extend-expect';
