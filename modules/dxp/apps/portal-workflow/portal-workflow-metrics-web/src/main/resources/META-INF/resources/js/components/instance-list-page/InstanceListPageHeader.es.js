@@ -44,15 +44,22 @@ const Header = ({
 	const kebabItems = [
 		{
 			action: () => {
-				const bulkReassign =
+				const bulkOperation =
 					selectedItems.length > 1 ||
 					selectedItems[0].taskNames.length > 1;
 
 				setVisibleModal(
-					bulkReassign ? 'bulkReassign' : 'singleReassign'
+					bulkOperation ? 'bulkReassign' : 'singleReassign'
 				);
 			},
 			icon: 'change',
+			title: Liferay.Language.get('reassign-task')
+		},
+		{
+			action: () => {
+				setVisibleModal('bulkTransition');
+			},
+			icon: 'ellipsis-v',
 			title: Liferay.Language.get('reassign-task')
 		}
 	];

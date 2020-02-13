@@ -11,29 +11,79 @@
 
 import ClayButton from '@clayui/button';
 import ClayModal, {useModal} from '@clayui/modal';
-import React, {useContext} from 'react';
+import React, {useCallback, useContext, useMemo, useState} from 'react';
 
+import StepOfBar from '../../../../../shared/components/step-bar/StepBar.es';
 import {ModalContext} from '../../ModalProvider.es';
+import {SelectTasksStep} from '../../shared/select-tasks-step/SelectTasksStep.es';
 
 const BulkTransitionModal = () => {
-	const {bulkTransition, setBulkTransition} = useContext(ModalContext);
+	const {
+		processId,
+		selectTasks: {selectAll, tasks},
+		setSelectTasks,
+		setVisibleModal,
+		visibleModal
+	} = useContext(ModalContext);
+	const [currentStep, setCurrentStep] = useState('selectTasks');
 
 	const {observer, onClose} = useModal({
 		onClose: () => {
-			setBulkTransition({selectedTasks: [], visible: false});
+			setSelectTasks({selectAll: false, tasks: []});
+			setVisibleModal('');
 		}
 	});
 
-	const {visible} = bulkTransition;
+	const [fetching, setFetching] = useState(false);
+	const handleNext = useCallback(() => {
+		console.log('next step');
+	}, []);
+
+	const getStep = useCallback(
+		step => {
+			const steps = {
+				selectTasks: {
+					component: SelectTasksStep,
+					nextBtn: {
+						disabled: tasks.length === 0 || fetching,
+						handle: handleNext,
+						text: Liferay.Language.get('next')
+					},
+					order: 1,
+					previousBtn: false,
+					subtitle: Liferay.Language.get('select-steps'),
+					title: Liferay.Language.get('select-steps-to-transition')
+				}
+			};
+
+			return steps[step];
+		},
+		[fetching, handleNext, tasks.length]
+	);
+
+	const step = useMemo(() => getStep(currentStep), [currentStep, getStep]);
 
 	return (
 		<>
-			{visible && (
+			{visibleModal === 'bulkTransition' && (
 				<ClayModal
-					data-testid="bulkReassignModal"
+					data-testid="bulkTransitionModal"
 					observer={observer}
 					size="lg"
 				>
+					<ClayModal.Header>{step.title}</ClayModal.Header>
+
+					<StepOfBar
+						current={step.order}
+						title={step.subtitle}
+						total={2}
+					/>
+
+					<step.component
+						processId={processId}
+						setErrorToast={() => {}}
+					/>
+
 					<ClayModal.Footer
 						first={
 							<ClayButton
@@ -46,15 +96,19 @@ const BulkTransitionModal = () => {
 						}
 						last={
 							<>
-								<ClayButton
-									className="mr-3"
-									data-testid="previousButton"
-									displayType="secondary"
-								>
-									{Liferay.Language.get('previous')}
-								</ClayButton>
+								{step.previousBtn && (
+									<ClayButton
+										className="mr-3"
+										data-testid="previousButton"
+										displayType="secondary"
+									>
+										{Liferay.Language.get('previous')}
+									</ClayButton>
+								)}
 
-								<ClayButton data-testid="nextButton"></ClayButton>
+								<ClayButton data-testid="nextButton">
+									{Liferay.Language.get('next')}
+								</ClayButton>
 							</>
 						}
 					/>
