@@ -13,7 +13,7 @@ import {useCallback, useContext, useState} from 'react';
 
 import {AppContext} from '../../components/AppContext.es';
 
-const useFetch = ({admin = false, params = {}, url}) => {
+const useFetch = ({admin = false, callback = () => {}, params = {}, url}) => {
 	const {getClient} = useContext(AppContext);
 	const [data, setData] = useState({});
 
@@ -25,10 +25,10 @@ const useFetch = ({admin = false, params = {}, url}) => {
 			client.get(url, {params}).then(({data}) => {
 				setData(data);
 
-				return data;
+				return callback(data);
 			}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[queryParamsStr, url, admin]
+		[client, queryParamsStr, url]
 	);
 
 	return {
