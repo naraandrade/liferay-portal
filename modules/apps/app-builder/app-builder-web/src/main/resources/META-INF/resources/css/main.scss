@@ -140,3 +140,22 @@ body.open .app-builder-upper-toolbar {
 		color: #6b6c7e;
 	}
 }
+
+.apps-popover {
+	padding-left: 1rem;
+	padding-right: 1rem;
+	padding-top: 1rem;
+}
+
+.icon {
+	margin-top: 0.325rem;
+}
+
+.popover {
+	z-index: 999;
+}
+
+.select-dropdown-menu {
+	width: 100%;
+	max-width: 418px;
+}
