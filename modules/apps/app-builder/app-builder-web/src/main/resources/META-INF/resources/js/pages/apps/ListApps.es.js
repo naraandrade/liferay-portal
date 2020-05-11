@@ -33,7 +33,7 @@ export default ({
 		url,
 	},
 }) => {
-	const {getStandaloneURL} = useContext(AppContext);
+	const {basePortletURL, getStandaloneURL} = useContext(AppContext);
 	const addButtonRef = useRef();
 	const emptyStateButtonRef = useRef();
 	const popoverRef = useRef();
@@ -42,6 +42,12 @@ export default ({
 
 	const [alignElement, setAlignElement] = useState(addButtonRef.current);
 	const [isPopoverVisible, setPopoverVisible] = useState(false);
+
+	const newAppUrl = Liferay.Util.PortletURL.createRenderURL(basePortletURL, {
+		// eslint-disable-next-line lines-around-comment
+		// idDoCustomObject,
+		mvcRenderCommandName: '/apps/edit',
+	});
 
 	const onClickAddButton = ({currentTarget}) => {
 		setAlignElement(currentTarget);
@@ -55,28 +61,8 @@ export default ({
 
 	const onCancel = () => setPopoverVisible(false);
 
-	const onSubmit = () => {
-		// const addURL = `/o/data-engine/v2.0/data-definitions/by-content-type/app-builder`;
-		// addItem(addURL, {
-		// 	availableLanguageIds: ['en_US'],
-		// 	dataDefinitionFields: [],
-		// 	name: {
-		// 		value: name,
-		// 	},
-		// }).then(({id}) => {
-		// 	if (isAddFormView) {
-		// 		Liferay.Util.navigate(
-		// 			Liferay.Util.PortletURL.createRenderURL(basePortletURL, {
-		// 				dataDefinitionId: id,
-		// 				mvcRenderCommandName: '/edit_form_view',
-		// 				newCustomObject: true,
-		// 			})
-		// 		);
-		// 	}
-		// 	else {
-		// 		history.push(`/custom-object/${id}/form-views/`);
-		// 	}
-		// });
+	const onContinue = () => {
+		Liferay.Util.navigate(newAppUrl);
 	};
 
 	useEffect(() => {
@@ -235,13 +221,15 @@ export default ({
 				})}
 			</ListView>
 
-			<ListAppsPopover
-				alignElement={alignElement}
-				onCancel={onCancel}
-				onSubmit={onSubmit}
-				ref={popoverRef}
-				visible={isPopoverVisible}
-			/>
+			{!dataDefinitionId && (
+				<ListAppsPopover
+					alignElement={alignElement}
+					onCancel={onCancel}
+					onContinue={onContinue}
+					ref={popoverRef}
+					visible={isPopoverVisible}
+				/>
+			)}
 		</>
 	);
 };
