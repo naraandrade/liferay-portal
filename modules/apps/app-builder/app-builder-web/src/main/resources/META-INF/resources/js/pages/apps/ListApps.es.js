@@ -28,12 +28,13 @@ import {DEPLOYMENT_ACTION, DEPLOYMENT_STATUS} from './constants.es';
 import {concatTypes} from './utils.es';
 
 export default ({
+	history,
 	match: {
 		params: {dataDefinitionId},
 		url,
 	},
 }) => {
-	const {basePortletURL, getStandaloneURL} = useContext(AppContext);
+	const {getStandaloneURL} = useContext(AppContext);
 	const addButtonRef = useRef();
 	const emptyStateButtonRef = useRef();
 	const popoverRef = useRef();
@@ -42,13 +43,6 @@ export default ({
 
 	const [alignElement, setAlignElement] = useState(addButtonRef.current);
 	const [isPopoverVisible, setPopoverVisible] = useState(false);
-
-	const newAppUrl = Liferay.Util.PortletURL.createRenderURL(basePortletURL, {
-		// eslint-disable-next-line lines-around-comment
-		// idDoCustomObject,
-
-		mvcRenderCommandName: '/apps/edit',
-	});
 
 	const onClickAddButton = ({currentTarget}) => {
 		setAlignElement(currentTarget);
@@ -61,10 +55,6 @@ export default ({
 	};
 
 	const onCancel = () => setPopoverVisible(false);
-
-	const onContinue = () => {
-		Liferay.Util.navigate(newAppUrl);
-	};
 
 	useEffect(() => {
 		const handler = ({target}) => {
@@ -142,7 +132,6 @@ export default ({
 		button: () => (
 			<Button
 				displayType="secondary"
-				href={`${url}/deploy`}
 				onClick={(currentTarget) => onClickAddButton(currentTarget)}
 				ref={emptyStateButtonRef}
 			>
@@ -161,8 +150,7 @@ export default ({
 	if (dataDefinitionId) {
 		ENDPOINT = `/o/app-builder/v1.0/data-definitions/${dataDefinitionId}/apps`;
 		buttonProps = {href: `${url}/deploy`};
-	}
-	else {
+	} else {
 		const [firstColumn, ...otherColumns] = COLUMNS;
 
 		COLUMNS = [
@@ -216,7 +204,6 @@ export default ({
 							{DEPLOYMENT_STATUS[item.active]}
 						</ClayLabel>
 					),
-					statusText: item.status.toLowerCase(),
 					type: concatTypes(
 						item.appDeployments.map((deployment) => deployment.type)
 					),
@@ -226,9 +213,10 @@ export default ({
 			{!dataDefinitionId && (
 				<ListAppsPopover
 					alignElement={alignElement}
+					history={history}
 					onCancel={onCancel}
-					onContinue={onContinue}
 					ref={popoverRef}
+					setVisible={setPopoverVisible}
 					visible={isPopoverVisible}
 				/>
 			)}
