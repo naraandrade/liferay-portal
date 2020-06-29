@@ -80,8 +80,14 @@ export default ({onCancel}) => {
 	const onClickDeploy = () => {
 		setDeploying(true);
 
+		const workflowAppSteps = Array.from(steps);
+
 		const workflowApp = {
-			appWorkflowStates: [steps[0], steps[steps.length - 1]],
+			appWorkflowStates: [
+				workflowAppSteps.shift(),
+				workflowAppSteps.pop(),
+			],
+			appWorkflowTasks: workflowAppSteps,
 		};
 
 		if (appId) {
