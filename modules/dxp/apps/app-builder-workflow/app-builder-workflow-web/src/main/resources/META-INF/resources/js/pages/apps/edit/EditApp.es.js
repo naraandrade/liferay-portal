@@ -141,12 +141,17 @@ export default ({
 									!app.dataLayoutId ||
 									!app.dataListViewId ||
 									!app.name.en_US ||
-									config.steps.some(({name}) => !name) ||
 									config.steps.some(
-										(step) =>
-											step.initial === undefined &&
-											step.roleIds &&
-											step.roleIds.length === 0
+										({
+											appWorkflowRoleAssignments,
+											initial,
+											name,
+										}) =>
+											appWorkflowRoleAssignments &&
+											appWorkflowRoleAssignments.length ===
+												0 &&
+											initial === undefined &&
+											!name
 									)
 								}
 								onClick={() => setModalVisible(true)}
