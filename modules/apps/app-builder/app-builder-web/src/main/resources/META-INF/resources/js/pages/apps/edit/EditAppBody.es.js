@@ -15,7 +15,7 @@
 import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 
 import {AppContext} from '../../../AppContext.es';
 import MultiStepNav from '../../../components/multi-step-nav/MultiStepNav.es';
@@ -35,6 +35,7 @@ const EditAppBody = ({currentStep, dataDefinitionId, defaultLanguageId}) => {
 			app: {dataLayoutId, dataListViewId, workflowDefinitionName},
 		},
 	} = useContext(EditAppContext);
+	const [showInfoAlert, setShowInfoAlert] = useState(false);
 
 	const dispatchSelection = (type) => (item) => {
 		dispatch({
@@ -79,27 +80,30 @@ const EditAppBody = ({currentStep, dataDefinitionId, defaultLanguageId}) => {
 					title: Liferay.Language.get('no-results-were-found'),
 				},
 			},
-			endpoint: `/o/headless-admin-workflow/v1.0/workflow-definitions?active=true&page=-1&pageSize=-1`,
+			endpoint: `/o/headless-admin-workflow/v1.0/workflow-definitions`,
 			itemId: workflowDefinitionName ?? '',
 			onSelect: dispatchSelection(UPDATE_WORKFLOW_PROCESS_ID),
-			shortCutButton: (
-				<ClayButton
-					displayType="secondary"
-					onClick={() => {
-						window.open(workflowProcessBuilderPortletURL, '_blank');
-					}}
-				>
-					{Liferay.Language.get('manage-workflows')}
-					<ClayIcon className="ml-2" symbol="shortcut" />
-				</ClayButton>
-			),
+			params: {active: true, page: -1, pageSize: -1},
 			parseItems: (items) =>
 				items.map(({name, title, ...restProps}) => ({
 					...restProps,
 					id: name,
 					name: {[defaultLanguageId]: title},
 				})),
-
+			setShowInfoAlert,
+			shortCutButton: (
+				<ClayButton
+					displayType="secondary"
+					onClick={() => {
+						window.open(workflowProcessBuilderPortletURL, '_blank');
+						setShowInfoAlert(true);
+					}}
+				>
+					{Liferay.Language.get('manage-workflows')}
+					<ClayIcon className="ml-2" symbol="shortcut" />
+				</ClayButton>
+			),
+			showInfoAlert,
 			staticItems: [
 				{
 					dateCreated: null,
@@ -141,12 +145,17 @@ const EditAppBody = ({currentStep, dataDefinitionId, defaultLanguageId}) => {
 				</ClayLayout.Col>
 			</ClayLayout.Row>
 
-			{currentStep < 3 && (
-				<EditAppBody.StepContent
-					defaultLanguageId={defaultLanguageId}
-					{...stepProps[currentStep]}
-				/>
-			)}
+			{stepProps.map((step, index) => {
+				if (index === currentStep) {
+					return (
+						<EditAppBody.StepContent
+							defaultLanguageId={defaultLanguageId}
+							key={index}
+							{...step}
+						/>
+					);
+				}
+			})}
 
 			{currentStep == 3 && <DeployApp />}
 		</div>

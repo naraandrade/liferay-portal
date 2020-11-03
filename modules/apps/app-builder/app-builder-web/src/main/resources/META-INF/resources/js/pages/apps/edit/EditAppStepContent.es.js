@@ -12,11 +12,13 @@
  * details.
  */
 
+import ClayAlert from '@clayui/alert';
 import ClayLayout from '@clayui/layout';
+import ClayLink from '@clayui/link';
 import {SearchInput} from 'data-engine-taglib';
 import React, {useEffect, useState} from 'react';
 
-import {useRequest} from '../../../hooks/index.es';
+import useResource from '../../../hooks/useResource.es';
 import {getLocalizedValue} from '../../../utils/lang.es';
 import ListItems from './ListItems.es';
 
@@ -27,7 +29,10 @@ const EditAppStepContent = ({
 	itemId,
 	shortCutButton,
 	onSelect,
+	params = {},
 	parseItems = (items) => items,
+	setShowInfoAlert,
+	showInfoAlert,
 	staticItems = [],
 	stepHeader,
 }) => {
@@ -37,10 +42,9 @@ const EditAppStepContent = ({
 		setSearchText('');
 	}, [stepHeader]);
 
-	const {
-		response: {items = []},
-		isLoading,
-	} = useRequest(endpoint);
+	const {isLoading, refetch, response} = useResource({endpoint, params});
+
+	const items = response?.items ?? [];
 
 	const filteredItems = [
 		...staticItems,
@@ -68,6 +72,29 @@ const EditAppStepContent = ({
 				</ClayLayout.ContentCol>
 
 				{shortCutButton}
+			</ClayLayout.ContentRow>
+
+			<ClayLayout.ContentRow className="pl-4 pr-4">
+				{showInfoAlert && (
+					<ClayAlert
+						className="w-100"
+						displayType="info"
+						onClose={() => {
+							setShowInfoAlert(false);
+						}}
+						title={`${Liferay.Language.get('info')}:`}
+					>
+						{Liferay.Language.get(
+							'refresh-the-list-if-a-newly-created-workflow-is-not-displayed'
+						)}
+
+						<ClayLink
+							onClick={() => {
+								refetch();
+							}}
+						>{` ${Liferay.Language.get('refresh')}.`}</ClayLink>
+					</ClayAlert>
+				)}
 			</ClayLayout.ContentRow>
 
 			<ClayLayout.ContentRow className="pl-4 pr-4 scrollable-container">
