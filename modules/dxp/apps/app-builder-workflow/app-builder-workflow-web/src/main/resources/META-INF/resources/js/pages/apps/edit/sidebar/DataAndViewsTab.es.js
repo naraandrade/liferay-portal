@@ -102,9 +102,7 @@ export default function DataAndViewsTab({
 
 	const mainFormViews = formViews.map((form) => ({
 		...form,
-		disabled:
-			form.missingRequiredFields?.customField &&
-			form.missingRequiredFields?.nativeField,
+		disabled: form.missingRequiredFields?.nativeField,
 	}));
 
 	const addStepFormView = () => {
