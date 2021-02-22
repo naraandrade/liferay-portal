@@ -124,14 +124,13 @@ export default ({history, scope, ...props}) => {
 
 						resolve(false);
 					});
-			}
-			else {
+			} else {
 				resolve(false);
 			}
 		});
 	};
 
-	function validateFormViewMissingRequiredFields(app) {
+	function validateFormViewMissingRequiredFields(app, fieldType) {
 		const isFormViewMissingRequiredFields = (app) => {
 			return getDataDefinition(app.dataDefinitionId).then(
 				(dataDefinition) => {
@@ -147,7 +146,7 @@ export default ({history, scope, ...props}) => {
 						);
 
 						return formViews.find(({id}) => id === app.dataLayoutId)
-							.missingRequiredFields?.customField;
+							.missingRequiredFields?.fieldType;
 					});
 				}
 			);
@@ -155,10 +154,12 @@ export default ({history, scope, ...props}) => {
 
 		return isFormViewMissingRequiredFields(app).then((missing) => {
 			if (missing) {
-				return new Promise((resolve, reject) => {
-					setDeployCallback({reject, resolve});
-					setMissingFieldsModalVisible(true);
-				});
+				return fieldType === 'customField'
+					? new Promise((resolve, reject) => {
+							setDeployCallback({reject, resolve});
+							setMissingFieldsModalVisible(true);
+					  })
+					: fieldType === 'nativeField';
 			}
 		});
 	}

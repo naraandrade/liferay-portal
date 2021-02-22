@@ -46,12 +46,19 @@ export const Actions = (validateFormViewMissingRequiredFields) => {
 				}
 
 				if (validateFormViewMissingRequiredFields) {
-					return validateFormViewMissingRequiredFields(app).then(
-						(callback) => callback ?? deployApp(app)
-					);
+					return validateFormViewMissingRequiredFields(
+						app,
+						'customField'
+					).then((callback) => callback ?? deployApp(app));
 				}
 
 				return deployApp(app);
+			},
+			disabled: (app) => {
+				return validateFormViewMissingRequiredFields(
+					app,
+					'nativeField'
+				).then((callback) => !app.active && callback);
 			},
 			name: ({active}) =>
 				DEPLOYMENT_ACTION[active ? 'undeploy' : 'deploy'],
