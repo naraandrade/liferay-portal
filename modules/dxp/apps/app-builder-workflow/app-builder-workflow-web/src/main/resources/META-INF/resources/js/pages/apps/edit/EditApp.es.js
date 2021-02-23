@@ -34,7 +34,7 @@ import '../../../../css/EditApp.scss';
 import ApplyAppChangesModal from './ApplyAppChangesModal.es';
 import DeployAppModal from './DeployAppModal.es';
 import EditAppToolbar from './EditAppToolbar.es';
-import MissingFieldsModal from './MissingFieldsModal.es';
+import MissingRequiredFieldsModal from './MissingRequiredFieldsModal.es';
 import {
 	getAssigneeRoles,
 	getDataDefinition,
@@ -90,9 +90,12 @@ export default ({
 		false
 	);
 	const [isDeployModalVisible, setDeployModalVisible] = useState(false);
-	const [missingFieldsModalVisible, setMissingFieldsModalVisible] = useState(
-		false
-	);
+	const [
+		missingRequiredFieldsModalProps,
+		setMissingRequiredFieldsModalProps,
+	] = useState({
+		visible: false,
+	});
 	const [isLoading, setLoading] = useState(false);
 	const [isSaving, setSaving] = useState(false);
 
@@ -182,7 +185,7 @@ export default ({
 		openFormViewModal,
 		setAppChangesModalVisible,
 		setDeployModalVisible,
-		setMissingFieldsModalVisible,
+		setMissingRequiredFieldsModalProps,
 		state: {app},
 		updateFormView,
 	};
@@ -427,17 +430,19 @@ export default ({
 
 					<DeployAppModal onSave={onSave} />
 
-					<MissingFieldsModal
+					<MissingRequiredFieldsModal
 						dataObjectName={config.dataObject.name}
-						missingFieldsModalVisible={missingFieldsModalVisible}
 						onDeploy={() => {
 							setDeployModalVisible(true);
 
-							setMissingFieldsModalVisible(false);
+							setMissingRequiredFieldsModalProps({
+								visible: false,
+							});
 						}}
-						setMissingFieldsModalVisible={
-							setMissingFieldsModalVisible
+						setMissingRequiredFieldsModalProps={
+							setMissingRequiredFieldsModalProps
 						}
+						{...missingRequiredFieldsModalProps}
 					/>
 				</EditAppContext.Provider>
 			</Loading>

@@ -12,6 +12,7 @@
 import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
 import ClayPopover from '@clayui/popover';
 import {AppContext} from 'app-builder-web/js/AppContext.es';
+import useBackUrl from 'app-builder-web/js/hooks/useBackUrl.es';
 import useDeployApp from 'app-builder-web/js/hooks/useDeployApp.es';
 import ListApps, {Actions} from 'app-builder-web/js/pages/apps/ListApps.es';
 import {COLUMNS, FILTERS} from 'app-builder-web/js/pages/apps/constants.es';
@@ -24,20 +25,24 @@ import {createResourceURL, fetch} from 'frontend-js-web';
 import {compile} from 'path-to-regexp';
 import React, {useContext, useState} from 'react';
 
-import MissingFieldsModal from './edit/MissingFieldsModal.es';
+import MissingRequiredFieldsModal from './edit/MissingRequiredFieldsModal.es';
 import {getDataDefinition, getFormViews} from './edit/actions.es';
 import {checkRequiredFields} from './edit/utils.es';
 
 export default ({history, scope, ...props}) => {
-	const {userId} = useContext(AppContext);
+	const {baseResourceURL, namespace, userId} = useContext(AppContext);
+	const withBackUrl = useBackUrl();
 	const {deployApp} = useDeployApp();
 	const [currentApp, setCurrentApp] = useState({dataDefinitionName: ''});
 	const [showTooltip, setShowTooltip] = useState(false);
 	const [deployCallback, setDeployCallback] = useState({});
-	const [missingFieldsModalVisible, setMissingFieldsModalVisible] = useState(
-		false
-	);
-	const {baseResourceURL, namespace} = useContext(AppContext);
+	const [
+		missingRequiredFieldsModalProps,
+		setMissingRequiredFieldsModalProps,
+	] = useState({
+		fieldType: '',
+		visible: false,
+	});
 
 	const [firstColumn, ...otherColumns] = COLUMNS;
 	const lastColumn = otherColumns.pop();
@@ -87,6 +92,16 @@ export default ({history, scope, ...props}) => {
 			name: 'author',
 		},
 	];
+
+	const getEditAppUrl = ({dataDefinitionId, id}) => {
+		return withBackUrl(
+			compile(props.editPath[1])({
+				appId: id,
+				dataDefinitionId,
+				objectType: props.match.params.objectType,
+			})
+		);
+	};
 
 	const confirmDelete = ({id}) => {
 		return new Promise((resolve) => {
@@ -141,13 +156,21 @@ export default ({history, scope, ...props}) => {
 						dataDefinition.id,
 						dataDefinition.defaultLanguageId
 					).then((formViews) => {
-						formViews = checkRequiredFields(
-							formViews,
-							dataDefinition
+						let formView = formViews.find(
+							({id}) => id === app.dataLayoutId
 						);
+						formView = checkRequiredFields(
+							[formView],
+							dataDefinition
+						)[0];
 
-						return formViews.find(({id}) => id === app.dataLayoutId)
-							.missingRequiredFields?.customField;
+						if (formView.missingRequiredFields.nativeField) {
+							return 'nativeField';
+						}
+
+						if (formView.missingRequiredFields.customField) {
+							return 'customField';
+						}
 					});
 				}
 			);
@@ -157,7 +180,12 @@ export default ({history, scope, ...props}) => {
 			if (missing) {
 				return new Promise((resolve, reject) => {
 					setDeployCallback({reject, resolve});
-					setMissingFieldsModalVisible(true);
+					setMissingRequiredFieldsModalProps({
+						fieldType: missing,
+						nativeActionOnClick: () =>
+							history.push(getEditAppUrl(app)),
+						visible: true,
+					});
 				});
 			}
 		});
@@ -207,18 +235,22 @@ export default ({history, scope, ...props}) => {
 				{...props}
 			/>
 
-			<MissingFieldsModal
+			<MissingRequiredFieldsModal
 				dataObjectName={currentApp.dataDefinitionName}
-				missingFieldsModalVisible={missingFieldsModalVisible}
 				onDeploy={() =>
 					deployApp(currentApp)
 						.then((result) => {
-							setMissingFieldsModalVisible(false);
+							setMissingRequiredFieldsModalProps({
+								visible: false,
+							});
 							deployCallback.resolve(result);
 						})
 						.catch(deployCallback.reject)
 				}
-				setMissingFieldsModalVisible={setMissingFieldsModalVisible}
+				setMissingRequiredFieldsModalProps={
+					setMissingRequiredFieldsModalProps
+				}
+				{...missingRequiredFieldsModalProps}
 			/>
 		</>
 	);
