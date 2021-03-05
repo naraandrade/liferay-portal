@@ -10,7 +10,13 @@
  */
 
 import EditAppContext from 'app-builder-web/js/pages/apps/edit/EditAppContext.es';
-import React, {useContext} from 'react';
+import React, {useContext, useRef, useState} from 'react';
+import ReactFlow, {
+	Controls,
+	ReactFlowProvider,
+	addEdge,
+	removeElements,
+} from 'react-flow-renderer';
 
 import {
 	ADD_STEP,
@@ -19,6 +25,8 @@ import {
 	UPDATE_STEP_INDEX,
 } from '../configReducer.es';
 import WorkflowStep from './WorkflowStep.es';
+
+import './dnd.scss';
 
 export default function WorkflowBuilder() {
 	const {
@@ -29,8 +37,7 @@ export default function WorkflowBuilder() {
 	const badgeLabel = (stepIndex) => {
 		if (stepIndex === 0) {
 			return Liferay.Language.get('start');
-		}
-		else if (stepIndex === steps.length - 1) {
+		} else if (stepIndex === steps.length - 1) {
 			return Liferay.Language.get('end');
 		}
 
@@ -49,6 +56,9 @@ export default function WorkflowBuilder() {
 			dispatchConfig({stepIndex: index, type: UPDATE_STEP_INDEX});
 		}
 	};
+
+	let id = 0;
+	const getId = () => `dndnode_${id++}`;
 
 	const stepInfo = [
 		[
@@ -73,35 +83,91 @@ export default function WorkflowBuilder() {
 			),
 	];
 
+	const customElements = steps.map((step, index) => {
+		step.id = `${getId()}`;
+		step.position = {x: 100, y: 25};
+		step.type = 'selectorNode';
+		step.data = {
+			props: {
+				actions: [
+					{
+						label: Liferay.Language.get('delete-step'),
+						onClick: () =>
+							dispatchConfig({
+								stepIndex: index,
+								type: REMOVE_STEP,
+							}),
+					},
+				],
+				addStep: () =>
+					dispatchConfig({stepIndex: index, type: ADD_STEP}),
+				badgeLabel: badgeLabel(index),
+				onClick: () => onClickStep(index),
+				selected: stepIndex === index,
+				stepInfo:
+					index < steps.length - 1 && stepInfo[index]
+						? stepInfo[index]
+						: [],
+				...step,
+			},
+		};
+
+		return step;
+	});
+
+	const reactFlowWrapper = useRef(null);
+	const [reactFlowInstance, setReactFlowInstance] = useState(null);
+	const [elements, setElements] = useState(customElements);
+	const onConnect = (params) => setElements((els) => addEdge(params, els));
+	const onElementsRemove = (elementsToRemove) =>
+		setElements((els) => removeElements(elementsToRemove, els));
+	const onLoad = (_reactFlowInstance) =>
+		setReactFlowInstance(_reactFlowInstance);
+	const onDragOver = (event) => {
+		event.preventDefault();
+		event.dataTransfer.dropEffect = 'move';
+	};
+	const onDrop = (event) => {
+		event.preventDefault();
+		const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+		const type = event.dataTransfer.getData('application/reactflow');
+		const position = reactFlowInstance.project({
+			x: event.clientX - reactFlowBounds.left,
+			y: event.clientY - reactFlowBounds.top,
+		});
+
+		const newNode = {
+			data: {label: `${type} node`},
+			id: getId(),
+			position,
+			type,
+		};
+		setElements((es) => es.concat(newNode));
+	};
+
+	const nodeTypes = {
+		selectorNode: WorkflowStep,
+	};
+
 	return (
 		<div className="app-builder-workflow-app__builder">
-			{steps.map((step, index) => (
-				<WorkflowStep
-					actions={[
-						{
-							label: Liferay.Language.get('delete-step'),
-							onClick: () =>
-								dispatchConfig({
-									stepIndex: index,
-									type: REMOVE_STEP,
-								}),
-						},
-					]}
-					addStep={() =>
-						dispatchConfig({stepIndex: index, type: ADD_STEP})
-					}
-					badgeLabel={badgeLabel(index)}
-					{...step}
-					key={index}
-					onClick={() => onClickStep(index)}
-					selected={stepIndex === index}
-					stepInfo={
-						index < steps.length - 1 && stepInfo[index]
-							? stepInfo[index]
-							: []
-					}
-				/>
-			))}
+			<div className="dndflow">
+				<ReactFlowProvider>
+					<div className="reactflow-wrapper" ref={reactFlowWrapper}>
+						<ReactFlow
+							elements={elements}
+							nodeTypes={nodeTypes}
+							onConnect={onConnect}
+							onDragOver={onDragOver}
+							onDrop={onDrop}
+							onElementsRemove={onElementsRemove}
+							onLoad={onLoad}
+						>
+							<Controls />
+						</ReactFlow>
+					</div>
+				</ReactFlowProvider>
+			</div>
 		</div>
 	);
 }
