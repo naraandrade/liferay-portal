@@ -184,19 +184,23 @@ const Card = ({
 	);
 };
 
-export default function WorkflowStep({
-	actions,
-	addStep,
-	badgeLabel,
-	errors,
-	initial,
-	name,
-	onClick,
-	selected,
-	stepInfo,
-}) {
+export default function WorkflowStep({data: {props}}) {
+	const {
+		actions,
+		addStep,
+		badgeLabel,
+		errors,
+		initial,
+		name,
+		onClick,
+		selected,
+		stepInfo,
+	} = props;
+
 	const isInitialOrFinalSteps = initial !== undefined;
 	const isFinalStep = isInitialOrFinalSteps && !initial;
+
+	console.log(props);
 
 	return (
 		<>
