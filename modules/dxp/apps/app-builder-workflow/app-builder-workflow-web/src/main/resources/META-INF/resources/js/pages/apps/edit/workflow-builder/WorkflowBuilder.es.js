@@ -10,7 +10,7 @@
  */
 
 import EditAppContext from 'app-builder-web/js/pages/apps/edit/EditAppContext.es';
-import React, {useContext, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import ReactFlow, {
 	Controls,
 	ReactFlowProvider,
@@ -34,14 +34,15 @@ export default function WorkflowBuilder() {
 		dispatchConfig,
 	} = useContext(EditAppContext);
 
-	const badgeLabel = (stepIndex) => {
-		if (stepIndex === 0) {
+	const badgeLabel = (stepId) => {
+		if (stepId === 0) {
 			return Liferay.Language.get('start');
-		} else if (stepIndex === steps.length - 1) {
+		}
+		else if (stepId === steps.length - 1) {
 			return Liferay.Language.get('end');
 		}
 
-		return stepIndex;
+		return '';
 	};
 
 	const onClickStep = (index) => {
@@ -56,9 +57,6 @@ export default function WorkflowBuilder() {
 			dispatchConfig({stepIndex: index, type: UPDATE_STEP_INDEX});
 		}
 	};
-
-	let id = 0;
-	const getId = () => `dndnode_${id++}`;
 
 	const stepInfo = [
 		[
@@ -84,9 +82,12 @@ export default function WorkflowBuilder() {
 	];
 
 	const customElements = steps.map((step, index) => {
-		step.id = `${getId()}`;
-		step.position = {x: 100, y: 25};
-		step.type = 'selectorNode';
+
+		// step.id = `${getId()}`;
+		// step.position = {x: 100, y: 25};
+		// step.type = 'selectorNode';
+
+		step.id = `${step.id}`;
 		step.data = {
 			props: {
 				actions: [
@@ -136,18 +137,25 @@ export default function WorkflowBuilder() {
 			y: event.clientY - reactFlowBounds.top,
 		});
 
-		const newNode = {
+		dispatchConfig({
 			data: {label: `${type} node`},
-			id: getId(),
-			position,
-			type,
-		};
-		setElements((es) => es.concat(newNode));
+			id: 5000,
+			stepPosition: position,
+			stepType: type,
+			type: ADD_STEP,
+		});
+
+		// setElements((es) => es.concat(newNode));
+
 	};
 
 	const nodeTypes = {
 		selectorNode: WorkflowStep,
 	};
+
+	useEffect(() => {
+		setElements(steps);
+	}, [steps]);
 
 	return (
 		<div className="app-builder-workflow-app__builder">

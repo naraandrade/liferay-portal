@@ -18,6 +18,7 @@ import EditAppContext from 'app-builder-web/js/pages/apps/edit/EditAppContext.es
 import classNames from 'classnames';
 import {sub} from 'data-engine-js-components-web/js/utils/lang.es';
 import React, {useContext, useState} from 'react';
+import {Handle} from 'react-flow-renderer';
 
 import ButtonInfo from '../../../../components/button-info/ButtonInfo.es';
 import MissingRequiredFieldsPopover from '../MissingRequiredFieldsPopover.es';
@@ -29,7 +30,6 @@ const Arrow = ({addStep, selected}) => {
 				className={classNames('arrow-point icon')}
 				symbol="live"
 			/>
-
 			{selected && (
 				<ClayTooltipProvider>
 					<div
@@ -43,10 +43,8 @@ const Arrow = ({addStep, selected}) => {
 					</div>
 				</ClayTooltipProvider>
 			)}
-
 			<div className="arrow-body">
 				<div className="arrow-tail" />
-
 				<ClayIcon
 					className={classNames('arrow-head icon')}
 					symbol="caret-bottom"
@@ -75,8 +73,8 @@ const Card = ({
 	} = useContext(EditAppContext);
 	const [active, setActive] = useState(false);
 	const [showPopover, setShowPopover] = useState(false);
-
 	const duplicatedFields = errors?.formViews?.duplicatedFields || [];
+
 	const {missingRequiredFields: {customField, nativeField} = {}} = formView;
 
 	const handleOnClick = (event, onClick) => {
@@ -92,10 +90,8 @@ const Card = ({
 		>
 			<div>
 				{name}
-
 				<ButtonInfo items={stepInfo} />
 			</div>
-
 			{duplicatedFields.length > 0 && (
 				<ClayTooltipProvider>
 					<ClayIcon
@@ -112,7 +108,6 @@ const Card = ({
 					/>
 				</ClayTooltipProvider>
 			)}
-
 			{!app.active && appId && initial && (customField || nativeField) && (
 				<MissingRequiredFieldsPopover
 					dataObjectName={dataObject.name}
@@ -133,7 +128,6 @@ const Card = ({
 					nativeField={nativeField}
 					onClick={() => {
 						setShowPopover(false);
-
 						openFormViewModal(
 							dataObject.id,
 							dataObject.defaultLanguageId,
@@ -146,7 +140,6 @@ const Card = ({
 					triggerClassName="help-cursor step-card-icon"
 				/>
 			)}
-
 			<div className="d-flex">
 				{!isInitialOrFinalSteps && (
 					<ClayTooltipProvider>
@@ -184,23 +177,23 @@ const Card = ({
 	);
 };
 
-export default function WorkflowStep({data: {props}}) {
-	const {
-		actions,
-		addStep,
-		badgeLabel,
-		errors,
-		initial,
-		name,
-		onClick,
-		selected,
-		stepInfo,
-	} = props;
-
+export default function WorkflowStep({
+	data: {
+		props: {
+			actions,
+			addStep,
+			badgeLabel,
+			errors,
+			initial,
+			name,
+			onClick,
+			selected,
+			stepInfo,
+		},
+	},
+}) {
 	const isInitialOrFinalSteps = initial !== undefined;
 	const isFinalStep = isInitialOrFinalSteps && !initial;
-
-	console.log(props);
 
 	return (
 		<>
@@ -214,7 +207,6 @@ export default function WorkflowStep({data: {props}}) {
 						displayType={selected ? 'primary' : 'secondary'}
 						label={badgeLabel}
 					/>
-
 					<Card
 						actions={actions}
 						errors={errors}
@@ -226,8 +218,23 @@ export default function WorkflowStep({data: {props}}) {
 						stepInfo={stepInfo}
 					/>
 				</div>
+				<Handle
+					onConnect={(params) =>
+						console.log('handle onConnect', params)
+					}
+					position="top"
+					style={{background: '#000', border: '#555'}}
+					type="source"
+				/>
+				<Handle
+					onConnect={(params) =>
+						console.log('handle onConnect', params)
+					}
+					position="bottom"
+					style={{background: '#000', border: '#555'}}
+					type="target"
+				/>
 			</div>
-
 			{!isFinalStep && <Arrow addStep={addStep} selected={selected} />}
 		</>
 	);

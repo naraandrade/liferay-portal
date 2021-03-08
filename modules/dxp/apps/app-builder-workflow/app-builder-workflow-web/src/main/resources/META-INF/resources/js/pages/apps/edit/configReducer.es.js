@@ -42,10 +42,19 @@ export const getInitialConfig = () => {
 					transitionTo: Liferay.Language.get('final-step'),
 				},
 			],
+			id: 0,
 			initial: true,
 			name: Liferay.Language.get('initial-step'),
+			position: {x: 200, y: 200},
+			type: 'selectorNode',
 		},
-		{initial: false, name: Liferay.Language.get('final-step')},
+		{
+			id: 800,
+			initial: false,
+			name: Liferay.Language.get('final-step'),
+			position: {x: 200, y: 600},
+			type: 'selectorNode',
+		},
 	];
 
 	return {
@@ -77,8 +86,12 @@ export default (state, action) => {
 			const workflowSteps = [...state.steps];
 
 			const finalStep = workflowSteps.pop();
-			const nextStep = workflowSteps[stepIndex];
+
+			// const nextStep = workflowSteps[stepIndex];
+
 			const previousStep = workflowSteps[action.stepIndex];
+
+			const sourceStep = action.sourceId;
 
 			if (state.formView.id) {
 				appWorkflowDataLayoutLinks.push({
@@ -95,7 +108,7 @@ export default (state, action) => {
 					{
 						name: Liferay.Language.get('submit'),
 						primary: true,
-						transitionTo: nextStep?.name ?? finalStep.name,
+						transitionTo: '',
 					},
 				],
 				errors: {
@@ -104,9 +117,12 @@ export default (state, action) => {
 						errorIndexes: [],
 					},
 				},
+				id: action.id,
 				name: sub(Liferay.Language.get('step-x'), [
 					state.steps.length - 1,
 				]),
+				position: action.stepPosition,
+				type: action.stepType,
 			};
 
 			if (stepIndex > 1) {
@@ -131,19 +147,20 @@ export default (state, action) => {
 				}
 			});
 
-			if (nextStep) {
-				nextStep.appWorkflowTransitions.forEach((action) => {
-					if (!action.primary) {
-						action.transitionTo = currentStep.name;
-					}
-				});
-			}
+			// if (nextStep) {
+			// 	nextStep.appWorkflowTransitions.forEach((action) => {
+			// 		if (!action.primary) {
+			// 			action.transitionTo = currentStep.name;
+			// 		}
+			// 	});
+			// }
 
-			workflowSteps.splice(stepIndex, 0, currentStep);
+			//workflowSteps.splice(stepIndex, 0, currentStep);
 
 			return {
 				...state,
 				currentStep,
+				sourceStep,
 				stepIndex,
 				steps: [...workflowSteps, finalStep],
 			};
