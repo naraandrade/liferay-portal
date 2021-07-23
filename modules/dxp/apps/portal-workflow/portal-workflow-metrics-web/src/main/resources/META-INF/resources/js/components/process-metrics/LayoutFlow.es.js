@@ -9,7 +9,7 @@
  * distribution rights of the Software.
  */
 
-import dagre from 'dagre';
+import graphlib from 'graphlib';
 import React, {useCallback, useState} from 'react';
 import ReactFlow, {
 	Controls,
@@ -19,10 +19,11 @@ import ReactFlow, {
 	removeElements,
 } from 'react-flow-renderer';
 
+import layout from './layout';
 import JsonSample from './sampleDefinition';
 
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
+const graph = new graphlib.Graph();
+graph.setDefaultEdgeLabel(() => ({}));
 
 // In order to keep this example simple the node width and height are hardcoded.
 // In a real world app you would use the correct width and height values of
@@ -33,24 +34,24 @@ const nodeHeight = 36;
 
 const getLayoutedElements = (elements, direction = 'TB') => {
 	const isHorizontal = direction === 'LR';
-	dagreGraph.setGraph({rankdir: direction});
+	graph.setGraph({rankdir: direction});
 
 	elements.forEach((element) => {
 		if (isNode(element)) {
-			dagreGraph.setNode(element.id, {
+			graph.setNode(element.id, {
 				height: nodeHeight,
 				width: nodeWidth,
 			});
 		} else {
-			dagreGraph.setEdge(element.source, element.target);
+			graph.setEdge(element.source, element.target);
 		}
 	});
 
-	dagre.layout(dagreGraph);
+	layout(graph);
 
 	return elements.map((element) => {
 		if (isNode(element)) {
-			const nodeWithPosition = dagreGraph.node(element.id);
+			const nodeWithPosition = graph.node(element.id);
 			element.targetPosition = isHorizontal ? 'left' : 'top';
 			element.sourcePosition = isHorizontal ? 'right' : 'bottom';
 
