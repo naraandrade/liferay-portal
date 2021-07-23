@@ -237,3 +237,18 @@ $font-weight-semi-bold: 600;
 		}
 	}
 }
+
+.layoutflow {
+	flex-grow: 1;
+	position: relative;
+	height: 680px;
+	width: 100%;
+	margin: 10px;
+
+	.controls {
+		position: absolute;
+		right: 10px;
+		top: 10px;
+		z-index: 10;
+	}
+}
