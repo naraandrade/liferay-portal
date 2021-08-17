@@ -9,11 +9,14 @@
  * distribution rights of the Software.
  */
 
+import ClayButton from '@clayui/button';
 import {ClayCheckbox} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
+import ClayModal, {useModal} from '@clayui/modal';
 import ClayPopover from '@clayui/popover';
 import ClayTable from '@clayui/table';
+import WorkflowInstanceTracker from '@liferay/portal-workflow-instance-tracker-web/js/components/WorkflowInstanceTracker';
 import React, {useContext, useState} from 'react';
 
 import useDebounceCallback from '../../hooks/useDebounceCallback.es';
@@ -46,6 +49,14 @@ function Item({totalCount, ...instance}) {
 		slaStatus,
 		taskNames = [Liferay.Language.get('not-available')],
 	} = instance;
+
+	const [showModal, setShowModal] = useState(false);
+
+	const {observer} = useModal({
+		onClose: () => {
+			setShowModal(false);
+		},
+	});
 
 	const checked = !!selectedItems.find((item) => item.id === id);
 
@@ -160,6 +171,26 @@ function Item({totalCount, ...instance}) {
 					instance={instance}
 				/>
 			</ClayTable.Cell>
+
+			<ClayButton onClick={() => setShowModal(true)}>
+				Workflow Instance Tracker
+			</ClayButton>
+
+			{showModal && (
+				<ClayModal
+					className="workflow-instance-tracker-modal"
+					observer={observer}
+					size="lg"
+				>
+					<ClayModal.Header>
+						{Liferay.Language.get('track-approval')}
+					</ClayModal.Header>
+
+					<ClayModal.Body>
+						<WorkflowInstanceTracker instanceId={id} />
+					</ClayModal.Body>
+				</ClayModal>
+			)}
 		</ClayTable.Row>
 	);
 }
