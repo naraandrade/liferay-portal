@@ -187,7 +187,7 @@ function Item({totalCount, ...instance}) {
 					</ClayModal.Header>
 
 					<ClayModal.Body>
-						<WorkflowInstanceTracker instanceId={id} />
+						<WorkflowInstanceTracker workflowInstanceId={id} />
 					</ClayModal.Body>
 				</ClayModal>
 			)}

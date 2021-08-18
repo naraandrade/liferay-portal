@@ -89,15 +89,15 @@ const getLayoutedElements = (elements) => {
 		}
 
 		if (sourceY > targetY) {
-			transition.targetHandle = 't';
+			transition.targetHandle = 'top';
 		} else {
-			transition.targetHandle = 'l';
+			transition.targetHandle = 'left';
 		}
 
 		if (sourceX > targetX) {
-			transition.sourceHandle = 'b';
+			transition.sourceHandle = 'bottom';
 		} else {
-			transition.sourceHandle = 'r';
+			transition.sourceHandle = 'right';
 		}
 
 		return transition;
