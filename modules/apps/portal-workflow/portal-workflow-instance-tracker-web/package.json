@@ -10,7 +10,8 @@
 	"jest": {
 		"collectCoverageFrom": [
 			"src/main/resources/META-INF/resources/js/**/*.js"
-		]
+		],
+		"timers": "fake"
 	},
 	"main": "js/index.js",
 	"name": "@liferay/portal-workflow-instance-tracker-web",

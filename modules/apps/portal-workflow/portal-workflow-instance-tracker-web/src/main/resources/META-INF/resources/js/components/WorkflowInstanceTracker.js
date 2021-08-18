@@ -17,7 +17,6 @@ import ReactFlow, {Controls, ReactFlowProvider} from 'react-flow-renderer';
 
 import '../../css/main.scss';
 import {useFetch} from '../hooks/useFetch';
-import {useFetchWithParams} from '../hooks/useFetchWithParams';
 import {
 	getLayoutedElements,
 	getNodeType,
@@ -29,21 +28,25 @@ import {
 export default function WorkflowInstanceTracker({workflowInstanceId}) {
 	const [nodes, setNodes] = useState([]);
 	const [transitions, setTransitions] = useState([]);
-	const [workflowDefinitionName, setWorkflowDefinitionName] = useState('');
-	const [nodeElements, setNodeElements] = useState([]);
 	const [completedNodes, setCompletedNodes] = useState([]);
-	const [transitionElements, setTransitionElements] = useState([]);
 	const [currentSteps, setCurrentSteps] = useState([]);
 
+	const [nodeAndTransitions, setNodeAndTransitions] = useState({});
+
 	const {data, fetchData} = useFetch({
+		callback: (responses, client) => {
+			client.get(`/workflow-definitions/by-name/${responses[0].data.workflowDefinitionName}`)
+				.then(response => {
+					setNodeAndTransitions({
+						nodes: response.data.nodes,
+						transitions: response.data.transitions
+					})
+				});
+		},
 		urls: [
 			`/workflow-instances/${workflowInstanceId}`,
 			`/workflow-instances/${workflowInstanceId}/workflow-logs?types=NodeEntry`,
 		],
-	});
-
-	const {data: dataP, fetchData: fetchDataP} = useFetchWithParams({
-		url: '/workflow-definitions/by-name/:workflowDefinitionName',
 	});
 
 	useEffect(() => {
@@ -54,30 +57,16 @@ export default function WorkflowInstanceTracker({workflowInstanceId}) {
 
 	useEffect(() => {
 		if (data.length) {
-			setWorkflowDefinitionName(data[0].workflowDefinitionName);
 			setCurrentSteps(data[0].state);
 			setCompletedNodes(data[1].state);
 		}
 	}, [data]);
 
-	useEffect(() => {
-		if (workflowDefinitionName) {
-			fetchDataP({workflowDefinitionName});
-		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [workflowDefinitionName]);
-
-	useEffect(() => {
-		if (dataP.nodes) {
-			setNodeElements(dataP.nodes);
-			setTransitionElements(dataP.transitions);
-		}
-	}, [dataP]);
-
 	const position = {x: 0, y: 0};
 
 	useEffect(() => {
+		const {nodes: nodeElements, transitions: transitionElements} = nodeAndTransitions;
+
 		if (nodeElements?.length && transitionElements?.length) {
 			const elementsN = nodeElements.map((node) => {
 				return {
@@ -109,7 +98,7 @@ export default function WorkflowInstanceTracker({workflowInstanceId}) {
 		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [nodeElements, transitionElements]);
+	}, [nodeAndTransitions]);
 
 	const elements = nodes.concat(transitions);
 

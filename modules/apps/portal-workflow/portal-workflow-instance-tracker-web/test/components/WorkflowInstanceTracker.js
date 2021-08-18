@@ -13,95 +13,124 @@
  */
 
 import '@testing-library/jest-dom/extend-expect';
-import {render} from '@testing-library/react';
+import {act, render} from '@testing-library/react';
 import React from 'react';
 
-import {useFetch} from '../../src/main/resources/META-INF/resources/js/hooks/useFetch';
-import {useFetchWithParams} from '../../src/main/resources/META-INF/resources/js/hooks/useFetchWithParams';
 import WorkflowInstanceTracker from '../../src/main/resources/META-INF/resources/js/components/WorkflowInstanceTracker';
 
-const firstRequest = {
-	state: 'Review',
-	workflowDefinitionName: 'Single Approver',
-};
+jest.mock('axios', () => {
+	const firstRequest = {
+		state: 'Review',
+		workflowDefinitionName: 'Single Approver',
+	};
+	
+	const secondRequest = {
+		items: [
+			{
+				state: 'review',
+			},
+			{
+				state: 'created',
+			},
+		],
+	};
+	
+	const thirdRequest = {
+		name: 'Single Approver',
+		nodes: [
+			{
+				label: 'Approved',
+				name: 'approved',
+				type: 'TERMINAL_STATE',
+			},
+			{
+				label: 'Created',
+				name: 'created',
+				type: 'INITIAL_STATE',
+			},
+			{
+				label: 'Review',
+				name: 'review',
+				type: 'TASK',
+			},
+			{
+				label: 'Update',
+				name: 'update',
+				type: 'TASK',
+			},
+		],
+		title: 'Single Approver',
+		transitions: [
+			{
+				label: 'Review',
+				name: 'review',
+				sourceNodeName: 'created',
+				targetNodeName: 'review',
+			},
+			{
+				label: 'Approve',
+				name: 'approve',
+				sourceNodeName: 'review',
+				targetNodeName: 'approved',
+			},
+			{
+				label: 'Reject',
+				name: 'reject',
+				sourceNodeName: 'review',
+				targetNodeName: 'update',
+			},
+			{
+				label: 'Resubmit',
+				name: 'resubmit',
+				sourceNodeName: 'update',
+				targetNodeName: 'review',
+			},
+		],
+	};
 
-const secondRequest = {
-	items: [
-		{
-			state: 'review',
+	return {
+		all: (promises) => Promise.all(promises),
+		create: jest.fn(() => ({
+			get: jest.fn().mockResolvedValueOnce({data: firstRequest})
+				.mockResolvedValueOnce({data: secondRequest})
+				.mockResolvedValueOnce({data: thirdRequest}),
+		})),
+		defaults: {
+			headers: {
+				common: {
+					'Accept-Language': null,
+				},
+			},
+			params: {}
 		},
-		{
-			state: 'created',
-		},
-	],
-};
+		spread: callback => array => callback?.apply(null, array),
+	}
+});
 
-const thirdRequest = {
-	name: 'Single Approver',
-	nodes: [
-		{
-			label: 'Approved',
-			name: 'approved',
-			type: 'TERMINAL_STATE',
-		},
-		{
-			label: 'Created',
-			name: 'created',
-			type: 'INITIAL_STATE',
-		},
-		{
-			label: 'Review',
-			name: 'review',
-			type: 'TASK',
-		},
-		{
-			label: 'Update',
-			name: 'update',
-			type: 'TASK',
-		},
-	],
-	title: 'Single Approver',
-	transitions: [
-		{
-			label: 'Review',
-			name: 'review',
-			sourceNodeName: 'created',
-			targetNodeName: 'review',
-		},
-		{
-			label: 'Approve',
-			name: 'approve',
-			sourceNodeName: 'review',
-			targetNodeName: 'approved',
-		},
-		{
-			label: 'Reject',
-			name: 'reject',
-			sourceNodeName: 'review',
-			targetNodeName: 'update',
-		},
-		{
-			label: 'Resubmit',
-			name: 'resubmit',
-			sourceNodeName: 'update',
-			targetNodeName: 'review',
-		},
-	],
-};
+window.ResizeObserver =
+    window.ResizeObserver ||
+    jest.fn().mockImplementation(() => ({
+        disconnect: jest.fn(),
+        observe: jest.fn(),
+        unobserve: jest.fn(),
+    }));
 
 describe('The TaskNode component should', () => {
-	it('Be rendered with nodes and transitions', async () => {
-		const mock1 = jest.spyOn(useFetch, 'all');
-		const mock2 = jest.spyOn(useFetchWithParams, 'get');
+	let container;
 
-		mock1.mockImplementation(() => Promise.resolve({data: firstRequest}));
-		mock1.mockImplementation(() => Promise.resolve({data: secondRequest}));
-		mock2.mockImplementation(() => Promise.resolve({data: thirdRequest}));
-
-		const {container} = await render(
+	beforeAll(async () => {
+		const renderResult = await render(
 			<WorkflowInstanceTracker instanceId={41769} />
 		);
 
+		container = renderResult.container;
+	
+		await act(async () => {
+			jest.runAllTimers();
+		});
+	});
+	
+	it('Be rendered with nodes and transitions', async () => {
 		console.log(container.innerHTML);
 	});
 });

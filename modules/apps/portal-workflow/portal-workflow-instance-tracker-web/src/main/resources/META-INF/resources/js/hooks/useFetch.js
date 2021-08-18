@@ -30,18 +30,18 @@ function useFetch({callback = (data) => data, urls}) {
 		baseURL: '/o/headless-admin-workflow/v1.0',
 	});
 
-	const requests = urls.map((url) => client.get(url));
-
 	const fetchData = useCallback(
-		() =>
+		() => {
+			const requests = urls.map((url) => client.get(url));
+
 			axios.all(requests).then(
-				axios.spread((...responses) => {
+				axios.spread(async (...responses) => {
 					setData(responses.map((response) => response.data));
-
-					return callback(data);
+					
+					return await callback(responses, client);
 				})
-			),
-
+			);
+		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[client, urls]
 	);
