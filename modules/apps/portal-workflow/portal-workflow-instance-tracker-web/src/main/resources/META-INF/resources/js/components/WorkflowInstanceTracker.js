@@ -26,7 +26,7 @@ import {
 	nodeTypes,
 } from '../util/util';
 
-export default function WorkflowInstanceTracker({instanceId}) {
+export default function WorkflowInstanceTracker({workflowInstanceId}) {
 	const [nodes, setNodes] = useState([]);
 	const [transitions, setTransitions] = useState([]);
 	const [workflowDefinitionName, setWorkflowDefinitionName] = useState('');
@@ -37,8 +37,8 @@ export default function WorkflowInstanceTracker({instanceId}) {
 
 	const {data, fetchData} = useFetch({
 		urls: [
-			`/workflow-instances/${instanceId}`,
-			`/workflow-instances/${instanceId}/workflow-logs?types=NodeEntry`,
+			`/workflow-instances/${workflowInstanceId}`,
+			`/workflow-instances/${workflowInstanceId}/workflow-logs?types=NodeEntry`,
 		],
 	});
 

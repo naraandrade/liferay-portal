@@ -34,8 +34,7 @@ const getLayoutedElements = (elements) => {
 				height: nodeHeight,
 				width: nodeWidth,
 			});
-		}
-		else {
+		} else {
 			dagreGraph.setEdge(element.source, element.target);
 		}
 	});
@@ -91,15 +90,13 @@ const getLayoutedElements = (elements) => {
 
 		if (sourceY > targetY) {
 			transition.targetHandle = 't';
-		}
-		else {
+		} else {
 			transition.targetHandle = 'l';
 		}
 
 		if (sourceX > targetX) {
 			transition.sourceHandle = 'b';
-		}
-		else {
+		} else {
 			transition.sourceHandle = 'r';
 		}
 
@@ -118,9 +115,9 @@ const getNodeType = (type) => {
 		case 'STATE':
 			return 'state';
 		case 'INITIAL_STATE':
-			return 'borderS';
+			return 'borderInitial';
 		case 'TERMINAL_STATE':
-			return 'borderE';
+			return 'borderTerminal';
 		default:
 			return 'task';
 	}
@@ -135,8 +132,8 @@ const isCurrent = (currentSteps = [], node) => {
 };
 
 const nodeTypes = {
-	borderE: BorderStateNode,
-	borderS: BorderStateNode,
+	borderInitial: BorderStateNode,
+	borderTerminal: BorderStateNode,
 	state: StateNode,
 	task: TaskNode,
 };

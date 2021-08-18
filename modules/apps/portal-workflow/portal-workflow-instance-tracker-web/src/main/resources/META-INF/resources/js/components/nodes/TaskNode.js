@@ -24,9 +24,9 @@ export default function TaskNode({
 }) {
 	return (
 		<>
-			<Handle id="l" position="left" style={{top: '50%'}} type="target" />
+			<Handle id="left" position="left" style={{top: '50%'}} type="target" />
 
-			<Handle id="t" position="top" style={{left: '50%'}} type="target" />
+			<Handle id="top" position="top" style={{left: '50%'}} type="target" />
 
 			<div
 				className={classnames(
@@ -44,14 +44,14 @@ export default function TaskNode({
 			</div>
 
 			<Handle
-				id="r"
+				id="right"
 				position="right"
 				style={{top: '50%'}}
 				type="source"
 			/>
 
 			<Handle
-				id="b"
+				id="bottom"
 				position="bottom"
 				style={{left: '50%'}}
 				type="source"

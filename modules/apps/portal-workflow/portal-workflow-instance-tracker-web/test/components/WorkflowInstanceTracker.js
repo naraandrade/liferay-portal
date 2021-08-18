@@ -14,6 +14,7 @@
 
 import '@testing-library/jest-dom/extend-expect';
 import {render} from '@testing-library/react';
+import axios from 'axios';
 import React from 'react';
 
 import WorkflowInstanceTracker from '../../src/main/resources/META-INF/resources/js/components/WorkflowInstanceTracker';
@@ -87,13 +88,19 @@ const thirdRequest = {
 	],
 };
 
-describe('The TaskNode component should', () => {
-	it('Be rendered with nodes and transitions', () => {
-		jest.fn()
-			.mockResolvedValueOnce({data: {...firstRequest}})
-			.mockResolvedValueOnce({data: {...secondRequest}})
-			.mockResolvedValueOnce({data: {...thirdRequest}});
+jest.mock('axios');
 
-		render(<WorkflowInstanceTracker instanceId={41769} />);
+describe('The TaskNode component should', () => {
+	it('Be rendered with nodes and transitions', async () => {
+		jest.spyOn(axios, 'get')
+			.mockResolvedValueOnce(firstRequest)
+			.mockResolvedValueOnce(secondRequest)
+			.mockResolvedValueOnce(thirdRequest);
+
+		const {container} = await render(
+			<WorkflowInstanceTracker instanceId={41769} />
+		);
+
+		console.log(container.innerHTML);
 	});
 });
