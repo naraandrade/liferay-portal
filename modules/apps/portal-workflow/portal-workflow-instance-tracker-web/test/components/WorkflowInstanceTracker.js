@@ -14,9 +14,10 @@
 
 import '@testing-library/jest-dom/extend-expect';
 import {render} from '@testing-library/react';
-import axios from 'axios';
 import React from 'react';
 
+import {useFetch} from '../../src/main/resources/META-INF/resources/js/hooks/useFetch';
+import {useFetchWithParams} from '../../src/main/resources/META-INF/resources/js/hooks/useFetchWithParams';
 import WorkflowInstanceTracker from '../../src/main/resources/META-INF/resources/js/components/WorkflowInstanceTracker';
 
 const firstRequest = {
@@ -88,14 +89,14 @@ const thirdRequest = {
 	],
 };
 
-jest.mock('axios');
-
 describe('The TaskNode component should', () => {
 	it('Be rendered with nodes and transitions', async () => {
-		jest.spyOn(axios, 'get')
-			.mockResolvedValueOnce(firstRequest)
-			.mockResolvedValueOnce(secondRequest)
-			.mockResolvedValueOnce(thirdRequest);
+		const mock1 = jest.spyOn(useFetch, 'all');
+		const mock2 = jest.spyOn(useFetchWithParams, 'get');
+
+		mock1.mockImplementation(() => Promise.resolve({data: firstRequest}));
+		mock1.mockImplementation(() => Promise.resolve({data: secondRequest}));
+		mock2.mockImplementation(() => Promise.resolve({data: thirdRequest}));
 
 		const {container} = await render(
 			<WorkflowInstanceTracker instanceId={41769} />
