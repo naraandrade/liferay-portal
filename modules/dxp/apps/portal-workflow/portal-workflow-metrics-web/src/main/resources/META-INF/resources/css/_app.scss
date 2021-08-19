@@ -237,3 +237,20 @@ $font-weight-semi-bold: 600;
 		}
 	}
 }
+
+.workflow-instance-tracker-modal {
+	.modal-content,
+	.modal-body {
+		width: 1050px;
+	}
+
+	.modal-body {
+		height: 590px;
+		overflow: hidden;
+		padding: 0;
+	}
+
+	.modal-content {
+		height: 654px;
+	}
+}

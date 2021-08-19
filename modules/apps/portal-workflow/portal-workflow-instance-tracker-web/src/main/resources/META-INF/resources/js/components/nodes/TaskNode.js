@@ -25,16 +25,58 @@ export default function TaskNode({
 	return (
 		<>
 			<Handle
-				id="left"
+				id="leftSource1"
 				position="left"
-				style={{top: '50%'}}
+				style={{top: '20%'}}
+				type="source"
+			/>
+
+			<Handle
+				id="leftTarget1"
+				position="left"
+				style={{top: '40%'}}
 				type="target"
 			/>
 
 			<Handle
-				id="top"
+				id="leftSource2"
+				position="left"
+				style={{top: '60%'}}
+				type="source"
+			/>
+
+			<Handle
+				id="leftTarget2"
+				position="left"
+				style={{top: '80%'}}
+				type="target"
+			/>
+
+			<Handle
+				id="topSource1"
 				position="top"
-				style={{left: '50%'}}
+				style={{left: '20%'}}
+				type="source"
+			/>
+
+			<Handle
+				id="topTarget1"
+				position="top"
+				style={{left: '40%'}}
+				type="target"
+			/>
+
+			<Handle
+				id="topSource2"
+				position="top"
+				style={{left: '60%'}}
+				type="source"
+			/>
+
+			<Handle
+				id="topTarget2"
+				position="top"
+				style={{left: '80%'}}
 				type="target"
 			/>
 
@@ -56,16 +98,58 @@ export default function TaskNode({
 			</div>
 
 			<Handle
-				id="right"
+				id="rightSource1"
 				position="right"
-				style={{top: '50%'}}
+				style={{top: '20%'}}
 				type="source"
 			/>
 
 			<Handle
-				id="bottom"
+				id="rightTarget1"
+				position="right"
+				style={{top: '40%'}}
+				type="target"
+			/>
+
+			<Handle
+				id="rightSource2"
+				position="right"
+				style={{top: '60%'}}
+				type="source"
+			/>
+
+			<Handle
+				id="rightTarget2"
+				position="right"
+				style={{top: '80%'}}
+				type="target"
+			/>
+
+			<Handle
+				id="bottomTarget1"
 				position="bottom"
-				style={{left: '50%'}}
+				style={{left: '20%'}}
+				type="target"
+			/>
+
+			<Handle
+				id="bottomSource1"
+				position="bottom"
+				style={{left: '40%'}}
+				type="source"
+			/>
+
+			<Handle
+				id="bottomTarget2"
+				position="bottom"
+				style={{left: '60%'}}
+				type="target"
+			/>
+
+			<Handle
+				id="bottomSource2"
+				position="bottom"
+				style={{left: '80%'}}
 				type="source"
 			/>
 		</>
