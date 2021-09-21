@@ -362,7 +362,7 @@
 </tr>
 <tr>
 	<td>WORKFLOW_ALL_ITEMS_SELECT_ALL_MODAL</td>
-	<td>xpath=(//li[contains(@class,'nav-item')]//label//input[contains(@type,'checkbox')])[2]</td>
+	<td>xpath=(//div[contains(@class,'modal')]//li//div[contains(@class, 'custom-checkbox')])[1]</td>
 	<td></td>
 </tr>
 <tr>
