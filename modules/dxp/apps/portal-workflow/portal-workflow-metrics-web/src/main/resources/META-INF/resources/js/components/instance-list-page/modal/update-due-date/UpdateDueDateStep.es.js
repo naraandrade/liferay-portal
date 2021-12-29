@@ -28,7 +28,7 @@ import {toUppercase} from '../../../../shared/util/util.es';
 import {AppContext} from '../../../AppContext.es';
 import {ModalContext} from '../ModalProvider.es';
 
-const getTimeOptions = (isAmPm) => {
+const getTimeOptions = (format, isAmPm) => {
 	const parse = (number) => (number < 10 ? `0${number}` : number);
 
 	if (isAmPm) {
@@ -42,6 +42,17 @@ const getTimeOptions = (isAmPm) => {
 				times[type].push(`${parse(i)}:00 ${type}`);
 				times[type].push(`${parse(i)}:30 ${type}`);
 			}
+		});
+
+		const testTimes = [];
+
+		for (let i = 0; i < 24; i++) {
+			testTimes.push(`${parse(i)}:00`);
+			testTimes.push(`${parse(i)}:30`);
+		}
+
+		testTimes.map((time) => {
+			console.log('formated times', formatDate(time, format));
 		});
 
 		return [...times.AM, ...times.PM];
@@ -58,11 +69,10 @@ const getTimeOptions = (isAmPm) => {
 };
 
 function UpdateDueDateStep({className, dueDate = new Date()}) {
-	const {isAmPm} = useContext(AppContext);
+	const {isAmPm, timeFormat} = useContext(AppContext);
 	const {setUpdateDueDate, updateDueDate} = useContext(ModalContext);
 
 	const dateFormat = getLocaleDateFormat();
-	const timeFormat = getLocaleDateFormat('LT');
 
 	const dateMask = getMaskByDateFormat(dateFormat);
 
@@ -154,7 +164,7 @@ function TimePickerInputWithOptions({format, isAmPm, setValue, value}) {
 	const [invalidTime, setInvalidTime] = useState(false);
 	const [showOptions, setShowOptions] = useState(false);
 	const inputRef = useRef();
-	const options = getTimeOptions(isAmPm);
+	const options = getTimeOptions(format, isAmPm);
 
 	useEffect(() => {
 		setInvalidTime(!isValidDate(value, format));
