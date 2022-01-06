@@ -14,7 +14,7 @@ import ClayLayout from '@clayui/layout';
 import ClayToolbar from '@clayui/toolbar';
 import {Editor} from 'frontend-editor-ckeditor-web';
 import React, {useContext, useEffect, useRef} from 'react';
-import {isNode} from 'react-flow-renderer';
+import {isEdge, isNode} from 'react-flow-renderer';
 
 import {DefinitionBuilderContext} from '../DefinitionBuilderContext';
 import {xmlNamespace} from './constants';
@@ -43,14 +43,20 @@ export default function SourceBuilder({version}) {
 				name: definitionTitle,
 				version,
 			};
-			const nodes = elements.filter(isNode);
 
-			const xmlContent = serializeDefinition(xmlNamespace, metada, nodes);
+			const xmlContent = serializeDefinition(
+				xmlNamespace,
+				metada,
+				elements.filter(isNode),
+				elements.filter(isEdge)
+			);
 
 			if (xmlContent && currentEditor) {
 				currentEditor.setData(xmlContent);
 			}
 		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentEditor, definitionTitle, elements, version]);
 
 	useEffect(() => {
