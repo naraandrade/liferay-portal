@@ -1,16 +1,21 @@
 .sidebar {
 	background: #fff;
 	border-left: 1px solid #e7e7ed;
-	width: 30vw;
+	min-width: 368px;
+	width: 600px;
 
 	.node {
 		border: none;
 		cursor: grab;
-		width: 100%;
+		min-width: 344px;		
 
 		&:hover {
 			border: 2px solid #80acff;
 			box-shadow: 0 8px 16px 0 #27283329;
+		}
+
+		.node-description {
+			margin: auto;
 		}
 
 		.node-icon {
@@ -30,7 +35,7 @@
 			cursor: pointer;
 			display: flex;
 			justify-content: space-between;
-			width: 100%;
+			min-width: 368px;
 		}
 
 		span .lexicon-icon-exclamation-full:hover {
