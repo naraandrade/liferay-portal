@@ -78,6 +78,14 @@ function getModalInfo(itemType) {
 			title: Liferay.Language.get('delete-join-xor-node'),
 		};
 	}
+	if (itemType === 'notifications') {
+		return {
+			message: Liferay.Language.get(
+				'are-you-sure-you-want-to-delete-all-notifications-and-their-settings'
+			),
+			title: Liferay.Language.get('delete-notifications'),
+		};
+	}
 	if (itemType === 'start') {
 		return {
 			message: Liferay.Language.get(
@@ -119,8 +127,7 @@ function getModalInfo(itemType) {
 		};
 	}
 
-		return {};
-	}
+	return {};
 }
 
 export {getModalInfo, isIdDuplicated};
