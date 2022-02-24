@@ -127,7 +127,15 @@ function getLocationValue(field, context) {
 									itemContent = item.textContent;
 								}
 
-								childContent[item.tagName] = itemContent;
+								if (childContent[item.tagName]) {
+									childContent[item.tagName] = [
+										childContent[item.tagName],
+										itemContent,
+									];
+								}
+								else {
+									childContent[item.tagName] = itemContent;
+								}
 							}
 						}
 					}
