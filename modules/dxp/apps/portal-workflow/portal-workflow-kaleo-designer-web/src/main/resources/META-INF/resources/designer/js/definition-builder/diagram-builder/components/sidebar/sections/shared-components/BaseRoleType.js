@@ -36,7 +36,6 @@ const BaseRoleType = ({
 	updateSelectedItem = () => {},
 }) => {
 	const [accountRoles, setAccountRoles] = useState([]);
-	const [checked, setChecked] = useState(autoCreate);
 	const [filterRoleName, setFilterRoleName] = useState(true);
 	const [filterRoleType, setFilterRoleType] = useState(true);
 	const [networkStatus, setNetworkStatus] = useState(4);
@@ -46,6 +45,11 @@ const BaseRoleType = ({
 	const [selectedRoleType, setSelectedRoleType] = useState(
 		titleCase(roleType)
 	);
+	if (autoCreate === 'false') {
+		autoCreate = false;
+	}
+
+	const [checked, setChecked] = useState(autoCreate);
 
 	const {resource} = useResource({
 		fetchOptions: {
@@ -299,9 +303,26 @@ const BaseRoleType = ({
 				<div className="spaced-items">
 					<div className="auto-create">
 						<ClayCheckbox
+							checked={checked}
 							className="mt-2"
-							defaultChecked={checked}
-							onClick={() => setChecked(!checked)}
+							onChange={() => {
+								setChecked((value) => {
+									setSections((prev) => {
+										prev[index] = {
+											...prev[index],
+											autoCreate: !value,
+											roleName: selectedRoleName,
+											roleType: selectedRoleType,
+										};
+
+										updateSelectedItem(prev);
+
+										return prev;
+									});
+
+									return !value;
+								});
+							}}
 						/>
 
 						<span className="ml-2">

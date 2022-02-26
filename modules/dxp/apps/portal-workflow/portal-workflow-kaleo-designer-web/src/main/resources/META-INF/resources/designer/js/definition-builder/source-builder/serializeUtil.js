@@ -40,8 +40,7 @@ function jsonStringify(value) {
 			STR_CHAR_CRLF +
 			JSON.stringify(value, null, STR_CHAR_TAB) +
 			STR_CHAR_CRLF;
-	}
-	catch (error) {}
+	} catch (error) {}
 
 	return jsonString;
 }
@@ -146,8 +145,7 @@ function appendXMLAssignments(
 			);
 
 			buffer.push(XMLUtil.create('resourceActions', xmlResourceAction));
-		}
-		else if (assignmentType === 'roleId') {
+		} else if (assignmentType === 'roleId') {
 			const xmlRoleId = XMLUtil.create('roleId', dataAssignments.roleId);
 
 			buffer.push(
@@ -155,8 +153,7 @@ function appendXMLAssignments(
 				XMLUtil.create('role', xmlRoleId),
 				xmlRoles.close
 			);
-		}
-		else if (assignmentType === 'roleType') {
+		} else if (assignmentType === 'roleType') {
 			buffer.push(xmlRoles.open);
 
 			const xmlRole = XMLUtil.createObj('role');
@@ -171,13 +168,14 @@ function appendXMLAssignments(
 						XMLUtil.create('name', roleName)
 					);
 
-					if (dataAssignments.autoCreate?.[index]) {
-						buffer.push(
-							XMLUtil.create(
-								'autoCreate',
-								dataAssignments.autoCreate[index]
-							)
-						);
+					let autoCreate = dataAssignments.autoCreate?.[index];
+
+					if (autoCreate !== undefined && autoCreate !== null) {
+						if (!autoCreate) {
+							autoCreate = 'false';
+						}
+
+						buffer.push(XMLUtil.create('autoCreate', autoCreate));
 					}
 
 					buffer.push(xmlRole.close);
@@ -185,8 +183,7 @@ function appendXMLAssignments(
 			});
 
 			buffer.push(xmlRoles.close);
-		}
-		else if (assignmentType === 'scriptedAssignment') {
+		} else if (assignmentType === 'scriptedAssignment') {
 			const xmlScriptedAssignment = XMLUtil.createObj(
 				'scriptedAssignment'
 			);
@@ -202,8 +199,7 @@ function appendXMLAssignments(
 					xmlScriptedAssignment.close
 				);
 			});
-		}
-		else if (assignmentType === 'scriptedRecipient') {
+		} else if (assignmentType === 'scriptedRecipient') {
 			const xmlScriptedRecipient = XMLUtil.createObj('scriptedRecipient');
 
 			dataAssignments.script.forEach((item, index) => {
@@ -217,8 +213,7 @@ function appendXMLAssignments(
 					xmlScriptedRecipient.close
 				);
 			});
-		}
-		else if (assignmentType === 'user') {
+		} else if (assignmentType === 'user') {
 			if (
 				Array.isArray(dataAssignments.emailAddress) &&
 				dataAssignments.emailAddress.filter(
@@ -236,8 +231,7 @@ function appendXMLAssignments(
 
 					buffer.push(xmlUser.close);
 				});
-			}
-			else if (
+			} else if (
 				Array.isArray(dataAssignments.screenName) &&
 				dataAssignments.screenName.filter(
 					(screenName) => screenName !== ''
@@ -254,8 +248,7 @@ function appendXMLAssignments(
 
 					buffer.push(xmlUser.close);
 				});
-			}
-			else if (
+			} else if (
 				Array.isArray(dataAssignments.userId) &&
 				dataAssignments.userId.filter((userId) => userId !== '')
 					.length !== 0
@@ -271,15 +264,12 @@ function appendXMLAssignments(
 
 					buffer.push(xmlUser.close);
 				});
-			}
-			else {
+			} else {
 				buffer.push('<user />');
 			}
-		}
-		else if (assignmentType === 'taskAssignees') {
+		} else if (assignmentType === 'taskAssignees') {
 			buffer.push('<assignees />');
-		}
-		else if (
+		} else if (
 			!dataAssignments.address ||
 			dataAssignments.address.filter((address) => address !== '')
 				.length === 0
@@ -414,8 +404,7 @@ function appendXMLTaskTimers(buffer, taskTimers) {
 
 			if (blocking && blocking[index] !== '') {
 				buffer.push(XMLUtil.create('blocking', blocking[index]));
-			}
-			else {
+			} else {
 				buffer.push(XMLUtil.create('blocking', String(false)));
 			}
 

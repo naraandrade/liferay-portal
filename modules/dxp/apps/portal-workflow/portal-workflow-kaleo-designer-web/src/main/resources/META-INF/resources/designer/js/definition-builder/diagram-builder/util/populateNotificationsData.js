@@ -11,7 +11,7 @@
 
 import {isNode} from 'react-flow-renderer';
 
-import {retrieveRolesBy} from '../../util/fetchUtil';
+import {retrieveRolesBy, retrieveUsersBy} from '../../util/fetchUtil';
 
 const populateNotificationsData = (initialElements, setElements) => {
 	for (let i = 0; i < initialElements.length; i++) {
@@ -32,6 +32,29 @@ const populateNotificationsData = (initialElements, setElements) => {
 								name: response.name,
 								roleType: response.roleType,
 							};
+
+							setElements([...initialElements]);
+						});
+				} else if (recipient.assignmentType[0] === 'user') {
+					const sectionsData = [];
+
+					retrieveUsersBy('emailAddress', recipient.emailAddress)
+						.then((response) => response.json())
+						.then(({items}) => {
+							items.forEach((item, index) => {
+								sectionsData.push({
+									emailAddress: item.emailAddress,
+									identifier: `${Date.now()}-${index}`,
+									name: item.name,
+									screenName: item.alternateName,
+									userId: item.id,
+								});
+							});
+						})
+						.then(() => {
+							initialElements[i].data.notifications.recipients[
+								index
+							].sectionsData = sectionsData;
 
 							setElements([...initialElements]);
 						});
