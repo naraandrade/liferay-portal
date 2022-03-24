@@ -14,8 +14,7 @@ import {isIdDuplicated} from '../utils';
 function checkLabelErrors(errors, target) {
 	if (target.value.trim() === '') {
 		return {...errors, label: true};
-	}
-	else {
+	} else {
 		return {...errors, label: false};
 	}
 }
@@ -26,21 +25,44 @@ function checkIdErrors(elements, errors, target) {
 			...errors,
 			id: {duplicated: false, empty: true},
 		};
-	}
-	else {
+	} else {
 		if (isIdDuplicated(elements, target.value.trim())) {
 			return {
 				...errors,
 				id: {duplicated: true, empty: false},
 			};
-		}
-		else {
+		} else {
 			return {
 				...errors,
 				id: {duplicated: false, empty: false},
 			};
 		}
 	}
+}
+
+function getRecipientTypeOptions() {
+	return [
+		{
+			label: Liferay.Language.get('asset-creator'),
+			value: 'assetCreator',
+		},
+		{
+			label: Liferay.Language.get('role'),
+			value: 'role',
+		},
+		{
+			label: Liferay.Language.get('role-type'),
+			value: 'roleType',
+		},
+		{
+			label: Liferay.Language.get('scripted-recipient'),
+			value: 'scriptedRecipient',
+		},
+		{
+			label: Liferay.Language.get('user'),
+			value: 'user',
+		},
+	];
 }
 
 function getUpdatedLabelItem(key, selectedItem, target) {
@@ -71,6 +93,7 @@ function sortElements(array, property) {
 export {
 	checkLabelErrors,
 	checkIdErrors,
+	getRecipientTypeOptions,
 	getUpdatedLabelItem,
 	limitValue,
 	sortElements,

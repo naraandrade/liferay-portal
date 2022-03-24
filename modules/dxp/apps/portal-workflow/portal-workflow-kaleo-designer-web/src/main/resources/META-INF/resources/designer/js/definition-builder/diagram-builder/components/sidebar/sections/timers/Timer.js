@@ -40,7 +40,6 @@ const Timer = ({
 	);
 
 	useEffect(() => {
-		console.log('actionSections', actionSections)
 		if (actionSections.length) {
 			const filteredActionSections = [];
 
