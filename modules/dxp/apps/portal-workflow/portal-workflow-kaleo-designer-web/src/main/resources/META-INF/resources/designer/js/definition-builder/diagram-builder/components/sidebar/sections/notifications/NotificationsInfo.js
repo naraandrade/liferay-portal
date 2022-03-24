@@ -10,7 +10,7 @@
  */
 
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 
 import {DEFAULT_LANGUAGE} from '../../../../../source-builder/constants';
 import {DiagramBuilderContext} from '../../../../DiagramBuilderContext';
@@ -28,12 +28,12 @@ let executionTypeOptions = [
 	},
 ];
 
-const NotificationsInfo = ({
-	index: notificationIndex,
-	setSelectedItem,
-	...restProps
-}) => {
-	const {selectedItem} = useContext(DiagramBuilderContext);
+const NotificationsInfo = ({index: notificationIndex, ...restProps}) => {
+	const {selectedItem, setSelectedItem} = useContext(DiagramBuilderContext);
+	const [executionType, setExecutionType] = useState(
+		selectedItem.data.notifications?.executionType?.[notificationIndex] ||
+			(selectedItem.type === 'task' ? 'onAssignment' : 'onEntry')
+	);
 	let recipientTypeOptions = getRecipientTypeOptions();
 
 	if (selectedItem.type === 'task') {
@@ -111,10 +111,13 @@ const NotificationsInfo = ({
 
 	return (
 		<BaseNotificationsInfo
+			executionType={executionType}
 			executionTypeOptions={executionTypeOptions}
+			notificationIndex={notificationIndex}
 			scriptedRecipientUpdateSelectedItem={
 				scriptedRecipientUpdateSelectedItem
 			}
+			setExecutionType={setExecutionType}
 			updateSelectedItem={updateSelectedItem}
 			{...restProps}
 		/>

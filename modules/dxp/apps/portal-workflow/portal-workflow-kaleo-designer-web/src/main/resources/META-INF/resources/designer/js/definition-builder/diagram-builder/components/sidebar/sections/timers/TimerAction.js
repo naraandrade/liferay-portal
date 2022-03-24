@@ -33,7 +33,6 @@ const TimerAction = ({
 	setActionSections,
 	timersIndex,
 }) => {
-	// console.log('actionData', actionData)
 	const ActionSectionComponent =
 		actionSectionComponents[actionData.actionType];
 

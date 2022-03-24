@@ -123,7 +123,85 @@ const Timers = () => {
 					return {};
 				}),
 
-				timerNotifications: serializebleSections.map(() => ({})),
+				timerNotifications: serializebleSections.map(
+					({timerNotifications}) => {
+						const filteredTimerNotifications = timerNotifications.filter(
+							({actionType}) =>
+								actionType === 'timerNotifications'
+						);
+
+						if (filteredTimerNotifications.length) {
+							const notifications = {};
+
+							notifications.recipientType = filteredTimerNotifications.map(
+								({recipientType}) => recipientType
+							);
+
+							if (
+								notifications.recipientType === 'assetCreator'
+							) {
+								notifications
+							}
+
+							return {
+								description: filteredTimerNotifications.map(
+									({description}) => description
+								),
+								name: filteredTimerNotifications.map(
+									({name}) => name
+								),
+								notificationTypes: filteredTimerNotifications.map(
+									({notificationTypes}) => notificationTypes
+								),
+								recipientType: filteredTimerNotifications.map(
+									({recipientType}) => recipientType
+								),
+								template: filteredTimerNotifications.map(
+									({template}) => template
+								),
+								templateLanguage: filteredTimerNotifications.map(
+									({templateLanguage}) => templateLanguage
+								),
+							};
+						}
+
+						if (filteredTimerActions.length) {
+							const reassignments = {};
+
+							reassignments.assignmentType = filteredTimerActions.map(
+								({assignmentType}) => assignmentType
+							);
+
+							if (
+								reassignments.assignmentType[0] ===
+								'resourceActions'
+							) {
+								reassignments.resourceAction = filteredTimerActions.map(
+									({resourceAction}) => resourceAction
+								);
+							} else if (
+								reassignments.assignmentType[0] === 'roleId'
+							) {
+								reassignments.roleId = filteredTimerActions.map(
+									({roleId}) => roleId
+								);
+							} else if (
+								reassignments.assignmentType[0] === 'user' &&
+								Object.keys(filteredTimerActions[0]).includes(
+									'users'
+								)
+							) {
+								reassignments.emailAddress = filteredTimerActions[0].users.map(
+									({emailAddress}) => emailAddress
+								);
+							}
+
+							return reassignments;
+						}
+
+						return {};
+					}
+				),
 			};
 		} else {
 			taskTimers = null;
@@ -153,7 +231,7 @@ const Timers = () => {
 
 		if (allTimerActions.reassignments.length) {
 			const data = allTimerActions.reassignments;
-			console.log('data', data)
+			console.log('data', data);
 			for (let index = 0; index < data[0][1].length; index++) {
 				const section = {};
 

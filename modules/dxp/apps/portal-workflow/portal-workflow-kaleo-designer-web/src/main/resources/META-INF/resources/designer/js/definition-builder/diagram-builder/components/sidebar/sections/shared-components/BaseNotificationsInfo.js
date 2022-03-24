@@ -62,58 +62,57 @@ const templateLanguageOptions = [
 ];
 
 const BaseNotificationsInfo = ({
+	executionType,
 	executionTypeOptions,
 	identifier,
-	index: notificationIndex,
+	notificationIndex,
 	scriptedRecipientUpdateSelectedItem,
 	sectionsLength,
+	setExecutionType,
 	setSections,
 	updateSelectedItem,
+	updateTimersNotificationInfo,
 	...restProps
 }) => {
 	const {selectedItem, setSelectedItem} = useContext(DiagramBuilderContext);
 
-	const [executionType, setExecutionType] = useState(
-		selectedItem.data.notifications?.executionType?.[notificationIndex] ||
-			(selectedItem.type === 'task' ? 'onAssignment' : 'onEntry')
-	);
+	const notificationsPath = executionType
+		? selectedItem.data.notifications
+		: selectedItem.data.taskTimers?.timerNotifications[notificationIndex];
 
 	const [notificationDescription, setNotificationDescription] = useState(
-		selectedItem.data.notifications?.description?.[notificationIndex] || ''
+		notificationsPath?.description?.[notificationIndex] || ''
 	);
 	const [notificationName, setNotificationName] = useState(
-		selectedItem.data.notifications?.name?.[notificationIndex] || ''
+		notificationsPath?.name?.[notificationIndex] || ''
 	);
 
 	const [notificationTypeEmail, setNotificationTypeEmail] = useState(
-		selectedItem.data.notifications?.notificationTypes?.[
-			notificationIndex
-		]?.some((value) => value.notificationType === 'email') || false
+		notificationsPath?.notificationTypes?.[notificationIndex]?.some(
+			(value) => value.notificationType === 'email'
+		) || false
 	);
 
 	const [
 		notificationTypeUserNotification,
 		setNotificationTypeUserNotification,
 	] = useState(
-		selectedItem.data.notifications?.notificationTypes?.[
-			notificationIndex
-		]?.some((value) => value.notificationType === 'user-notification') ||
-			false
+		notificationsPath?.notificationTypes?.[notificationIndex]?.some(
+			(value) => value.notificationType === 'user-notification'
+		) || false
 	);
 
 	const [recipientType, setRecipientType] = useState(
 		getRecipientType(
-			selectedItem.data.notifications?.recipients?.[notificationIndex]
+			notificationsPath?.recipients?.[notificationIndex]
 				?.assignmentType?.[0]
 		) || 'assetCreator'
 	);
 	const [template, setTemplate] = useState(
-		selectedItem.data.notifications?.template?.[notificationIndex] || ''
+		notificationsPath?.template?.[notificationIndex] || ''
 	);
 	const [templateLanguage, setTemplateLanguage] = useState(
-		selectedItem.data.notifications?.templateLanguage?.[
-			notificationIndex
-		] || 'freemarker'
+		notificationsPath?.templateLanguage?.[notificationIndex] || 'freemarker'
 	);
 
 	const [internalSections, setInternalSections] = useState([
@@ -190,7 +189,7 @@ const BaseNotificationsInfo = ({
 	];
 
 	useEffect(() => {
-		if (selectedItem.data.notifications) {
+		if (notificationsPath) {
 			setSelectedItem((previousItem) => {
 				let recipientDetails = {};
 
@@ -204,21 +203,29 @@ const BaseNotificationsInfo = ({
 					...recipientDetails,
 				};
 
+				const previousItemNotificationsPath = executionType
+					? previousItem.data.notifications
+					: previousItem.data.taskTimers?.timerNotifications[
+							notificationIndex
+					  ];
+
 				if (
-					previousItem.data.notifications.recipients[
+					previousItemNotificationsPath.recipients?.[
 						notificationIndex
 					]
 				) {
-					previousItem.data.notifications.recipients[
+					previousItemNotificationsPath.recipients[
 						notificationIndex
 					] = {
-						...previousItem.data.notifications.recipients[
+						...previousItemNotificationsPath.recipients[
 							notificationIndex
 						],
 						...currentRecipient,
 					};
 				} else {
-					previousItem.data.notifications.recipients[
+					previousItemNotificationsPath.recipients = [];
+
+					previousItemNotificationsPath.recipients[
 						notificationIndex
 					] = currentRecipient;
 				}
@@ -234,8 +241,8 @@ const BaseNotificationsInfo = ({
 		let sectionsData = [];
 
 		const recipients =
-			selectedItem.data.notifications &&
-			selectedItem.data.notifications.recipients[notificationIndex];
+			notificationsPath &&
+			notificationsPath.recipients[notificationIndex];
 
 		if (recipients && recipientType === 'roleType') {
 			for (let i = 0; i < recipients.roleName.length; i++) {
@@ -248,13 +255,11 @@ const BaseNotificationsInfo = ({
 			}
 		} else if (
 			recipients &&
-			selectedItem.data.notifications.recipients[notificationIndex]
-				.sectionsData &&
+			notificationsPath.recipients[notificationIndex].sectionsData &&
 			recipientType === 'user'
 		) {
 			sectionsData =
-				selectedItem.data.notifications.recipients[notificationIndex]
-					.sectionsData;
+				notificationsPath.recipients[notificationIndex].sectionsData;
 		}
 
 		if (sectionsData.length) {
@@ -276,7 +281,7 @@ const BaseNotificationsInfo = ({
 		});
 	};
 
-	const updateNotificationInfo = (item) => {
+	const updateNotificationsNotificationInfo = (item) => {
 		if (item.name && item.template && item.notificationTypes.length) {
 			setSections((prev) => {
 				prev[notificationIndex] = {
@@ -288,6 +293,14 @@ const BaseNotificationsInfo = ({
 
 				return prev;
 			});
+		}
+	};
+
+	const updateNotificationInfo = (item) => {
+		if (updateTimersNotificationInfo) {
+			updateTimersNotificationInfo(item);
+		} else {
+			updateNotificationsNotificationInfo(item);
 		}
 	};
 
@@ -472,7 +485,7 @@ const BaseNotificationsInfo = ({
 				/>
 			</ClayForm.Group>
 
-			{executionTypeOptions && (
+			{executionType && (
 				<ClayForm.Group>
 					<label htmlFor="execution-type">
 						{Liferay.Language.get('execution-type')}
@@ -575,9 +588,9 @@ const BaseNotificationsInfo = ({
 								<RecipientTypeComponent
 									index={index}
 									inputValue={
-										selectedItem.data.notifications
-											?.recipients[notificationIndex]
-											?.script?.[0]
+										notificationsPath?.recipients?.[
+											notificationIndex
+										]?.script?.[0]
 									}
 									key={`section-${props.identifier}`}
 									notificationIndex={notificationIndex}

@@ -9,59 +9,74 @@
  * distribution rights of the Software.
  */
 
-import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
 import React, {useState} from 'react';
 
-const ActionTypeNotification = () => {
+import {DEFAULT_LANGUAGE} from '../../../../../../source-builder/constants';
+import BaseNotificationsInfo from '../../shared-components/BaseNotificationsInfo';
+
+const ActionTypeNotification = ({
+	actionSectionsIndex,
+	actionType,
+	setActionSections,
+}) => {
 	const [notificationSections, setNotificationSections] = useState([
 		{identifier: `${Date.now()}-0`},
 	]);
 
-	const deleteSection = (identifier) => {
-		setNotificationSections((prevSections) => {
-			const newSections = prevSections.filter(
-				(prevSection) => prevSection.identifier !== identifier
-			);
+	const scriptedRecipientUpdateSelectedItem = ({target}) =>
+		setActionSections((previousSections) => {
+			const updatedSections = [...previousSections];
 
-			return newSections;
+			updatedSections[actionSectionsIndex].recipients[
+				actionSectionsIndex
+			] = {
+				assignmentType: ['scriptedRecipient'],
+				script: [target.value],
+				scriptLanguage: [DEFAULT_LANGUAGE],
+			};
+
+			return updatedSections;
 		});
+
+	const updateNotificationInfo = (item) => {
+		if (item.name && item.template && item.notificationTypes.length) {
+			console.log('chegou aqui', item);
+
+			setActionSections((previousSections) => {
+				const updatedSections = [...previousSections];
+
+				updatedSections[actionSectionsIndex] = {
+					...previousSections[actionSectionsIndex],
+					...item,
+					actionType,
+					recipients: !updatedSections[actionSectionsIndex]
+						?.recipients
+						? [
+								{
+									assignmentType: ['user'],
+								},
+						  ]
+						: [...updatedSections[actionSectionsIndex].recipients],
+				};
+
+				return updatedSections;
+			});
+		}
 	};
 
-	return notificationSections.map(({identifier}) => {
+	return notificationSections.map(({identifier, ...restProps}, index) => {
 		return (
-			<div key={`section-${identifier}`}>
-				<div>Notification Placeholder {identifier}</div>
-
-				<div className="section-buttons-area">
-					<ClayButton
-						className="mr-3"
-						displayType="secondary"
-						onClick={() =>
-							setNotificationSections((prev) => {
-								return [
-									...prev,
-									{
-										identifier: `${Date.now()}-${
-											prev.length
-										}`,
-									},
-								];
-							})
-						}
-					>
-						Add Button Placeholder
-					</ClayButton>
-
-					{notificationSections.length > 1 && (
-						<ClayButtonWithIcon
-							className="delete-button"
-							displayType="unstyled"
-							onClick={() => deleteSection(identifier)}
-							symbol="trash"
-						/>
-					)}
-				</div>
-			</div>
+			<BaseNotificationsInfo
+				identifier={identifier}
+				key={index}
+				notificationIndex={actionSectionsIndex}
+				scriptedRecipientUpdateSelectedItem={
+					scriptedRecipientUpdateSelectedItem
+				}
+				setSections={setNotificationSections}
+				updateTimersNotificationInfo={updateNotificationInfo}
+				{...restProps}
+			/>
 		);
 	});
 };
