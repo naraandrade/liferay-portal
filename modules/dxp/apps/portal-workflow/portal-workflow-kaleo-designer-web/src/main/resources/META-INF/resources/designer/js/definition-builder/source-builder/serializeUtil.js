@@ -50,6 +50,7 @@ function appendXMLActions(
 	buffer,
 	actions,
 	notifications,
+	exporting,
 	assignments,
 	wrapperNodeName,
 	actionNodeName,
@@ -101,7 +102,12 @@ function appendXMLActions(
 	}
 
 	if (hasNotification) {
-		appendXMLNotifications(buffer, notifications, notificationNodeName);
+		appendXMLNotifications(
+			buffer,
+			notifications,
+			notificationNodeName,
+			exporting
+		);
 	}
 
 	if (hasAssignment) {
@@ -292,7 +298,7 @@ function appendXMLAssignments(
 	}
 }
 
-function appendXMLNotifications(buffer, notifications, nodeName) {
+function appendXMLNotifications(buffer, notifications, nodeName, exporting) {
 	if (notifications && notifications.name && notifications.name.length > 0) {
 		const {
 			description,
@@ -313,6 +319,8 @@ function appendXMLNotifications(buffer, notifications, nodeName) {
 					XMLUtil.create('description', cdata(description[index]))
 				);
 			}
+
+			const roleTypeName = exporting ? 'depot' : 'asset library';
 
 			if (isValidValue(template, index)) {
 				buffer.push(XMLUtil.create('template', cdata(template[index])));
@@ -346,6 +354,12 @@ function appendXMLNotifications(buffer, notifications, nodeName) {
 				recipientsAttrs.receptionType = recipients[index].receptionType;
 			}
 
+			recipients[index].roleType?.forEach((item, roleTypeIndex) => {
+				if (item === 'depot' || item === 'asset library') {
+					recipients[index].roleType[roleTypeIndex] = roleTypeName;
+				}
+			});
+
 			if (
 				isObject(recipients[index]) &&
 				!isObjectEmpty(recipients[index])
@@ -369,7 +383,7 @@ function appendXMLNotifications(buffer, notifications, nodeName) {
 	}
 }
 
-function appendXMLTaskTimers(buffer, taskTimers) {
+function appendXMLTaskTimers(buffer, taskTimers, exporting) {
 	if (taskTimers && taskTimers.name && taskTimers.name.length > 0) {
 		const xmlTaskTimers = XMLUtil.createObj('task-timers');
 
@@ -424,6 +438,7 @@ function appendXMLTaskTimers(buffer, taskTimers) {
 				buffer,
 				timerActions[index],
 				timerNotifications[index],
+				exporting,
 				reassignments[index],
 				'timer-actions',
 				'timer-action',
@@ -544,7 +559,12 @@ function serializeDefinition(
 
 		buffer.push(XMLUtil.create('metadata', cdata(jsonStringify(metadata))));
 
-		appendXMLActions(buffer, item.data.actions, item.data.notifications);
+		appendXMLActions(
+			buffer,
+			item.data.actions,
+			item.data.notifications,
+			exporting
+		);
 
 		appendXMLAssignments(buffer, item.data.assignments);
 
@@ -567,7 +587,7 @@ function serializeDefinition(
 
 		buffer.push(xmlLabels.close);
 
-		appendXMLTaskTimers(buffer, item.data.taskTimers);
+		appendXMLTaskTimers(buffer, item.data.taskTimers, exporting);
 
 		if (script) {
 			buffer.push(XMLUtil.create('script', cdata(script)));

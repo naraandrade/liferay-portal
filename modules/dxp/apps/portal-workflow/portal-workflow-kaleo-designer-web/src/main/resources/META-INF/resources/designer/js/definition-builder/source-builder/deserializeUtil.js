@@ -98,6 +98,16 @@ DeserializeUtil.prototype = {
 				data.notifications =
 					node.notifications && parseNotifications(node);
 
+				node.notifications?.forEach((notification) => {
+					var roleTypes = notification['role-type'];
+
+					roleTypes?.forEach((type, index) => {
+						if (type === 'depot') {
+							roleTypes[index] = 'asset library';
+						}
+					});
+				});
+
 				let nodeId;
 
 				if (node.id) {
