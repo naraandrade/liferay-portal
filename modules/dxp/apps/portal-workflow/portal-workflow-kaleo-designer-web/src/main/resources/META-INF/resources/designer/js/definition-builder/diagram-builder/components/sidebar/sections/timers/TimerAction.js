@@ -23,39 +23,38 @@ const actionSectionComponents = {
 	reassignments: ActionTypeReassignment,
 };
 
-const TimerAction = ({
-	actionsIndex,
-	actionsSectionsLength,
-	identifier,
-	setActionsSections,
-	setContentName,
-	timerIndex,
-	updateSelectedItem,
-}) => {
-	const [actionType, setActionType] = useState('actions');
+const TimerAction = ({setContentName, updateSelectedItem}) => {
+	const [actionSection, setActionSection] = useState('actions');
+	const [actionSections, setActionSections] = useState([
+		{identifier: `${Date.now()}-0`},
+	]);
 
-	const ActionSectionComponent = actionSectionComponents[actionType];
+	const ActionSectionComponent = actionSectionComponents[actionSection];
 
 	return (
 		<SidebarPanel panelTitle={Liferay.Language.get('action')}>
 			<SelectActionType
-				actionType={actionType}
-				setActionType={setActionType}
+				actionSection={actionSection}
+				setActionSection={setActionSection}
+				setActionSections={setActionSections}
 			/>
 
-			{ActionSectionComponent && (
-				<ActionSectionComponent
-					actionsIndex={actionsIndex}
-					actionsSectionsLength={actionsSectionsLength}
-					identifier={identifier}
-					key={`section-${identifier}`}
-					setActionsSections={setActionsSections}
-					setContentName={setContentName}
-					subSectionsIndex={actionsIndex}
-					timerIndex={timerIndex}
-					updateSelectedItem={updateSelectedItem}
-				/>
-			)}
+			{actionSections.map(({identifier, ...restProps}, index) => {
+				return (
+					ActionSectionComponent && (
+						<ActionSectionComponent
+							{...restProps}
+							identifier={identifier}
+							index={index}
+							key={`section-${identifier}`}
+							sectionsLength={actionSections?.length}
+							setContentName={setContentName}
+							setSections={setActionSections}
+							updateSelectedItem={updateSelectedItem}
+						/>
+					)
+				);
+			})}
 		</SidebarPanel>
 	);
 };

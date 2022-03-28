@@ -20,14 +20,14 @@ import TimerInfo from './TimerInfo';
 
 const Timer = ({
 	identifier,
-	index: timerIndex,
+	index,
 	sectionsLength,
 	setContentName,
 	setSections,
 }) => {
 	const {selectedItem, setSelectedItem} = useContext(DiagramBuilderContext);
 
-	const [actionsSections, setActionsSections] = useState([
+	const [subSections, setSubSections] = useState([
 		{identifier: `${Date.now()}-0`},
 	]);
 
@@ -39,19 +39,19 @@ const Timer = ({
 			const [key, value] = Object.entries(values)[0];
 
 			if (key === 'delay') {
-				itemCopy.data.taskTimers.delay[timerIndex].duration.splice(
+				itemCopy.data.taskTimers.delay[index].duration.splice(
 					options.delay,
 					1,
 					value.duration
 				);
-				itemCopy.data.taskTimers.delay[timerIndex].scale.splice(
+				itemCopy.data.taskTimers.delay[index].scale.splice(
 					options.delay,
 					1,
 					value.scale
 				);
 			}
 			else {
-				itemCopy.data.taskTimers[key].splice(timerIndex, 1, value);
+				itemCopy.data.taskTimers[key].splice(index, 1, value);
 			}
 
 			return itemCopy;
@@ -65,7 +65,7 @@ const Timer = ({
 			};
 
 			for (const key of Object.keys(itemCopy.data.taskTimers)) {
-				itemCopy.data.taskTimers[key].splice(timerIndex, 1);
+				itemCopy.data.taskTimers[key].splice(index, 1);
 			}
 
 			return itemCopy;
@@ -121,29 +121,27 @@ const Timer = ({
 		<div className="panel">
 			<TimerInfo
 				deleteTimer={deleteTimer}
-				index={timerIndex}
+				index={index}
 				sectionsLength={sectionsLength}
 				selectedItem={selectedItem}
 				updateSelectedItem={updateSelectedItem}
 			/>
 
 			<TimerDuration
-				index={timerIndex}
+				index={index}
 				selectedItem={selectedItem}
 				setSelectedItem={setSelectedItem}
 				updateSelectedItem={updateSelectedItem}
 			/>
 
-			{actionsSections.map(({identifier}, index) => (
+			{subSections.map(({identifier}, index) => (
 				<TimerAction
-					actionsIndex={index}
-					actionsSectionsLength={actionsSections?.length}
 					identifier={identifier}
+					index={index}
 					key={`section-${identifier}`}
+					sectionsLength={subSections?.length}
 					selectedItem={selectedItem}
-					setActionsSections={setActionsSections}
 					setContentName={setContentName}
-					timerIndex={timerIndex}
 					updateSelectedItem={updateSelectedItem}
 				/>
 			))}
@@ -156,7 +154,7 @@ const Timer = ({
 						className="mr-3"
 						displayType="secondary"
 						onClick={() =>
-							setActionsSections((prev) => handleClickNew(prev))
+							setSubSections((prev) => handleClickNew(prev))
 						}
 					>
 						{Liferay.Language.get('new-action')}
