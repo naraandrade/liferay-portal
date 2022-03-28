@@ -9,12 +9,61 @@
  * distribution rights of the Software.
  */
 
-import React from 'react';
+import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
+import React, {useState} from 'react';
 
-import NotificationsInfo from '../select-notifications/NotificationsInfo';
+const ActionTypeNotification = () => {
+	const [notificationSections, setNotificationSections] = useState([
+		{identifier: `${Date.now()}-0`},
+	]);
 
-const ActionTypeNotification = (props) => {
-	return <NotificationsInfo {...props} />;
+	const deleteSection = (identifier) => {
+		setNotificationSections((prevSections) => {
+			const newSections = prevSections.filter(
+				(prevSection) => prevSection.identifier !== identifier
+			);
+
+			return newSections;
+		});
+	};
+
+	return notificationSections.map(({identifier}) => {
+		return (
+			<div key={`section-${identifier}`}>
+				<div>Notification Placeholder {identifier}</div>
+
+				<div className="section-buttons-area">
+					<ClayButton
+						className="mr-3"
+						displayType="secondary"
+						onClick={() =>
+							setNotificationSections((prev) => {
+								return [
+									...prev,
+									{
+										identifier: `${Date.now()}-${
+											prev.length
+										}`,
+									},
+								];
+							})
+						}
+					>
+						Add Button Placeholder
+					</ClayButton>
+
+					{notificationSections.length > 1 && (
+						<ClayButtonWithIcon
+							className="delete-button"
+							displayType="unstyled"
+							onClick={() => deleteSection(identifier)}
+							symbol="trash"
+						/>
+					)}
+				</div>
+			</div>
+		);
+	});
 };
 
 export default ActionTypeNotification;

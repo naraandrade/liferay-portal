@@ -27,23 +27,28 @@ const options = [
 	},
 ];
 
-const SelectActionType = ({actionType, setActionType}) => {
+const SelectActionType = ({
+	actionSection,
+	setActionSection,
+	setActionSections,
+}) => {
 	return (
 		<ClayForm.Group>
 			<label htmlFor="action-type">{Liferay.Language.get('type')}</label>
 
 			<ClaySelect
 				aria-label="Select"
-				defaultValue={actionType}
 				id="action-type"
 				onChange={(event) => {
-					setActionType(event.target.value);
+					setActionSection(event.target.value);
+					setActionSections([{identifier: `${Date.now()}-0`}]);
 				}}
 			>
 				{options.map((item) => (
 					<ClaySelect.Option
 						key={item.actionType}
 						label={item.label}
+						selected={item.actionType === actionSection}
 						value={item.actionType}
 					/>
 				))}
