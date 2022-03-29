@@ -111,7 +111,12 @@ function appendXMLActions(
 	}
 
 	if (hasAssignment) {
-		appendXMLAssignments(buffer, assignments, assignmentNodeName);
+		appendXMLAssignments(
+			buffer,
+			assignments,
+			exporting,
+			assignmentNodeName
+		);
 	}
 
 	if (hasAction || hasNotification || hasAssignment) {
@@ -122,6 +127,7 @@ function appendXMLActions(
 function appendXMLAssignments(
 	buffer,
 	dataAssignments,
+	exporting,
 	wrapperNodeName,
 	wrapperNodeAttrs
 ) {
@@ -144,6 +150,8 @@ function appendXMLAssignments(
 		}
 
 		const xmlRoles = XMLUtil.createObj('roles');
+
+		const roleTypeName = exporting ? 'depot' : 'asset library';
 
 		if (assignmentType === 'resourceActions') {
 			const xmlResourceAction = XMLUtil.create(
@@ -169,11 +177,16 @@ function appendXMLAssignments(
 
 			dataAssignments.roleType.forEach((item, index) => {
 				const roleName = dataAssignments.roleName[index];
+				let roleType = dataAssignments.roleType[index];
+
+				if (item === 'asset library') {
+					roleType = roleTypeName;
+				}
 
 				if (roleName) {
 					buffer.push(
 						xmlRole.open,
-						XMLUtil.create('roleType', item),
+						XMLUtil.create('roleType', roleType),
 						XMLUtil.create('name', roleName)
 					);
 
@@ -367,6 +380,7 @@ function appendXMLNotifications(buffer, notifications, nodeName, exporting) {
 				appendXMLAssignments(
 					buffer,
 					recipients[index],
+					exporting,
 					'recipients',
 					recipientsAttrs
 				);
@@ -566,7 +580,7 @@ function serializeDefinition(
 			exporting
 		);
 
-		appendXMLAssignments(buffer, item.data.assignments);
+		appendXMLAssignments(buffer, item.data.assignments, exporting);
 
 		if (initial) {
 			buffer.push(XMLUtil.create('initial', initial));

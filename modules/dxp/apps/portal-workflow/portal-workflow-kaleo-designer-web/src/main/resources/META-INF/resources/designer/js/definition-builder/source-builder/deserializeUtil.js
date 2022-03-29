@@ -85,6 +85,16 @@ DeserializeUtil.prototype = {
 				};
 
 				if (type === 'task') {
+					node.assignments?.forEach((assignment) => {
+						var roleTypes = assignment['role-type'];
+
+						roleTypes?.forEach((type, index) => {
+							if (type === 'depot') {
+								roleTypes[index] = 'asset library';
+							}
+						});
+					});
+
 					if (node.assignments) {
 						data.assignments = parseAssignments(node);
 					}
