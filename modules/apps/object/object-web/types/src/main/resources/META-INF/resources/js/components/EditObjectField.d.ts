@@ -15,20 +15,4 @@
 /// <reference types="react" />
 
 import './EditObjectField.scss';
-export default function EditObjectField({
-	allowMaxLength,
-	isApproved,
-	objectField: initialValues,
-	objectFieldTypes,
-	readOnly,
-	showDocumentsAndMediaOption,
-}: IProps): JSX.Element;
-interface IProps {
-	allowMaxLength?: boolean;
-	isApproved: boolean;
-	objectField: ObjectField;
-	objectFieldTypes: ObjectFieldType[];
-	readOnly: boolean;
-	showDocumentsAndMediaOption: boolean;
-}
-export {};
+export default function EditObjectField(): JSX.Element;

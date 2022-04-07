@@ -11,3 +11,15 @@
 		color: #a7a9bc;
 	}
 }
+
+.cke_top {
+	display: none !important;
+}
+
+.CodeMirror-linenumbers {
+	width: 29px !important;
+}
+
+.CodeMirror-code > * {
+	padding-left: 30px;
+}
