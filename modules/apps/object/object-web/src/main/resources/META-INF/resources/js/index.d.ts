@@ -46,3 +46,7 @@ type ObjectFieldSettingName =
 	| 'maximumFileSize'
 	| 'maxLength'
 	| 'showCounter';
+
+interface ObjectValidationType {
+	label: string;
+}
