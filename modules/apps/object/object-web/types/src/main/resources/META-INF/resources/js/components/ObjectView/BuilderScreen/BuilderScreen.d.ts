@@ -14,17 +14,17 @@
 
 /// <reference types="react" />
 
-import {TObjectViewSortColumn} from '../types';
+import {TObjectColumn} from '../types';
 import './BuilderScreen.scss';
 interface IProps {
-	aliasColumnHeader: string;
+	aliasColumnHeader?: string;
 	emptyState: {
 		buttonText: string;
 		description: string;
 		title: string;
 	};
 	isDefaultSort?: boolean;
-	objectColumns: TObjectViewSortColumn[];
+	objectColumns: TObjectColumn[];
 	onEditing?: (boolean: boolean) => void;
 	onEditingObjectFieldName?: (objectFieldName: string) => void;
 	onVisibleEditModal: (boolean: boolean) => void;
