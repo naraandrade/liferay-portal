@@ -21,18 +21,21 @@ import {TObjectViewFilterColumn} from '../types';
 const defaultLanguageId = Liferay.ThemeDisplay.getDefaultLanguageId();
 
 export function DefaultFilterScreen() {
-	const [{objectView}] = useContext(ViewContext);
 
-	const {objectViewFilterColumns} = objectView;
+	// const [{objectView}] = useContext(ViewContext);
 
-	const newFilters: TObjectViewFilterColumn[] = [{
-		filterBy: "Price",
-		label: {[defaultLanguageId]: "Label"},
-		fieldLabel: "Price",
-		objectFieldName: "objectFieldName",
-		type: "PickList",
-		value: ["Approved"]
-	}]
+	// const {objectViewFilterColumns} = objectView;
+
+	const newFilters: TObjectViewFilterColumn[] = [
+		{
+			fieldLabel: 'Price',
+			filterBy: 'Price',
+			label: {[defaultLanguageId]: 'Label'},
+			objectFieldName: 'objectFieldName',
+			type: 'PickList',
+			valueList: ['Approved', 'Pending'],
+		},
+	];
 
 	const [_, setVisibleModal] = useState(false);
 
@@ -45,9 +48,12 @@ export function DefaultFilterScreen() {
 				),
 				title: Liferay.Language.get('no-filters-created-yet'),
 			}}
+			firstColumnHeader={Liferay.Language.get('filter-by')}
 			objectColumns={newFilters ?? []}
 			onVisibleEditModal={setVisibleModal}
 			onVisibleModal={setVisibleModal}
+			secondColumnHeader={Liferay.Language.get('type')}
+			thirdColumnHeader={Liferay.Language.get('value')}
 			title={Liferay.Language.get('default-filters')}
 		/>
 	);
