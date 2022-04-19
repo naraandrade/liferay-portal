@@ -16,11 +16,23 @@ import React, {useContext, useState} from 'react';
 
 import {BuilderScreen} from '../BuilderScreen/BuilderScreen';
 import ViewContext from '../context';
+import {TObjectViewFilterColumn} from '../types';
+
+const defaultLanguageId = Liferay.ThemeDisplay.getDefaultLanguageId();
 
 export function DefaultFilterScreen() {
 	const [{objectView}] = useContext(ViewContext);
 
 	const {objectViewFilterColumns} = objectView;
+
+	const newFilters: TObjectViewFilterColumn[] = [{
+		filterBy: "Price",
+		label: {[defaultLanguageId]: "Label"},
+		fieldLabel: "Price",
+		objectFieldName: "objectFieldName",
+		type: "PickList",
+		value: ["Approved"]
+	}]
 
 	const [_, setVisibleModal] = useState(false);
 
@@ -33,7 +45,7 @@ export function DefaultFilterScreen() {
 				),
 				title: Liferay.Language.get('no-filters-created-yet'),
 			}}
-			objectColumns={objectViewFilterColumns ?? []}
+			objectColumns={newFilters ?? []}
 			onVisibleEditModal={setVisibleModal}
 			onVisibleModal={setVisibleModal}
 			title={Liferay.Language.get('default-filters')}

@@ -21,6 +21,7 @@ import {invalidateRequired} from '../../hooks/useForm';
 import SidePanelContent from '../SidePanelContent';
 import BasicInfoScreen from './BasicInfoScreen/BasicInfoScreen';
 import {DefaultSortScreen} from './DefaultSortScreen/DefaultSortScreen';
+import {DefaultFilterScreen} from './DefaultFilterScreen/DefaultFilterScreen';
 import ViewBuilderScreen from './ViewBuilderScreen/ViewBuilderScreen';
 import ViewContext, {TYPES, ViewContextProvider} from './context';
 import {TObjectField, TObjectView} from './types';
@@ -37,6 +38,10 @@ const TABS = [
 	{
 		Component: DefaultSortScreen,
 		label: Liferay.Language.get('default-sort'),
+	},
+	{
+		Component: DefaultFilterScreen,
+		label: Liferay.Language.get('default-filter'),
 	},
 ];
 
