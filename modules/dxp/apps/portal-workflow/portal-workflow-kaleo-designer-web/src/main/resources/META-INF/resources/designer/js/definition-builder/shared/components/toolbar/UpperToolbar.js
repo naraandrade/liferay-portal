@@ -17,7 +17,7 @@ import ClayLayout from '@clayui/layout';
 import ClayToolbar from '@clayui/toolbar';
 import {TranslationAdminSelector} from 'frontend-js-components-web';
 import PropTypes from 'prop-types';
-import React, {useContext, useEffect, useRef} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {isEdge, isNode} from 'react-flow-renderer';
 
 import {DefinitionBuilderContext} from '../../../DefinitionBuilderContext';
@@ -76,8 +76,7 @@ export default function UpperToolbar({displayNames, languageIds}) {
 
 		if (blockingErrors.errorType === 'emptyField') {
 			return Liferay.Language.get('some-fields-need-to-be-filled');
-		}
-		else {
+		} else {
 			return Liferay.Language.get('error');
 		}
 	};
@@ -87,8 +86,7 @@ export default function UpperToolbar({displayNames, languageIds}) {
 
 		if (currentEditor && !exporting) {
 			xmlContent = currentEditor.getData();
-		}
-		else {
+		} else {
 			xmlContent = serializeDefinition(
 				xmlNamespace,
 				{
@@ -137,14 +135,12 @@ export default function UpperToolbar({displayNames, languageIds}) {
 			setAlertType('danger');
 
 			setShowAlert(true);
-		}
-		else {
+		} else {
 			if (definitionNotPublished) {
 				alertMessage = Liferay.Language.get(
 					'workflow-published-successfully'
 				);
-			}
-			else {
+			} else {
 				alertMessage = Liferay.Language.get(
 					'workflow-updated-successfully'
 				);
@@ -169,8 +165,7 @@ export default function UpperToolbar({displayNames, languageIds}) {
 						setDefinitionId(name);
 						setVersion(parseInt(version, 10));
 					});
-				}
-				else {
+				} else {
 					response.json().then(({title}) => {
 						setAlertMessage(title);
 						setAlertType('danger');
@@ -240,6 +235,34 @@ export default function UpperToolbar({displayNames, languageIds}) {
 		}
 	}, [selectedLanguageId, setDefinitionTitle, setTranslations, translations]);
 
+	const [otherTranslation, setOtherTranslation] = useState({});
+
+	const [x, setX] = useState({});
+
+	useEffect(() => {
+		const temp = {};
+		languageIds.map((languageId) => {
+			elements.map((element) => {
+				if (!Object.keys(element.data.label).includes(languageId)) {
+					setOtherTranslation((previous) => {
+						const aux = {...previous};
+
+						aux.languageId = false;
+
+						return aux;
+					});
+				}
+			});
+
+			temp[languageId] =
+				translations[languageId] && otherTranslation[languageId];
+		});
+
+		setX(temp);
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [elements]);
+
 	return (
 		<>
 			<ClayToolbar className="upper-toolbar">
@@ -254,7 +277,7 @@ export default function UpperToolbar({displayNames, languageIds}) {
 								onSelectedLanguageIdChange={
 									onSelectedLanguageIdChange
 								}
-								translations={translations}
+								translations={x}
 							/>
 						</ClayToolbar.Item>
 
@@ -335,8 +358,7 @@ export default function UpperToolbar({displayNames, languageIds}) {
 										) {
 											setSourceView(false);
 											setDeserialize(true);
-										}
-										else {
+										} else {
 											setShowInvalidContentMessage(true);
 										}
 									}}
