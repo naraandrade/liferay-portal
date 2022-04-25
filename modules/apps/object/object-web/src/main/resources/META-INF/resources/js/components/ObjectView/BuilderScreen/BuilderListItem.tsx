@@ -26,9 +26,10 @@ import './BuilderListItem.scss';
 
 interface IProps {
 	aliasColumnText?: string;
+	defaultFilter?: boolean;
+	defaultSort?: boolean;
 	hasDragAndDrop?: boolean;
 	index: number;
-	isDefaultSort?: boolean;
 	label?: string;
 	objectFieldName: string;
 	onEditing?: (boolean: boolean) => void;
@@ -49,9 +50,10 @@ type TDraggedOffset = {
 
 const BuilderListItem: React.FC<IProps> = ({
 	aliasColumnText,
+	defaultFilter,
+	defaultSort,
 	hasDragAndDrop,
 	index,
-	isDefaultSort,
 	label,
 	objectFieldName,
 	onEditing,
@@ -108,7 +110,7 @@ const BuilderListItem: React.FC<IProps> = ({
 
 			dispatch({
 				payload: {draggedIndex, targetIndex},
-				type: isDefaultSort
+				type: defaultSort
 					? TYPES.CHANGE_OBJECT_VIEW_SORT_COLUMN_ORDER
 					: TYPES.CHANGE_OBJECT_VIEW_COLUMN_ORDER,
 			});
@@ -119,15 +121,20 @@ const BuilderListItem: React.FC<IProps> = ({
 
 	const handleDeleteColumn = (
 		objectFieldName: string,
-		isDefaultSort?: boolean
+		defaultFilter?: boolean,
+		defaultSort?: boolean
 	) => {
-		if (isDefaultSort) {
+		if (defaultSort) {
 			dispatch({
 				payload: {objectFieldName},
 				type: TYPES.DELETE_OBJECT_VIEW_SORT_COLUMN,
 			});
-		}
-		else {
+		} else if (defaultFilter) {
+			dispatch({
+				payload: {objectFieldName},
+				type: TYPES.DELETE_OBJECT_VIEW_FILTER_COLUMN,
+			});
+		} else {
 			dispatch({
 				payload: {objectFieldName},
 				type: TYPES.DELETE_OBJECT_VIEW_COLUMN,
@@ -226,7 +233,11 @@ const BuilderListItem: React.FC<IProps> = ({
 
 					<ClayDropDown.Item
 						onClick={() =>
-							handleDeleteColumn(objectFieldName, isDefaultSort)
+							handleDeleteColumn(
+								objectFieldName,
+								defaultFilter,
+								defaultSort
+							)
 						}
 					>
 						<ClayIcon

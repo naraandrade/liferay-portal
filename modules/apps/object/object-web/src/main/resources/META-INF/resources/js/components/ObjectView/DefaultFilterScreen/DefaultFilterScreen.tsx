@@ -19,22 +19,26 @@ import {BuilderScreen} from '../BuilderScreen/BuilderScreen';
 import {ModalAddDefaultFilterColumn} from '../ModalAddDefaultFilterColumn/ModalAddDefaultFilterColumn';
 import ViewContext from '../context';
 
-export function DefaultFilterScreen() {
+export default function DefaultFilterScreen() {
 	const [{objectView}] = useContext(ViewContext);
 
 	const {objectViewFilterColumns} = objectView;
 
 	const [editingFilter, setEditingFilter] = useState(false);
-
+	const [editingObjectFieldName, setEditingObjectFieldName] = useState('');
 	const [visibleModal, setVisibleModal] = useState(false);
 
 	const {observer, onClose} = useModal({
-		onClose: () => setVisibleModal(false),
+		onClose: () => {
+			setEditingFilter(false);
+			setVisibleModal(false);
+		},
 	});
 
 	return (
 		<>
 			<BuilderScreen
+				defaultFilter
 				emptyState={{
 					buttonText: Liferay.Language.get('new-default-filter'),
 					description: Liferay.Language.get(
@@ -45,6 +49,7 @@ export function DefaultFilterScreen() {
 				firstColumnHeader={Liferay.Language.get('filter-by')}
 				objectColumns={objectViewFilterColumns ?? []}
 				onEditing={setEditingFilter}
+				onEditingObjectFieldName={setEditingObjectFieldName}
 				onVisibleEditModal={setVisibleModal}
 				onVisibleModal={setVisibleModal}
 				secondColumnHeader={Liferay.Language.get('type')}
@@ -55,6 +60,7 @@ export function DefaultFilterScreen() {
 			{visibleModal && (
 				<ModalAddDefaultFilterColumn
 					editingFilter={editingFilter}
+					editingObjectFieldName={editingObjectFieldName}
 					header={Liferay.Language.get('New Default Filter')}
 					observer={observer}
 					onClose={onClose}

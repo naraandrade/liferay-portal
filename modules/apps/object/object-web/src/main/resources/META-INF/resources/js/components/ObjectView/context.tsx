@@ -21,6 +21,7 @@ import {
 	TObjectField,
 	TObjectView,
 	TObjectViewColumn,
+	TObjectViewFilterColumn,
 	TObjectViewSortColumn,
 	TState,
 	TWorkflowStatus,
@@ -114,14 +115,17 @@ export enum TYPES {
 	ADD_OBJECT_VIEW = 'ADD_OBJECT_VIEW',
 	ADD_OBJECT_CUSTOM_VIEW_FIELD = 'ADD_OBJECT_CUSTOM_VIEW_FIELD',
 	ADD_OBJECT_VIEW_COLUMN = 'ADD_OBJECT_VIEW_COLUMN',
+	ADD_OBJECT_VIEW_FILTER_COLUMN = 'ADD_OBJECT_VIEW_FILTER_COLUMN',
 	ADD_OBJECT_VIEW_SORT_COLUMN = 'ADD_OBJECT_VIEW_SORT_COLUMN',
 	CHANGE_OBJECT_VIEW_NAME = 'CHANGE_OBJECT_VIEW_NAME',
 	CHANGE_OBJECT_VIEW_COLUMN_ORDER = 'CHANGE_OBJECT_VIEW_COLUMN_ORDER',
 	CHANGE_OBJECT_VIEW_SORT_COLUMN_ORDER = 'CHANGE_OBJECT_VIEW_SORT_COLUMN_ORDER',
 	DELETE_OBJECT_VIEW_COLUMN = 'DELETE_OBJECT_VIEW_COLUMN',
+	DELETE_OBJECT_VIEW_FILTER_COLUMN = 'DELETE_OBJECT_VIEW_FILTER_COLUMN',
 	DELETE_OBJECT_VIEW_SORT_COLUMN = 'DELETE_OBJECT_VIEW_SORT_COLUMN',
 	DELETE_OBJECT_CUSTOM_VIEW_FIELD = 'DELETE_OBJECT_CUSTOM_VIEW_FIELD',
 	EDIT_OBJECT_VIEW_COLUMN_LABEL = 'EDIT_OBJECT_VIEW_COLUMN_LABEL',
+	EDIT_OBJECT_VIEW_FILTER_COLUMN = 'EDIT_OBJECT_VIEW_FILTER_COLUMN',
 	EDIT_OBJECT_VIEW_SORT_COLUMN_SORT_ORDER = 'EDIT_OBJECT_VIEW_SORT_COLUMN_SORT_ORDER',
 	SET_OBJECT_VIEW_AS_DEFAULT = 'SET_OBJECT_VIEW_AS_DEFAULT',
 }
@@ -183,6 +187,69 @@ const viewReducer = (state: TState, action: TAction) => {
 			return {
 				...state,
 				objectFields: filteredItems,
+				objectView: newObjectView,
+			};
+		}
+		case TYPES.ADD_OBJECT_VIEW_FILTER_COLUMN: {
+			const {objectFieldName, type, valueList} = action.payload;
+
+			const labels: TName[] = [];
+			let objectFieldBusinessType;
+			const {objectFields} = state;
+
+			objectFields.forEach((objectField: TObjectField) => {
+				if (objectField.name === objectFieldName) {
+					labels.push(objectField.label);
+
+					objectFieldBusinessType = objectField.businessType;
+				}
+			});
+
+			const [label] = labels;
+
+			const newFilterColumnItem: TObjectViewFilterColumn = {
+				definition: {
+					[type]: valueList.map(
+						(item: {label: string; value: string}) => item.value
+					),
+				},
+				fieldLabel: label[defaultLanguageId],
+				filterBy: label[defaultLanguageId],
+				filterType: type,
+				label,
+				objectFieldBusinessType,
+				objectFieldName,
+				valueList,
+			};
+
+			// TODO: Update prop that indicates if the column is being used in a filter
+
+			const objectView = {...state.objectView};
+
+			let newObjectView;
+
+			const {objectViewFilterColumns} = state.objectView;
+
+			if (!objectViewFilterColumns) {
+				const filterColumns: TObjectViewFilterColumn[] = [];
+
+				filterColumns.push(newFilterColumnItem);
+
+				newObjectView = {
+					...objectView,
+					objectViewFilterColumns: filterColumns,
+				};
+			} else {
+				objectViewFilterColumns.push(newFilterColumnItem);
+
+				newObjectView = {
+					...objectView,
+					objectViewFilterColumns,
+				};
+			}
+
+			return {
+				...state,
 				objectView: newObjectView,
 			};
 		}
@@ -296,6 +363,8 @@ const viewReducer = (state: TState, action: TAction) => {
 					}
 				);
 			});
+
+			// TODO: Update prop that indicates if the column/field is being used in a filter
 
 			const newObjectViewColumns: TObjectViewColumn[] = [];
 			const newObjectViewSortColumns: TObjectViewSortColumn[] = [];
@@ -447,6 +516,26 @@ const viewReducer = (state: TState, action: TAction) => {
 				objectView: newObjectView,
 			};
 		}
+		case TYPES.DELETE_OBJECT_VIEW_FILTER_COLUMN: {
+			const {objectFieldName} = action.payload;
+
+			const {objectViewFilterColumns} = state.objectView;
+
+			const filterColumns = objectViewFilterColumns.filter(
+				(filterColumn) =>
+					filterColumn.objectFieldName !== objectFieldName
+			);
+
+			const newObjectView = {
+				...state.objectView,
+				objectViewFilterColumns: filterColumns,
+			};
+
+			return {
+				...state,
+				objectView: newObjectView,
+			};
+		}
 		case TYPES.DELETE_OBJECT_VIEW_SORT_COLUMN: {
 			const {objectFieldName} = action.payload;
 
@@ -508,6 +597,20 @@ const viewReducer = (state: TState, action: TAction) => {
 				objectView: newObjectView,
 			};
 		}
+		case TYPES.EDIT_OBJECT_VIEW_FILTER_COLUMN: {
+			// const {objectFieldName, type, valueList} = action.payload;
+
+			// const newObjectView = {
+			// 	...state.objectView,
+			// 	objectViewFilterColumns,
+			// };
+
+			// TODO: Update prop that indicates if the column is being used in a filter
+
+			return {
+				...state,
+			};
+		}
 		case TYPES.EDIT_OBJECT_VIEW_SORT_COLUMN_SORT_ORDER: {
 			const {editingObjectFieldName, selectedObjectSort} = action.payload;
 
@@ -522,8 +625,7 @@ const viewReducer = (state: TState, action: TAction) => {
 							...sortColumn,
 							sortOrder: selectedObjectSort,
 						};
-					}
-					else {
+					} else {
 						return sortColumn;
 					}
 				}

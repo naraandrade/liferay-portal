@@ -22,7 +22,7 @@ import AutoComplete from '../../Form/AutoComplete';
 import {CheckboxItem} from '../../Form/CheckBoxItem';
 import CustomSelect from '../../Form/CustomSelect/CustomSelect';
 import Input from '../../Form/Input';
-import ViewContext from '../context';
+import ViewContext, {TYPES} from '../context';
 import {TName, TObjectField} from '../types';
 
 const headers = new Headers({
@@ -45,11 +45,19 @@ const defaultLanguageId = Liferay.ThemeDisplay.getDefaultLanguageId();
 
 export function ModalAddDefaultFilterColumn({
 	editingFilter,
+	editingObjectFieldName,
 	header,
 	observer,
 	onClose,
 }: IProps) {
-	const [{objectFields, workflowStatusJSONArray}] = useContext(ViewContext);
+	const [
+		{
+			objectFields,
+			objectView: {objectViewFilterColumns},
+			workflowStatusJSONArray,
+		},
+		dispatch,
+	] = useContext(ViewContext);
 
 	const [availableFields, setAvailableFields] = useState(objectFields);
 
@@ -65,7 +73,7 @@ export function ModalAddDefaultFilterColumn({
 
 	const [active, setActive] = useState(false);
 
-	const filtredAvailableFields = useMemo(() => {
+	const filteredAvailableFields = useMemo(() => {
 		return availableFields.filter(({label}) => {
 			return label[defaultLanguageId]
 				.toLowerCase()
@@ -73,27 +81,11 @@ export function ModalAddDefaultFilterColumn({
 		});
 	}, [availableFields, query]);
 
-	useEffect(() => {
-		const filteredPickListFields = objectFields.filter((objectField) => {
-			if (
-				objectField.businessType === 'Picklist' ||
-				objectField.name === 'status'
-			) {
-				return objectField;
-			}
-		});
-
-		setAvailableFields(filteredPickListFields);
-	}, [objectFields]);
-
-	useEffect(() => {
-		if (!selectedFilterBy) {
-			setItems([]);
-		}
-		else if (selectedFilterBy?.businessType === 'Picklist') {
+	function setFieldValues(objectField: TObjectField) {
+		if (objectField?.businessType === 'Picklist') {
 			const makeFetch = async () => {
 				const response = await fetch(
-					`/o/headless-admin-list-type/v1.0/list-type-definitions/${selectedFilterBy.listTypeDefinitionId}/list-type-entries`,
+					`/o/headless-admin-list-type/v1.0/list-type-definitions/${objectField.listTypeDefinitionId}/list-type-entries`,
 					{
 						headers,
 						method: 'GET',
@@ -115,20 +107,100 @@ export function ModalAddDefaultFilterColumn({
 			};
 
 			makeFetch();
-		}
-		else {
-			setItems(
-				workflowStatusJSONArray.map((worflowStatus) => {
+		} else {
+			let newItems: IItem[] = [];
+
+			if (editingFilter) {
+				objectViewFilterColumns.map((objectViewFilterColumn) => {
+					const definition = objectViewFilterColumn.definition;
+
+					const valuesArray =
+						definition[objectViewFilterColumn.filterType];
+
+					newItems = workflowStatusJSONArray.map((workflowStatus) => {
+						const item = {
+							checked: false,
+							label: workflowStatus.label,
+							value: workflowStatus.value,
+						};
+
+						if (valuesArray.includes(workflowStatus.value)) {
+							item.checked = true;
+						}
+
+						return item;
+					});
+				});
+			} else {
+				newItems = workflowStatusJSONArray.map((worflowStatus) => {
 					return {
 						label: worflowStatus.label,
 						value: worflowStatus.value,
 					};
-				})
-			);
+				});
+			}
+
+			setItems(newItems);
 		}
-	}, [selectedFilterBy, workflowStatusJSONArray]);
+	}
+
+	useEffect(() => {
+		const filteredPickListFields = objectFields.filter((objectField) => {
+			if (
+				objectField.businessType === 'Picklist' ||
+				objectField.name === 'status'
+			) {
+				return objectField;
+			}
+		});
+
+		setAvailableFields(filteredPickListFields);
+	}, [objectFields]);
+
+	useEffect(() => {
+		if (!selectedFilterBy) {
+			setItems([]);
+		} else {
+			setFieldValues(selectedFilterBy);
+		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [selectedFilterBy]);
+
+	useEffect(() => {
+		if (editingFilter) {
+			const objectField = objectFields.find((objectField) => {
+				if (objectField.name === editingObjectFieldName) {
+					return objectField;
+				}
+			});
+
+			objectField && setFieldValues(objectField);
+		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [editingFilter]);
 
 	const checkedItems = items.filter((item) => item.checked);
+
+	const onSave = (event: any) => {
+		event.preventDefault();
+
+		const valueList = checkedItems.map((checkedItem) => checkedItem.value);
+
+		dispatch({
+			payload: {
+				objectFieldName: selectedFilterBy?.name,
+				type: selectedOperator.value,
+				valueList,
+			},
+			type: editingFilter
+				? TYPES.EDIT_OBJECT_VIEW_FILTER_COLUMN
+				: TYPES.ADD_OBJECT_VIEW_FILTER_COLUMN,
+		});
+
+		onClose();
+	};
 
 	return (
 		<ClayModal observer={observer}>
@@ -138,7 +210,7 @@ export function ModalAddDefaultFilterColumn({
 				{!editingFilter && (
 					<AutoComplete
 						emptyStateMessage=""
-						items={filtredAvailableFields}
+						items={filteredAvailableFields}
 						label={Liferay.Language.get('filter-by')}
 						onChangeQuery={setQuery}
 						onSelectItem={setSelectedFilterBy}
@@ -155,7 +227,7 @@ export function ModalAddDefaultFilterColumn({
 				)}
 
 				<CustomSelect
-					label={Liferay.Language.get('operator')}
+					label={Liferay.Language.get('filter-type')}
 					onChange={(target: IPickListOperators) =>
 						setSelectedOperator(target)
 					}
@@ -231,6 +303,7 @@ export function ModalAddDefaultFilterColumn({
 								checkedItems.length === 0
 							}
 							displayType="primary"
+							onClick={onSave}
 							type="button"
 						>
 							{Liferay.Language.get('save')}
@@ -244,6 +317,7 @@ export function ModalAddDefaultFilterColumn({
 
 interface IProps {
 	editingFilter: boolean;
+	editingObjectFieldName: string;
 	header: string;
 	observer: any;
 	onClose: () => void;

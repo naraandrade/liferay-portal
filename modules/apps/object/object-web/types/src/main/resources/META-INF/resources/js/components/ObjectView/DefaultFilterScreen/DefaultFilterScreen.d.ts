@@ -14,4 +14,4 @@
 
 /// <reference types="react" />
 
-export declare function DefaultFilterScreen(): JSX.Element;
+export default function DefaultFilterScreen(): JSX.Element;

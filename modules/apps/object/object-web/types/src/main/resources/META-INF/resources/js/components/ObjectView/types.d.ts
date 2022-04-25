@@ -39,6 +39,7 @@ export declare type TObjectColumn = {
 	filterBy?: string;
 	isDefaultSort?: boolean;
 	label: TName;
+	objectFieldBusinessType?: string;
 	objectFieldName: string;
 	priority?: number;
 	sortOrder?: string;
@@ -61,11 +62,15 @@ export declare type TObjectViewSortColumn = {
 	sortOrder?: string;
 };
 export declare type TObjectViewFilterColumn = {
+	definition: {
+		[key: string]: string[];
+	};
 	fieldLabel: string;
 	filterBy: string;
+	filterType: string;
 	label: TName;
+	objectFieldBusinessType?: string;
 	objectFieldName: string;
-	type: string;
 	value?: string;
 	valueList?: string[];
 };

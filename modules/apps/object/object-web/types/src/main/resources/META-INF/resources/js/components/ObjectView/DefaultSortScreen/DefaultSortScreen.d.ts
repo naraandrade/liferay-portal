@@ -14,4 +14,4 @@
 
 /// <reference types="react" />
 
-export declare function DefaultSortScreen(): JSX.Element;
+export default function DefaultSortScreen(): JSX.Element;

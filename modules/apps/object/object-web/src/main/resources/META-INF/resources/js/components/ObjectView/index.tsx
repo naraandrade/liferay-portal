@@ -20,7 +20,8 @@ import {invalidateRequired} from '../../hooks/useForm';
 import {defaultLanguageId} from '../../utils/locale';
 import SidePanelContent, {closeSidePanel, openToast} from '../SidePanelContent';
 import BasicInfoScreen from './BasicInfoScreen/BasicInfoScreen';
-import {DefaultSortScreen} from './DefaultSortScreen/DefaultSortScreen';
+import DefaultFilterScreen from './DefaultFilterScreen/DefaultFilterScreen';
+import DefaultSortScreen from './DefaultSortScreen/DefaultSortScreen';
 import ViewBuilderScreen from './ViewBuilderScreen/ViewBuilderScreen';
 import ViewContext, {TYPES, ViewContextProvider} from './context';
 import {TObjectField, TObjectView, TWorkflowStatus} from './types';
@@ -37,6 +38,10 @@ const TABS = [
 	{
 		Component: DefaultSortScreen,
 		label: Liferay.Language.get('default-sort'),
+	},
+	{
+		Component: DefaultFilterScreen,
+		label: Liferay.Language.get('default-filter'),
 	},
 ];
 
@@ -79,11 +84,29 @@ const CustomView: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 				}
 			);
 
+			const objectViewFilterColumns = [
+				{
+					definition: {
+						includes: ['brazil', 'spain'],
+					},
+					fieldLabel: 'Price',
+					filterBy: 'Price',
+					filterType: 'includes',
+					label: {[defaultLanguageId]: 'Label'},
+					objectFieldName: 'objectFieldName',
+					valueList: [
+						{label: 'Approved', value: 'approved'},
+						{label: 'Pending', value: 'pending'},
+					],
+				},
+			];
+
 			const objectView = {
 				defaultObjectView,
 				name,
 				objectDefinitionId,
 				objectViewColumns,
+				objectViewFilterColumns,
 				objectViewSortColumns,
 			};
 
@@ -174,8 +197,7 @@ const CustomView: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 
 			if (response.status === 401) {
 				window.location.reload();
-			}
-			else if (response.ok) {
+			} else if (response.ok) {
 				closeSidePanel();
 
 				openToast({
@@ -183,8 +205,7 @@ const CustomView: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 						'modifications-saved-successfully'
 					),
 				});
-			}
-			else {
+			} else {
 				const {
 					title = Liferay.Language.get('an-error-occurred'),
 				} = (await response.json()) as any;
@@ -194,8 +215,7 @@ const CustomView: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 					type: 'danger',
 				});
 			}
-		}
-		else {
+		} else {
 			openToast({
 				message: Liferay.Language.get(
 					'default-view-must-have-at-least-one-column'
