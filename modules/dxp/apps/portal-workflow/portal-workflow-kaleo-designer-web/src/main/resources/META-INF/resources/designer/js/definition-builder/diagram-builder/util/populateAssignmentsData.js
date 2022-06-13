@@ -48,10 +48,10 @@ const populateAssignmentsData = (initialElements, setElements) => {
 						initialElements[
 							index
 						].data.assignments.sectionsData = sectionsData;
+
 						setElements([...initialElements]);
 					});
-			}
-			else if (assignmentType === 'roleId') {
+			} else if (assignmentType === 'roleId') {
 				retrieveRolesBy('roleId', element.data.assignments.roleId)
 					.then((response) => response.json())
 					.then((response) => {
@@ -60,6 +60,7 @@ const populateAssignmentsData = (initialElements, setElements) => {
 							name: response.name,
 							roleType: response.roleType,
 						};
+						
 						setElements([...initialElements]);
 					});
 			}

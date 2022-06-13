@@ -24,9 +24,8 @@ import ReactFlow, {
 } from 'react-flow-renderer';
 import uuidv4 from 'uuid/v4';
 
-import {DefinitionBuilderContext} from '../DefinitionBuilderContext';
+import {DefinitionBuilderContext, TYPES} from '../DefinitionBuilderContext';
 import {defaultLanguageId} from '../constants';
-import DeserializeUtil from '../source-builder/deserializeUtil';
 import {singleEventObserver} from '../util/EventObserver';
 import {retrieveDefinitionRequest} from '../util/fetchUtil';
 import {DiagramBuilderContextProvider} from './DiagramBuilderContext';
@@ -36,27 +35,19 @@ import {isIdDuplicated} from './components/sidebar/utils';
 import edgeTypes from './components/transitions/Edge';
 import FloatingConnectionLine from './components/transitions/FloatingConnectionLine';
 import getCollidingElements from './util/collisionDetection';
-import populateAssignmentsData from './util/populateAssignmentsData';
-import populateNotificationsData from './util/populateNotificationsData';
 
-const deserializeUtil = new DeserializeUtil();
 
 export default function DiagramBuilder() {
-	const {
-		currentEditor,
-		definitionId,
-		deserialize,
-		elements,
-		selectedLanguageId,
-		setActive,
-		setDefinitionDescription,
-		setDefinitionInfo,
-		setDefinitionName,
-		setDeserialize,
-		setElements,
-		setShowDefinitionInfo,
-		version,
-	} = useContext(DefinitionBuilderContext);
+	const [
+		{
+			definitionId,
+			elements,
+			selectedLanguageId,
+			setElements,
+			version,
+		},
+		dispatch,
+	] = useContext(DefinitionBuilderContext);
 	const reactFlowWrapperRef = useRef(null);
 	const [collidingElements, setCollidingElements] = useState(null);
 	const [elementRectangle, setElementRectangle] = useState(null);
@@ -242,7 +233,7 @@ export default function DiagramBuilder() {
 			);
 		}
 
-		setShowDefinitionInfo(false);
+		// setShowDefinitionInfo(false);
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedItem]);
@@ -264,8 +255,7 @@ export default function DiagramBuilder() {
 						setSelectedItemNewId(null);
 
 						setSelectedItem(element);
-					}
-					else if (isEdge(element)) {
+					} else if (isEdge(element)) {
 						element = {
 							...element,
 							...(selectedItem.id === element.source && {
@@ -285,64 +275,61 @@ export default function DiagramBuilder() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedItem, selectedItemNewId]);
 
-	useEffect(() => {
-		if (deserialize && currentEditor) {
-			const xmlDefinition = currentEditor.getData();
+	// dispatch para deserialize - checar locais de atualização de currentEditor e version
 
-			deserializeUtil.updateXMLDefinition(xmlDefinition);
+	// useEffect(() => {
+	// 	if (deserialize && currentEditor) {
+	// 		const xmlDefinition = currentEditor.getData();
 
-			const elements = deserializeUtil.getElements();
+	// 		deserializeUtil.updateXMLDefinition(xmlDefinition);
 
-			const metadata = deserializeUtil.getMetadata();
+	// 		const elements = deserializeUtil.getElements();
 
-			setDefinitionDescription(metadata.description);
-			setDefinitionName(metadata.name);
+	// 		const metadata = deserializeUtil.getMetadata();
 
-			setElements(elements);
+	// 		setDefinitionDescription(metadata.description);
+	// 		setDefinitionName(metadata.name);
 
-			populateAssignmentsData(elements, setElements);
-			populateNotificationsData(elements, setElements);
+	// 		setElements(elements);
 
-			setDeserialize(false);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [currentEditor, deserialize, version]);
+	// 		populateAssignmentsData(elements, setElements);
+	// 		populateNotificationsData(elements, setElements);
 
-	useEffect(() => {
-		if (definitionId && version !== 0 && !deserialize) {
-			retrieveDefinitionRequest(definitionId)
-				.then((response) => response.json())
-				.then(
-					({
-						active,
-						content,
-						dateCreated,
-						dateModified,
-						description,
-						version,
-					}) => {
-						setActive(active);
-						setDefinitionDescription(description);
-						setDefinitionInfo({
-							dateCreated,
-							dateModified,
-							totalModifications: version,
-						});
+	// 		setDeserialize(false);
+	// 	}
+	// 	// eslint-disable-next-line react-hooks/exhaustive-deps
+	// }, [currentEditor, deserialize, version]);
 
-						deserializeUtil.updateXMLDefinition(content);
+	// useEffect(() => {
+	// 	if (definitionId && version !== 0 && !deserialize) {
+	// 		retrieveDefinitionRequest(definitionId)
+	// 			.then((response) => response.json())
+	// 			.then(
+	// 				({
+	// 					active,
+	// 					content,
+	// 					dateCreated,
+	// 					dateModified,
+	// 					description,
+	// 					version,
+	// 				}) => {
+	// 					dispatch({
+	// 						payload: {
+	// 							active,
+	// 							content,
+	// 							dateCreated,
+	// 							dateModified,
+	// 							description,
+	// 							version,
+	// 						},
+	// 						type: TYPES.UPDATE_DEFINITION_INFO,
+	// 					});
+	// 				}
+	// 			);
+	// 	}
 
-						const elements = deserializeUtil.getElements();
-
-						setElements(elements);
-
-						populateAssignmentsData(elements, setElements);
-						populateNotificationsData(elements, setElements);
-					}
-				);
-		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [definitionId, version]);
+	// 	// eslint-disable-next-line react-hooks/exhaustive-deps
+	// }, [definitionId, version]);
 
 	const contextProps = {
 		collidingElements,

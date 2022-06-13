@@ -20,7 +20,10 @@ import PropTypes from 'prop-types';
 import React, {useContext, useEffect, useRef} from 'react';
 import {isEdge, isNode} from 'react-flow-renderer';
 
-import {DefinitionBuilderContext} from '../../../DefinitionBuilderContext';
+import {
+	DefinitionBuilderContext,
+	TYPES,
+} from '../../../DefinitionBuilderContext';
 import {defaultLanguageId} from '../../../constants';
 import {xmlNamespace} from '../../../source-builder/constants';
 import DeserializeUtil from '../../../source-builder/deserializeUtil';
@@ -34,37 +37,16 @@ import {
 import {isObjectEmpty} from '../../../util/utils';
 
 export default function UpperToolbar({displayNames, languageIds}) {
-	const {
-		active,
-		alertMessage,
-		alertType,
-		blockingErrors,
-		currentEditor,
-		definitionDescription,
-		definitionId,
-		definitionName,
-		definitionTitle,
-		elements,
+	const [
+		{active, blockingErrors, currentEditor, definitionTitle, version},
+		dispatch,
 		selectedLanguageId,
-		setAlertMessage,
-		setAlertType,
-		setDefinitionDescription,
-		setDefinitionId,
-		setDefinitionTitle,
-		setDeserialize,
-		setElements,
 		setSelectedLanguageId,
-		setShowAlert,
-		setShowDefinitionInfo,
-		setShowInvalidContentMessage,
 		setSourceView,
 		setTranslations,
-		setVersion,
-		showAlert,
 		sourceView,
 		translations,
-		version,
-	} = useContext(DefinitionBuilderContext);
+	] = useContext(DefinitionBuilderContext);
 	const inputRef = useRef(null);
 
 	const availableLocales = getAvailableLocalesObject(
@@ -77,8 +59,7 @@ export default function UpperToolbar({displayNames, languageIds}) {
 		}
 		if (blockingErrors.errorType === 'emptyField') {
 			return Liferay.Language.get('some-fields-need-to-be-filled');
-		}
-		else {
+		} else {
 			return Liferay.Language.get('error');
 		}
 	};
@@ -89,8 +70,7 @@ export default function UpperToolbar({displayNames, languageIds}) {
 
 		if (currentEditor && !exporting) {
 			xmlContent = currentEditor.getData();
-		}
-		else {
+		} else {
 			if (sourceView) {
 				const deserializeUtil = new DeserializeUtil();
 				const xmlDefinition = currentEditor.getData();
@@ -99,20 +79,23 @@ export default function UpperToolbar({displayNames, languageIds}) {
 				const metadata = deserializeUtil.getMetadata();
 
 				currentDescription = metadata.description;
-				setDefinitionDescription(currentDescription);
+
+				// setDefinitionDescription(currentDescription);
 
 				currentElements = deserializeUtil.getElements();
-				setElements(currentElements);
-			}
-			else {
-				currentDescription = definitionDescription;
-				currentElements = elements;
+
+				// setElements(currentElements);
+			} else {
+				// currentDescription = definitionDescription;
+				// currentElements = elements;
 			}
 			xmlContent = serializeDefinition(
 				xmlNamespace,
 				{
 					description: currentDescription,
-					name: definitionName,
+
+					// name: definitionName,
+
 					version,
 				},
 				currentElements.filter(isNode),
@@ -152,50 +135,46 @@ export default function UpperToolbar({displayNames, languageIds}) {
 		if (!definitionTitle) {
 			alertMessage = Liferay.Language.get('name-workflow-before-publish');
 
-			setAlertMessage(alertMessage);
-			setAlertType('danger');
+			// setAlertMessage(alertMessage);
+			// setAlertType('danger');
 
-			setShowAlert(true);
-		}
-		else {
+			// setShowAlert(true);
+		} else {
 			if (definitionNotPublished) {
 				alertMessage = Liferay.Language.get(
 					'workflow-published-successfully'
 				);
-			}
-			else {
+			} else {
 				alertMessage = Liferay.Language.get(
 					'workflow-updated-successfully'
 				);
 			}
 
-			setAlertMessage(alertMessage);
+			// setAlertMessage(alertMessage);
 
 			publishDefinitionRequest({
 				active,
 				content: getXMLContent(true),
-				name: definitionId,
+
+				// name: definitionId,
+
 				title: definitionTitle,
 				title_i18n: translations,
 				version,
 			}).then((response) => {
 				if (response.ok) {
-					setAlertType('success');
-
-					setShowAlert(true);
-
-					response.json().then(({name, version}) => {
-						setDefinitionId(name);
-						setVersion(parseInt(version, 10));
-					});
-				}
-				else {
-					response.json().then(({title}) => {
-						setAlertMessage(title);
-						setAlertType('danger');
-
-						setShowAlert(true);
-					});
+					// setAlertType('success');
+					// setShowAlert(true);
+					// response.json().then(({name, version}) => {
+					// 	setDefinitionId(name);
+					// 	setVersion(parseInt(version, 10));
+					// });
+				} else {
+					// response.json().then(({title}) => {
+					// 	setAlertMessage(title);
+					// 	setAlertType('danger');
+					// 	setShowAlert(true);
+					// });
 				}
 			});
 		}
@@ -211,37 +190,35 @@ export default function UpperToolbar({displayNames, languageIds}) {
 		);
 
 		if (blockingErrors.errorType === 'emptyField') {
-			setAlertMessage(emptyFieldAlertMessage);
-			setAlertType('danger');
-
-			setShowAlert(true);
+			// setAlertMessage(emptyFieldAlertMessage);
+			// setAlertType('danger');
+			// setShowAlert(true);
 		}
 
 		if (blockingErrors.errorType === 'duplicated') {
-			setAlertMessage(duplicatedAlertMessage);
-			setAlertType('danger');
-
-			setShowAlert(true);
+			// setAlertMessage(duplicatedAlertMessage);
+			// setAlertType('danger');
+			// setShowAlert(true);
 		}
 
 		if (blockingErrors.errorType === '') {
 			saveDefinitionRequest({
 				active,
 				content: getXMLContent(true),
-				name: definitionId,
+
+				// name: definitionId,
+
 				title: definitionTitle,
 				version,
 			}).then((response) => {
 				if (response.ok) {
-					setAlertMessage(successMessage);
-					setAlertType('success');
-
-					setShowAlert(true);
-
-					response.json().then(({name, version}) => {
-						setDefinitionId(name);
-						setVersion(parseInt(version, 10));
-					});
+					// setAlertMessage(successMessage);
+					// setAlertType('success');
+					// setShowAlert(true);
+					// response.json().then(({name, version}) => {
+					// 	setDefinitionId(name);
+					// 	setVersion(parseInt(version, 10));
+					// });
 				}
 			});
 		}
@@ -255,9 +232,9 @@ export default function UpperToolbar({displayNames, languageIds}) {
 		}
 
 		if (selectedLanguageId) {
-			setDefinitionTitle(translations[selectedLanguageId]);
+			// setDefinitionTitle(translations[selectedLanguageId]);
 		}
-	}, [selectedLanguageId, setDefinitionTitle, setTranslations, translations]);
+	}, [selectedLanguageId, setTranslations, translations]);
 
 	return (
 		<>
@@ -284,7 +261,7 @@ export default function UpperToolbar({displayNames, languageIds}) {
 								id="definition-title"
 								onBlur={() => onInputBlur()}
 								onChange={({target: {value}}) => {
-									setDefinitionTitle(value);
+									// setDefinitionTitle(value);
 								}}
 								placeholder={Liferay.Language.get(
 									'untitled-workflow'
@@ -299,11 +276,11 @@ export default function UpperToolbar({displayNames, languageIds}) {
 							<ClayToolbar.Item>
 								<ClayButtonWithIcon
 									displayType="secondary"
-									onClick={() =>
-										setShowDefinitionInfo(
-											(previous) => !previous
-										)
-									}
+									onClick={() => {
+										// setShowDefinitionInfo(
+										// 	(previous) => !previous
+										// )
+									}}
 									symbol="info-circle-open"
 								/>
 							</ClayToolbar.Item>
@@ -353,10 +330,16 @@ export default function UpperToolbar({displayNames, languageIds}) {
 											)
 										) {
 											setSourceView(false);
-											setDeserialize(true);
-										}
-										else {
-											setShowInvalidContentMessage(true);
+
+											dispatch({
+												payload: {
+													currentEditor,
+												},
+												type:
+													TYPES.DESERIALIZE_DEFINITION,
+											});
+										} else {
+											// setShowInvalidContentMessage(true);
 										}
 									}}
 									symbol="rules"
@@ -375,7 +358,7 @@ export default function UpperToolbar({displayNames, languageIds}) {
 				</ClayLayout.ContainerFluid>
 			</ClayToolbar>
 
-			{showAlert && (
+			{/* {showAlert && (
 				<ClayAlert.ToastContainer>
 					<ClayAlert
 						autoClose={5000}
@@ -390,7 +373,7 @@ export default function UpperToolbar({displayNames, languageIds}) {
 						{alertMessage}
 					</ClayAlert>
 				</ClayAlert.ToastContainer>
-			)}
+			)} */}
 		</>
 	);
 }
