@@ -547,7 +547,7 @@ function AggregationSourceProperty({
 		selectedAggregationFunction,
 		setSelectedAggregationFunction,
 	] = useState<{label: string; value: string}>();
-	const [objectRelationships, setObjectRelatonships] = useState<
+	const [objectRelationships, setObjectRelationships] = useState<
 		TObjectRelationship[]
 	>();
 	const [objectRelationshipFields, setObjectRelationshipFields] = useState<
@@ -556,7 +556,7 @@ function AggregationSourceProperty({
 
 	useEffect(() => {
 		const makeFetch = async () => {
-			setObjectRelatonships(
+			setObjectRelationships(
 				await fetchObjectRelationships(objectDefinitionId)
 			);
 		};
