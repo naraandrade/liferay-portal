@@ -41,6 +41,9 @@ export function Select({
 	value,
 	...otherProps
 }: ISelectProps) {
+	console.log('options', options);
+	console.log('value', value);
+
 	return (
 		<FieldBase
 			className={className}

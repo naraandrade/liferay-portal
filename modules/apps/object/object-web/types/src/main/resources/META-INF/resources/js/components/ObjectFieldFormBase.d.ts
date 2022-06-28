@@ -37,10 +37,10 @@ export declare function useObjectFieldForm({
 	errors: FormError<
 		ObjectField & {
 			function: any;
-			maxLength: any;
 			acceptedFileExtensions: any;
 			fileSource: any;
 			maximumFileSize: any;
+			maxLength: any;
 			showCounter: any;
 			showFilesInDocumentsAndMedia: any;
 			storageDLFolderPath: any;
