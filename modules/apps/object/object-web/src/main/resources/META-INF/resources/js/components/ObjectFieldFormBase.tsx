@@ -160,6 +160,8 @@ export default function ObjectFieldFormBase({
 	const [pickList, setPickList] = useState<IPickList[]>([]);
 	const [pickListItems, setPickListItems] = useState<PickListItem[]>([]);
 
+	console.log('values', values);
+
 	const handleTypeChange = async (option: ObjectFieldType) => {
 		if (option.businessType === 'Picklist') {
 			setPickList(await fetchPickList());
@@ -215,8 +217,7 @@ export default function ObjectFieldFormBase({
 				objectFieldSettings,
 				state: false,
 			});
-		}
-		else {
+		} else {
 			setValues({
 				DBType: option.dbType,
 				businessType: option.businessType,
@@ -292,8 +293,7 @@ export default function ObjectFieldFormBase({
 								),
 								state: false,
 							});
-						}
-						else {
+						} else {
 							setValues({
 								listTypeDefinitionId: Number(
 									pickList[value].id
@@ -345,11 +345,11 @@ export default function ObjectFieldFormBase({
 					disabled={disabled}
 					error={errors.defaultValue}
 					label={Liferay.Language.get('default-value')}
-					onChange={({target: {value}}: any) =>
+					onChange={({target: {value}}: any) => {
 						setValues({
 							defaultValue: pickListItems[value].key,
-						})
-					}
+						});
+					}}
 					options={pickListItems.map(({name}) => name)}
 					required
 				/>
@@ -367,7 +367,6 @@ export function useObjectFieldForm({
 }: IUseObjectFieldForm) {
 	const validate = (field: Partial<ObjectField>) => {
 		const getSourceFolderError = (folderPath: string) => {
-
 			// folder name cannot end with invalid last characters
 
 			const lastChar = folderPath[folderPath.length - 1];
@@ -427,8 +426,7 @@ export function useObjectFieldForm({
 
 		if (!field.businessType) {
 			errors.businessType = REQUIRED_MSG;
-		}
-		else if (field.businessType === 'Aggregation') {
+		} else if (field.businessType === 'Aggregation') {
 			if (!settings.relationship) {
 				errors.relationship = REQUIRED_MSG;
 			}
@@ -438,8 +436,7 @@ export function useObjectFieldForm({
 			if (settings.function !== 'COUNT' && !settings.summarizeField) {
 				errors.summarizeField = REQUIRED_MSG;
 			}
-		}
-		else if (field.businessType === 'Attachment') {
+		} else if (field.businessType === 'Attachment') {
 			const uploadRequestSizeLimit = Math.floor(
 				Liferay.PropsValues.UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE /
 					1048576
@@ -457,16 +454,14 @@ export function useObjectFieldForm({
 			}
 			if (!settings.maximumFileSize && settings.maximumFileSize !== 0) {
 				errors.maximumFileSize = REQUIRED_MSG;
-			}
-			else if (settings.maximumFileSize > uploadRequestSizeLimit) {
+			} else if (settings.maximumFileSize > uploadRequestSizeLimit) {
 				errors.maximumFileSize = sub(
 					Liferay.Language.get(
 						'file-size-is-larger-than-the-allowed-overall-maximum-upload-request-size-x-mb'
 					),
 					uploadRequestSizeLimit
 				);
-			}
-			else if (settings.maximumFileSize < 0) {
+			} else if (settings.maximumFileSize < 0) {
 				errors.maximumFileSize = sub(
 					Liferay.Language.get(
 						'only-integers-greater-than-or-equal-to-x-are-allowed'
@@ -482,8 +477,7 @@ export function useObjectFieldForm({
 					)
 				) {
 					errors.storageDLFolderPath = REQUIRED_MSG;
-				}
-				else {
+				} else {
 					const sourceFolderError = getSourceFolderError(
 						settings.storageDLFolderPath as string
 					);
@@ -493,21 +487,23 @@ export function useObjectFieldForm({
 					}
 				}
 			}
-		}
-		else if (
+		} else if (
 			field.businessType === 'Text' ||
 			field.businessType === 'LongText'
 		) {
 			if (settings.showCounter && !settings.maxLength) {
 				errors.maxLength = REQUIRED_MSG;
 			}
-		}
-		else if (field.businessType === 'Picklist') {
+		} else if (field.businessType === 'Picklist') {
 			if (!field.listTypeDefinitionId) {
 				errors.listTypeDefinitionId = REQUIRED_MSG;
 			}
 
-			if (Liferay.FeatureFlags['LPS-152677'] && !field.defaultValue) {
+			if (
+				Liferay.FeatureFlags['LPS-152677'] &&
+				field.state &&
+				!field.defaultValue
+			) {
 				errors.defaultValue = REQUIRED_MSG;
 			}
 		}
