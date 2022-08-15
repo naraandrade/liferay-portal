@@ -81,10 +81,20 @@ function appendXMLActions(
 		const xmlAction = XMLUtil.createObj(actionNodeName || 'action');
 
 		actions.name.forEach((item, index) => {
-			buffer.push(xmlAction.open, XMLUtil.create('name', item));
+			const itemWithHTMLEscape = Liferay.Util.escape(item);
+
+			buffer.push(
+				xmlAction.open,
+				XMLUtil.create('name', itemWithHTMLEscape)
+			);
 
 			if (isValidValue(description, index)) {
-				buffer.push(XMLUtil.create('description', description[index]));
+				const descriptionWithHTMLEscape = Liferay.Util.escape(
+					description[index]
+				);
+				buffer.push(
+					XMLUtil.create('description', descriptionWithHTMLEscape)
+				);
 			}
 
 			if (isValidValue(script, index)) {
@@ -551,11 +561,15 @@ function serializeDefinition(
 	);
 
 	if (name) {
-		buffer.push(XMLUtil.create('name', name));
+		const nameWithHTMLEscape = Liferay.Util.escape(name);
+
+		buffer.push(XMLUtil.create('name', nameWithHTMLEscape));
 	}
 
 	if (description) {
-		buffer.push(XMLUtil.create('description', description));
+		const descriptionWithHTMLEscape = Liferay.Util.escape(description);
+
+		buffer.push(XMLUtil.create('description', descriptionWithHTMLEscape));
 	}
 
 	if (version) {
@@ -581,7 +595,11 @@ function serializeDefinition(
 		buffer.push(xmlNode.open, XMLUtil.create(`${tagNodeNameId}`, id));
 
 		if (description) {
-			buffer.push(XMLUtil.create('description', description));
+			const descriptionWithHTMLEscape = Liferay.Util.escape(description);
+
+			buffer.push(
+				XMLUtil.create('description', descriptionWithHTMLEscape)
+			);
 		}
 
 		const metadata = {xy: [item.position.x, item.position.y]};
