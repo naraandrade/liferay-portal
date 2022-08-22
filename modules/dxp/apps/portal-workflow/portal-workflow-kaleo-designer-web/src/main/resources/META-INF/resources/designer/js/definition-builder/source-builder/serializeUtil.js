@@ -46,6 +46,12 @@ function jsonStringify(value) {
 	return jsonString;
 }
 
+function createTagWithEscapedContent(tag, content) {
+	const escapedContent = Liferay.Util.escape(content);
+
+	return XMLUtil.create(tag, escapedContent);
+}
+
 function appendXMLActions(
 	buffer,
 	actions,
@@ -81,19 +87,17 @@ function appendXMLActions(
 		const xmlAction = XMLUtil.createObj(actionNodeName || 'action');
 
 		actions.name.forEach((item, index) => {
-			const itemWithHTMLEscape = Liferay.Util.escape(item);
-
 			buffer.push(
 				xmlAction.open,
-				XMLUtil.create('name', itemWithHTMLEscape)
+				createTagWithEscapedContent('name', item)
 			);
 
 			if (isValidValue(description, index)) {
-				const descriptionWithHTMLEscape = Liferay.Util.escape(
-					description[index]
-				);
 				buffer.push(
-					XMLUtil.create('description', descriptionWithHTMLEscape)
+					createTagWithEscapedContent(
+						'description',
+						description[index]
+					)
 				);
 			}
 
@@ -102,19 +106,24 @@ function appendXMLActions(
 			}
 
 			buffer.push(
-				XMLUtil.create(
+				createTagWithEscapedContent(
 					'scriptLanguage',
 					scriptLanguage || DEFAULT_LANGUAGE
 				)
 			);
 
 			if (isValidValue(priority, index)) {
-				buffer.push(XMLUtil.create('priority', priority[index]));
+				buffer.push(
+					createTagWithEscapedContent('priority', priority[index])
+				);
 			}
 
 			if (isValidValue(executionType, index)) {
 				buffer.push(
-					XMLUtil.create('executionType', executionType[index])
+					createTagWithEscapedContent(
+						'executionType',
+						executionType[index]
+					)
 				);
 			}
 
@@ -165,7 +174,7 @@ function appendXMLAssignments(
 		if (dataAssignments.address) {
 			dataAssignments.address.forEach((item) => {
 				if (item !== '') {
-					buffer.push(XMLUtil.create('address', item));
+					buffer.push(createTagWithEscapedContent('address', item));
 				}
 			});
 		}
@@ -175,19 +184,27 @@ function appendXMLAssignments(
 		const roleTypeName = exporting ? 'depot' : 'asset library';
 
 		if (assignmentType === 'resourceActions') {
-			const xmlResourceAction = XMLUtil.create(
+			const xmlResourceAction = createTagWithEscapedContent(
 				'resourceAction',
 				dataAssignments.resourceAction
 			);
 
-			buffer.push(XMLUtil.create('resourceActions', xmlResourceAction));
+			buffer.push(
+				createTagWithEscapedContent(
+					'resourceActions',
+					xmlResourceAction
+				)
+			);
 		}
 		else if (assignmentType === 'roleId') {
-			const xmlRoleId = XMLUtil.create('roleId', dataAssignments.roleId);
+			const xmlRoleId = createTagWithEscapedContent(
+				'roleId',
+				dataAssignments.roleId
+			);
 
 			buffer.push(
 				xmlRoles.open,
-				XMLUtil.create('role', xmlRoleId),
+				createTagWithEscapedContent('role', xmlRoleId),
 				xmlRoles.close
 			);
 		}
@@ -207,8 +224,8 @@ function appendXMLAssignments(
 				if (roleName) {
 					buffer.push(
 						xmlRole.open,
-						XMLUtil.create('roleType', roleType),
-						XMLUtil.create('name', roleName)
+						createTagWithEscapedContent('roleType', roleType),
+						createTagWithEscapedContent('name', roleName)
 					);
 
 					let autoCreate = dataAssignments.autoCreate?.[index];
@@ -218,7 +235,12 @@ function appendXMLAssignments(
 							autoCreate = 'false';
 						}
 
-						buffer.push(XMLUtil.create('autoCreate', autoCreate));
+						buffer.push(
+							createTagWithEscapedContent(
+								'autoCreate',
+								autoCreate
+							)
+						);
 					}
 
 					buffer.push(xmlRole.close);
@@ -239,7 +261,7 @@ function appendXMLAssignments(
 				buffer.push(
 					xmlScriptedAssignment.open,
 					XMLUtil.create('script', cdata(item)),
-					XMLUtil.create(
+					createTagWithEscapedContent(
 						'scriptLanguage',
 						dataAssignments.scriptLanguage
 					),
@@ -254,7 +276,7 @@ function appendXMLAssignments(
 				buffer.push(
 					xmlScriptedRecipient.open,
 					XMLUtil.create('script', cdata(item)),
-					XMLUtil.create(
+					createTagWithEscapedContent(
 						'scriptLanguage',
 						dataAssignments.scriptLanguage
 					),
@@ -275,7 +297,9 @@ function appendXMLAssignments(
 					buffer.push(xmlUser.open);
 
 					if (item !== '') {
-						buffer.push(XMLUtil.create('emailAddress', item));
+						buffer.push(
+							createTagWithEscapedContent('emailAddress', item)
+						);
 					}
 
 					buffer.push(xmlUser.close);
@@ -293,7 +317,9 @@ function appendXMLAssignments(
 					buffer.push(xmlUser.open);
 
 					if (item !== '') {
-						buffer.push(XMLUtil.create('screenName', item));
+						buffer.push(
+							createTagWithEscapedContent('screenName', item)
+						);
 					}
 
 					buffer.push(xmlUser.close);
@@ -310,7 +336,9 @@ function appendXMLAssignments(
 					buffer.push(xmlUser.open);
 
 					if (item !== '') {
-						buffer.push(XMLUtil.create('userId', item));
+						buffer.push(
+							createTagWithEscapedContent('userId', item)
+						);
 					}
 
 					buffer.push(xmlUser.close);
@@ -349,7 +377,10 @@ function appendXMLNotifications(buffer, notifications, nodeName, exporting) {
 		const xmlNotification = XMLUtil.createObj(nodeName || 'notification');
 
 		notifications.name.forEach((item, index) => {
-			buffer.push(xmlNotification.open, XMLUtil.create('name', item));
+			buffer.push(
+				xmlNotification.open,
+				createTagWithEscapedContent('name', item)
+			);
 
 			if (isValidValue(description, index)) {
 				buffer.push(
@@ -365,14 +396,17 @@ function appendXMLNotifications(buffer, notifications, nodeName, exporting) {
 
 			if (isValidValue(templateLanguage, index)) {
 				buffer.push(
-					XMLUtil.create('templateLanguage', templateLanguage[index])
+					createTagWithEscapedContent(
+						'templateLanguage',
+						templateLanguage[index]
+					)
 				);
 			}
 
 			if (isValidValue(notificationTypes, index)) {
 				notificationTypes[index].forEach((item) => {
 					buffer.push(
-						XMLUtil.create(
+						createTagWithEscapedContent(
 							'notificationType',
 							item.notificationType
 						)
@@ -416,7 +450,10 @@ function appendXMLNotifications(buffer, notifications, nodeName, exporting) {
 
 			if (executionType) {
 				buffer.push(
-					XMLUtil.create('executionType', executionType[index])
+					createTagWithEscapedContent(
+						'executionType',
+						executionType[index]
+					)
 				);
 			}
 
@@ -441,18 +478,33 @@ function appendXMLTaskTimers(buffer, taskTimers, exporting) {
 		const xmlTaskTimer = XMLUtil.createObj('task-timer');
 
 		taskTimers.name.forEach((item, index) => {
-			buffer.push(xmlTaskTimer.open, XMLUtil.create('name', item));
+			buffer.push(
+				xmlTaskTimer.open,
+				createTagWithEscapedContent('name', item)
+			);
 
 			if (isValidValue(description, index)) {
-				buffer.push(XMLUtil.create('description', description[index]));
+				buffer.push(
+					createTagWithEscapedContent(
+						'description',
+						description[index]
+					)
+				);
 			}
 
 			const xmlDelay = XMLUtil.createObj('delay');
 
 			buffer.push(xmlDelay.open);
 
-			buffer.push(XMLUtil.create('duration', delay[index].duration[0]));
-			buffer.push(XMLUtil.create('scale', delay[index].scale[0]));
+			buffer.push(
+				createTagWithEscapedContent(
+					'duration',
+					delay[index].duration[0]
+				)
+			);
+			buffer.push(
+				createTagWithEscapedContent('scale', delay[index].scale[0])
+			);
 
 			buffer.push(xmlDelay.close);
 
@@ -462,18 +514,27 @@ function appendXMLTaskTimers(buffer, taskTimers, exporting) {
 				buffer.push(xmlRecurrence.open);
 
 				buffer.push(
-					XMLUtil.create('duration', delay[index].duration[1])
+					createTagWithEscapedContent(
+						'duration',
+						delay[index].duration[1]
+					)
 				);
-				buffer.push(XMLUtil.create('scale', delay[index].scale[1]));
+				buffer.push(
+					createTagWithEscapedContent('scale', delay[index].scale[1])
+				);
 
 				buffer.push(xmlRecurrence.close);
 			}
 
 			if (blocking && blocking[index] !== '') {
-				buffer.push(XMLUtil.create('blocking', blocking[index]));
+				buffer.push(
+					createTagWithEscapedContent('blocking', blocking[index])
+				);
 			}
 			else {
-				buffer.push(XMLUtil.create('blocking', String(false)));
+				buffer.push(
+					createTagWithEscapedContent('blocking', String(false))
+				);
 			}
 
 			appendXMLActions(
@@ -523,11 +584,16 @@ function appendXMLTransitions(buffer, transitions, exporting) {
 
 			const tagTransitionNameId = exporting ? 'name' : 'id';
 
-			buffer.push(XMLUtil.create(`${tagTransitionNameId}`, item.id));
+			buffer.push(
+				createTagWithEscapedContent(`${tagTransitionNameId}`, item.id)
+			);
 
 			buffer.push(
-				XMLUtil.create('target', item.target),
-				XMLUtil.create('default', `${item.data.defaultEdge}`),
+				createTagWithEscapedContent('target', item.target),
+				createTagWithEscapedContent(
+					'default',
+					`${item.data.defaultEdge}`
+				),
 				xmlTransition.close
 			);
 		});
@@ -563,17 +629,22 @@ function serializeDefinition(
 	if (name) {
 		const nameWithHTMLEscape = Liferay.Util.escape(name);
 
-		buffer.push(XMLUtil.create('name', nameWithHTMLEscape));
+		buffer.push(createTagWithEscapedContent('name', nameWithHTMLEscape));
 	}
 
 	if (description) {
 		const descriptionWithHTMLEscape = Liferay.Util.escape(description);
 
-		buffer.push(XMLUtil.create('description', descriptionWithHTMLEscape));
+		buffer.push(
+			createTagWithEscapedContent(
+				'description',
+				descriptionWithHTMLEscape
+			)
+		);
 	}
 
 	if (version) {
-		buffer.push(XMLUtil.create('version', version));
+		buffer.push(createTagWithEscapedContent('version', version));
 	}
 
 	nodes?.forEach((item) => {
@@ -592,13 +663,19 @@ function serializeDefinition(
 
 		const tagNodeNameId = exporting ? 'name' : 'id';
 
-		buffer.push(xmlNode.open, XMLUtil.create(`${tagNodeNameId}`, id));
+		buffer.push(
+			xmlNode.open,
+			createTagWithEscapedContent(`${tagNodeNameId}`, id)
+		);
 
 		if (description) {
 			const descriptionWithHTMLEscape = Liferay.Util.escape(description);
 
 			buffer.push(
-				XMLUtil.create('description', descriptionWithHTMLEscape)
+				createTagWithEscapedContent(
+					'description',
+					descriptionWithHTMLEscape
+				)
 			);
 		}
 
@@ -620,7 +697,7 @@ function serializeDefinition(
 		appendXMLAssignments(buffer, item.data.assignments, exporting);
 
 		if (initial) {
-			buffer.push(XMLUtil.create('initial', initial));
+			buffer.push(createTagWithEscapedContent('initial', initial));
 		}
 
 		const xmlLabels = XMLUtil.createObj('labels');
@@ -646,7 +723,7 @@ function serializeDefinition(
 
 		if (xmlType === 'condition') {
 			buffer.push(
-				XMLUtil.create(
+				createTagWithEscapedContent(
 					'scriptLanguage',
 					scriptLanguage || DEFAULT_LANGUAGE
 				)
