@@ -101,6 +101,7 @@ interface ObjectFieldView extends ObjectField {
 }
 
 interface ObjectDefinition {
+	DBTableName?: string;
 	active: boolean;
 	dateCreated: string;
 	dateModified: string;

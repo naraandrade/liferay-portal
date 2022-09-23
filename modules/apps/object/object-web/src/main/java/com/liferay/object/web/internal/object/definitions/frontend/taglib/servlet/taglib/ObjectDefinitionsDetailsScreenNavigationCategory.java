@@ -65,7 +65,7 @@ public class ObjectDefinitionsDetailsScreenNavigationCategory
 
 	@Override
 	public String getJspPath() {
-		return "/object_definitions/object_definition/details.jsp";
+		return "/object_definitions/object_definition/new_details.jsp";
 	}
 
 	@Override
