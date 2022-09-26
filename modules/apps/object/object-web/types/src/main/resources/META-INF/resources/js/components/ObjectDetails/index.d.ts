@@ -18,16 +18,28 @@ import './index.scss';
 interface IObjectDefinition extends ObjectDefinition {
 	objectDefinitionId: number;
 }
+interface IObjectField extends ObjectField {
+	objectFieldId: number;
+}
 interface IProps {
+	accountEntryRelationshipObjectFields: ObjectField[];
 	dbTableName: string;
 	label: LocalizedValue<string>;
+	nonRelationshipObjectFieldsInfo: {
+		label: LocalizedValue<string>;
+		name: string;
+	}[];
 	objectDefinition: IObjectDefinition;
+	objectFields: IObjectField[];
 	pluralLabel: LocalizedValue<string>;
 	shortName: string;
 }
 export default function ObjectDetails({
+	accountEntryRelationshipObjectFields,
 	label,
+	nonRelationshipObjectFieldsInfo,
 	objectDefinition,
+	objectFields,
 	pluralLabel,
 	shortName,
 }: IProps): JSX.Element;

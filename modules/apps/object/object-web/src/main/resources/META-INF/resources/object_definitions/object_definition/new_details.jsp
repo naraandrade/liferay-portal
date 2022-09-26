@@ -19,10 +19,16 @@
 <%
 String backURL = ParamUtil.getString(request, "backURL", String.valueOf(renderResponse.createRenderURL()));
 
-ObjectDefinition objectDefinition = (ObjectDefinition)request.getAttribute(ObjectWebKeys.OBJECT_DEFINITION);
-
 portletDisplay.setShowBackIcon(true);
 portletDisplay.setURLBack(backURL);
+
+ObjectDefinitionsDetailsDisplayContext objectDefinitionsDetailsDisplayContext = (ObjectDefinitionsDetailsDisplayContext)request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT);
+
+List<ObjectField> accountEntryRelationshipObjectFields = objectDefinitionsDetailsDisplayContext.getAccountEntryRelationshipObjectFields();
+List<Map<String, Object>> nonRelationshipObjectFieldsInfo = objectDefinitionsDetailsDisplayContext.getNonRelationshipObjectFieldsInfo();
+List<ObjectField> objectFields = objectDefinitionsDetailsDisplayContext.getObjectFields();
+
+ObjectDefinition objectDefinition = (ObjectDefinition)request.getAttribute(ObjectWebKeys.OBJECT_DEFINITION);
 
 renderResponse.setTitle(LanguageUtil.format(request, "edit-x", objectDefinition.getLabel(locale, true), false));
 %>
@@ -31,9 +37,15 @@ renderResponse.setTitle(LanguageUtil.format(request, "edit-x", objectDefinition.
 	module="js/components/ObjectDetails/index"
 	props='<%=
 		HashMapBuilder.<String, Object>put(
+			"accountEntryRelationshipObjectFields", accountEntryRelationshipObjectFields
+		).put(
 			"label", LocalizationUtil.getLocalizationMap(objectDefinition.getLabel())
 		).put(
+			"nonRelationshipObjectFieldsInfo", nonRelationshipObjectFieldsInfo
+		).put(
 			"objectDefinition", objectDefinition
+		).put(
+			"objectFields", objectFields
 		).put(
 			"pluralLabel", LocalizationUtil.getLocalizationMap(objectDefinition.getPluralLabel())
 		).put(

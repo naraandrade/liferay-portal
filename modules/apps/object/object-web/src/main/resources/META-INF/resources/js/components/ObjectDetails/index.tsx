@@ -14,33 +14,61 @@
 
 import {ClayToggle} from '@clayui/form';
 import ClayPanel from '@clayui/panel';
-import {Input, InputLocalized} from '@liferay/object-js-components-web';
-import React from 'react';
+import {
+	Input,
+	InputLocalized,
+	SingleSelect,
+} from '@liferay/object-js-components-web';
+import React, {useMemo} from 'react';
 
-import Sheet from './Sheet';
+import {defaultLanguageId} from '../../utils/constants';
 
 import './index.scss';
+import Sheet from './Sheet';
 import {useObjectDetailsForm} from './useObjectDetailsForm';
 
 interface IObjectDefinition extends ObjectDefinition {
 	objectDefinitionId: number;
 }
 
+interface IObjectField extends ObjectField {
+	objectFieldId: number;
+}
+
 interface IProps {
+	accountEntryRelationshipObjectFields: ObjectField[];
 	dbTableName: string;
 	label: LocalizedValue<string>;
+	nonRelationshipObjectFieldsInfo: {
+		label: LocalizedValue<string>;
+		name: string;
+	}[];
 	objectDefinition: IObjectDefinition;
+	objectFields: IObjectField[];
 	pluralLabel: LocalizedValue<string>;
 	shortName: string;
 }
 
 export default function ObjectDetails({
+	accountEntryRelationshipObjectFields,
 	label,
+	nonRelationshipObjectFieldsInfo,
 	objectDefinition,
+	objectFields,
 	pluralLabel,
 	shortName,
 }: IProps) {
 	console.log('objectDefinition', objectDefinition);
+
+	objectFields = objectFields.map((objectField) => {
+		return {...objectField, id: objectField.objectFieldId};
+	});
+
+	const titleFieldOptions = useMemo(() => {
+		return nonRelationshipObjectFieldsInfo.map(({label, name}) => {
+			return {label: label[defaultLanguageId] ?? '', name};
+		});
+	}, [nonRelationshipObjectFieldsInfo]);
 
 	const {errors, handleChange, setValues, values} = useObjectDetailsForm({
 		initialValues: {
@@ -57,7 +85,9 @@ export default function ObjectDetails({
 		<div className="lfr-objects__object-definition-details">
 			<Sheet title={Liferay.Language.get('basic-information')}>
 				<ClayPanel
-					displayTitle={Liferay.Language.get('object-data')}
+					displayTitle={Liferay.Language.get(
+						'object-definition-data'
+					)}
 					displayType="unstyled"
 				>
 					<ClayPanel.Body>
@@ -101,7 +131,9 @@ export default function ObjectDetails({
 
 						<Input
 							error={errors.name}
-							label={Liferay.Language.get('table-name')}
+							label={Liferay.Language.get(
+								'object-definition-table-name'
+							)}
 							name="name"
 							onChange={handleChange}
 							required
@@ -122,7 +154,32 @@ export default function ObjectDetails({
 					displayTitle={Liferay.Language.get('entry-display')}
 					displayType="unstyled"
 				>
-					<ClayPanel.Body>Content</ClayPanel.Body>
+					<ClayPanel.Body>
+						<SingleSelect<{label: string; name: string}>
+							error={errors.titleObjectFieldId}
+							label={Liferay.Language.get(
+								'title-object-field-id'
+							)}
+							onChange={(target: {
+								label: string;
+								name: string;
+							}) => {
+								const field = objectFields.find(
+									({name}) => name === target.name
+								);
+
+								setValues({
+									titleObjectFieldId: field?.id,
+								});
+							}}
+							options={titleFieldOptions}
+							value={
+								objectFields.find(
+									({id}) => id === values.titleObjectFieldId
+								)?.label[defaultLanguageId]
+							}
+						/>
+					</ClayPanel.Body>
 				</ClayPanel>
 
 				<ClayPanel
@@ -130,7 +187,45 @@ export default function ObjectDetails({
 					displayTitle={Liferay.Language.get('scope')}
 					displayType="unstyled"
 				>
-					<ClayPanel.Body>Content</ClayPanel.Body>
+					<ClayPanel.Body>
+						<SingleSelect<{label: string; name: string}>
+							error={errors.titleObjectFieldId}
+							label={Liferay.Language.get('scope')}
+							onChange={(target: {
+								label: string;
+								name: string;
+							}) => {
+								const field = objectFields.find(
+									({name}) => name === target.name
+								);
+
+								setValues({
+									titleObjectFieldId: field?.id,
+								});
+							}}
+							options={titleFieldOptions}
+							value={values.scope}
+						/>
+
+						<SingleSelect<{label: string; name: string}>
+							error={errors.titleObjectFieldId}
+							label={Liferay.Language.get('panelCategoryKey')}
+							onChange={(target: {
+								label: string;
+								name: string;
+							}) => {
+								const field = objectFields.find(
+									({name}) => name === target.name
+								);
+
+								setValues({
+									titleObjectFieldId: field?.id,
+								});
+							}}
+							options={titleFieldOptions}
+							value={values.panelCategoryKey}
+						/>
+					</ClayPanel.Body>
 				</ClayPanel>
 
 				<ClayPanel

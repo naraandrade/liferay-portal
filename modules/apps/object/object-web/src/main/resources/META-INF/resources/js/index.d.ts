@@ -126,7 +126,7 @@ interface ObjectDefinition {
 	};
 	storageType?: string;
 	system: boolean;
-	titleObjectFieldId: number;
+	titleObjectFieldId: number | string;
 }
 
 interface ObjectFieldSetting {

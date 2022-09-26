@@ -33,8 +33,10 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.KeyValuePair;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -152,6 +154,27 @@ public class ObjectDefinitionsDetailsDisplayContext
 		return ListUtil.filter(
 			getObjectFields(),
 			objectField -> Validator.isNull(objectField.getRelationshipType()));
+	}
+
+	public List<Map<String, Object>> getNonRelationshipObjectFieldsInfo() {
+		List<ObjectField> objectFields = ListUtil.filter(
+			getObjectFields(),
+			objectField -> Validator.isNull(objectField.getRelationshipType()));
+
+		List<Map<String, Object>> nonRelationshipObjectFieldsInfo =
+			new ArrayList<>();
+
+		for (ObjectField objectField : objectFields) {
+			nonRelationshipObjectFieldsInfo.add(
+				HashMapBuilder.<String, Object>put(
+					"label",
+					LocalizationUtil.getLocalizationMap(objectField.getLabel())
+				).put(
+					"name", objectField.getName()
+				).build());
+		}
+
+		return nonRelationshipObjectFieldsInfo;
 	}
 
 	public ObjectDefinition getObjectDefinition() {
