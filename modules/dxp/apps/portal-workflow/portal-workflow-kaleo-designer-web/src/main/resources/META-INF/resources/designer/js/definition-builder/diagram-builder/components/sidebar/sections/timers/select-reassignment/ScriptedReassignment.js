@@ -15,6 +15,7 @@ import ClayLayout from '@clayui/layout';
 import ClayLink from '@clayui/link';
 import React, {useContext, useEffect, useState} from 'react';
 
+import {DEFAULT_LANGUAGE} from '../../../../../../source-builder/constants';
 import {DiagramBuilderContext} from '../../../../../DiagramBuilderContext';
 import SidebarPanel from '../../../SidebarPanel';
 
@@ -37,7 +38,8 @@ const ScriptedReassignment = ({actionData, setContentName}) => {
 	);
 
 	const [scriptLanguage, setScriptLanguage] = useState(
-		selectedItem?.data.taskTimers?.reassignments?.scriptLanguage || 'groovy'
+		selectedItem?.data.taskTimers?.reassignments?.scriptLanguage ||
+			DEFAULT_LANGUAGE
 	);
 
 	const addSourceButtonName = Liferay.Language.get('add-source-code');
