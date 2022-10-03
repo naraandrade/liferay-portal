@@ -21,7 +21,7 @@ const TimerSourceCode = () => {
 		selectedItem.data.taskTimers?.reassignments?.[0]?.script;
 
 	const scriptLanguage =
-		selectedItem.data.taskTimers?.reassignments?.[0]?.scriptLanguage;
+		selectedItem.data.taskTimers?.reassignments?.[0]?.scriptLanguage?.[0];
 
 	const updateTimer = (editor) => {
 		if (editor.getData().trim() !== '') {
@@ -35,7 +35,7 @@ const TimerSourceCode = () => {
 							{
 								assignmentType: ['scriptedAssignment'],
 								script: [editor.getData()],
-								scriptLanguage: [scriptLanguage],
+								scriptLanguage,
 							},
 						],
 					},

@@ -108,6 +108,7 @@ export function parseReassignments(node) {
 
 	node.assignments.forEach((item) => {
 		const itemKeys = Object.keys(item);
+
 		if (itemKeys.includes('resource-action')) {
 			assignments.assignmentType = ['resourceActions'];
 			assignments.resourceAction = item['resource-action'];
@@ -125,7 +126,9 @@ export function parseReassignments(node) {
 		else if (itemKeys.includes('script')) {
 			assignments.assignmentType = ['scriptedAssignment'];
 			assignments.script = [item.script];
-			assignments.scriptLanguage = item['script-language'];
+			assignments.scriptLanguage = node.assignments.find(
+				(item) => item['script-language']
+			)['script-language'];
 		}
 		else if (itemKeys.includes('user')) {
 			assignments.assignmentType = ['user'];

@@ -11,7 +11,6 @@
 
 import React, {useContext, useEffect, useState} from 'react';
 
-import {DEFAULT_LANGUAGE} from '../../../../../source-builder/constants';
 import {DiagramBuilderContext} from '../../../../DiagramBuilderContext';
 import Timer from './Timer';
 
@@ -96,9 +95,7 @@ const Timers = ({setContentName, setErrors}) => {
 							)[0];
 
 							reassignments.scriptLanguage = filteredTimerActions.map(
-								({scriptLanguage}) => [
-									scriptLanguage || DEFAULT_LANGUAGE,
-								]
+								({scriptLanguage}) => scriptLanguage
 							)[0];
 						}
 						else if (
@@ -181,6 +178,7 @@ const Timers = ({setContentName, setErrors}) => {
 
 		if (allTimerActions.reassignments.length) {
 			const data = allTimerActions.reassignments;
+
 			for (let index = 0; index < data[0][1].length; index++) {
 				const section = {};
 
@@ -202,10 +200,15 @@ const Timers = ({setContentName, setErrors}) => {
 				}
 				else if (section.assignmentType === 'scriptedAssignment') {
 					section.assignmentType = 'scriptedReassignment';
-
 					section.script = data.find(
 						(entry) => entry[0] === 'script'
 					)[1];
+
+					section.scriptLanguage = [
+						data.find(
+							(entry) => entry[0] === 'scriptLanguage'
+						)?.[1],
+					];
 				}
 				else if (
 					section.assignmentType === 'user' &&
@@ -251,6 +254,9 @@ const Timers = ({setContentName, setErrors}) => {
 				section.script = data.find((entry) => entry[0] === 'script')[1][
 					index
 				];
+				section.scriptLanguage = data.find(
+					(entry) => entry[0] === 'scriptLanguage'
+				)[1][index];
 				sections.push(section);
 			}
 		}

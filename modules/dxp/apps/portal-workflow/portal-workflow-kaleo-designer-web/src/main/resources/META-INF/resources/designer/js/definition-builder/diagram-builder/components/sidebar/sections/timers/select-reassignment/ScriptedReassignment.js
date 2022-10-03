@@ -15,7 +15,6 @@ import ClayLayout from '@clayui/layout';
 import ClayLink from '@clayui/link';
 import React, {useContext, useEffect, useState} from 'react';
 
-import {DEFAULT_LANGUAGE} from '../../../../../../source-builder/constants';
 import {DiagramBuilderContext} from '../../../../../DiagramBuilderContext';
 import SidebarPanel from '../../../SidebarPanel';
 
@@ -33,13 +32,14 @@ const scriptLanguageOptions = [
 const ScriptedReassignment = ({actionData, setContentName}) => {
 	const {selectedItem, setSelectedItem} = useContext(DiagramBuilderContext);
 
+	console.log('selectedItem', selectedItem);
+
 	const [showScriptData, setShowScriptData] = useState(
 		selectedItem?.data.taskTimers?.reassignments?.script
 	);
 
 	const [scriptLanguage, setScriptLanguage] = useState(
-		selectedItem?.data.taskTimers?.reassignments?.scriptLanguage ||
-			DEFAULT_LANGUAGE
+		selectedItem?.data.taskTimers?.reassignments?.[0].scriptLanguage
 	);
 
 	const addSourceButtonName = Liferay.Language.get('add-source-code');
@@ -60,7 +60,14 @@ const ScriptedReassignment = ({actionData, setContentName}) => {
 
 	useEffect(() => {
 		setShowScriptData(actionData?.script);
+
+		// setScriptLanguage(actionData?.scriptLanguage?.[0]);
+
 	}, [actionData]);
+
+	useEffect(() => {
+		console.log('scriptLanguage', scriptLanguage);
+	}, [scriptLanguage]);
 
 	return (
 		<SidebarPanel panelTitle={Liferay.Language.get('script')}>
@@ -74,8 +81,7 @@ const ScriptedReassignment = ({actionData, setContentName}) => {
 				id="script-language"
 				onChange={({target}) => {
 					setScriptLanguage(target.value);
-				}}
-				onClickCapture={() => {
+
 					setSelectedItem((previous) => ({
 						...previous,
 						data: {
@@ -86,7 +92,7 @@ const ScriptedReassignment = ({actionData, setContentName}) => {
 									{
 										...previous.data.taskTimers
 											.reassignments[0],
-										scriptLanguage,
+										scriptLanguage: [target.value],
 									},
 								],
 							},
