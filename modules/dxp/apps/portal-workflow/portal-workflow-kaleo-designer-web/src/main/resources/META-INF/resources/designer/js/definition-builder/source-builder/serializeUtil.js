@@ -413,39 +413,43 @@ function appendXMLNotifications(buffer, notifications, nodeName, exporting) {
 				});
 			}
 
-			const currentRecipients = recipients[index];
-
-			for (let i = 0; i < currentRecipients.length; i++) {
+			if(recipients[index]) {
 				const recipientsAttrs = {};
 
 				if (
-					receptionType[index]?.length &&
-					receptionType[index][i] !== ''
+					recipients[index]?.receptionType &&
+					recipients[index]?.receptionType.some(
+						(receptionType) => receptionType !== ''
+					)
 				) {
-					recipientsAttrs.receptionType = receptionType[index][i];
+					recipientsAttrs.receptionType = recipients[index].receptionType;
 				}
-				currentRecipients[i]?.roleType?.forEach(
-					(item, roleTypeIndex) => {
-						if (item === 'depot' || item === 'asset library') {
-							currentRecipients[i].roleType[
-								roleTypeIndex
-							] = roleTypeName;
-						}
+	
+				if (!recipientsAttrs.receptionType && receptionType?.[0]) {
+					recipientsAttrs.receptionType = receptionType[0];
+				}
+	
+				recipients[index]?.roleType?.forEach((item, roleTypeIndex) => {
+					if (item === 'depot' || item === 'asset library') {
+						recipients[index].roleType[roleTypeIndex] = roleTypeName;
 					}
-				);
+				});
+	
 				if (
-					isObject(currentRecipients[i]) &&
-					!isObjectEmpty(currentRecipients[i])
+					isObject(recipients[index]) &&
+					!isObjectEmpty(recipients[index])
 				) {
 					appendXMLAssignments(
 						buffer,
-						currentRecipients[i],
+						recipients[index],
 						exporting,
 						'recipients',
 						recipientsAttrs
 					);
 				}
 			}
+
+			
 
 			if (executionType) {
 				buffer.push(

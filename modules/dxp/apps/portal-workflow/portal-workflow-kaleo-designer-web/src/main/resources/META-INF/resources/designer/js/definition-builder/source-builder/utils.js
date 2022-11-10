@@ -280,7 +280,7 @@ export function parseNotifications(node, xmlDefinition) {
 				assignmentType: ['taskAssignees'],
 			});
 		}
-		if (item['user']) {
+		else if (item['user']) {
 			if (item['user'].some((item) => item['email-address'])) {
 				const emailAddress = [];
 
@@ -320,7 +320,7 @@ export function parseNotifications(node, xmlDefinition) {
 				});
 			}
 		}
-		if (item['role-type']) {
+		else if (item['role-type']) {
 			currentRecipients.push({
 				assignmentType: ['roleType'],
 				autoCreate: item['auto-create'],
@@ -328,13 +328,13 @@ export function parseNotifications(node, xmlDefinition) {
 				roleType: item['role-type'],
 			});
 		}
-		if (item['role-id']) {
+		else if (item['role-id']) {
 			currentRecipients.push({
 				assignmentType: ['roleId'],
 				roleId: item['role-id'][0],
 			});
 		}
-		if (item['scripted-recipient']) {
+		else if (item['scripted-recipient']) {
 			const scriptedRecipient = item['scripted-recipient'][0];
 
 			const script = scriptedRecipient.script;
@@ -346,14 +346,13 @@ export function parseNotifications(node, xmlDefinition) {
 				scriptLanguage: scriptLanguage || [DEFAULT_LANGUAGE],
 			});
 		}
-
-		if (!notifications.recipients) {
+		else {
 			currentRecipients.push({
 				assignmentType: ['user'],
 			});
 		}
 
-		notifications.recipients[index] = currentRecipients;
+		notifications.recipients[index] = currentRecipients[0];
 	});
 
 	return notifications;

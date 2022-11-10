@@ -15,7 +15,7 @@ const getRecipientType = (assignments) => {
 		? 'assetCreator'
 		: assignments?.assignmentType?.[0] === 'roleId'
 		? 'role'
-		: 'assetCreator';
+		: assignments?.assignmentType?.[0];
 };
 
 export {getRecipientType};
