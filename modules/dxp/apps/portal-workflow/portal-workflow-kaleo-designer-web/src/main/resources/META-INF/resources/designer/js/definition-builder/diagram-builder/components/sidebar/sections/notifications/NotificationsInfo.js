@@ -148,14 +148,20 @@ const NotificationsInfo = ({
 		},
 	];
 
+	useEffect(() => {
+		if (selectedItem?.data.notifications) {
+			console.log(
+				'selectedItem notifications',
+				selectedItem.data.notifications
+			);
+		}
+	}, [selectedItem]);
+
 	const [items, setItems] = useState(notificationTypesOptions);
 
 	let recipientTypeHolder;
 
-	if (
-		selectedItem.data.notifications?.recipients?.[notificationIndex]
-			?.length !== 0
-	) {
+	if (selectedItem.data.notifications?.recipients?.[notificationIndex]) {
 		recipientTypeHolder = getRecipientType(
 			selectedItem.data.notifications?.recipients?.[notificationIndex]
 		);

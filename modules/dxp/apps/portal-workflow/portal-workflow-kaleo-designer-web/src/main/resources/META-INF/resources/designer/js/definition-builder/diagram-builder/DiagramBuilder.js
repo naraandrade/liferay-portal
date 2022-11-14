@@ -320,7 +320,7 @@ export default function DiagramBuilder() {
 
 			deserializeUtil.updateXMLDefinition(xmlDefinition);
 
-			const elements = deserializeUtil.getElements();
+			const elements = deserializeUtil.getElements(xmlDefinition);
 
 			const metadata = deserializeUtil.getMetadata();
 
@@ -367,7 +367,7 @@ export default function DiagramBuilder() {
 						setDefinitionDescription(metadata.description);
 						setDefinitionName(metadata.name);
 
-						const elements = deserializeUtil.getElements();
+						const elements = deserializeUtil.getElements(content);
 
 						setElements(elements);
 

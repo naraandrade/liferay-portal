@@ -413,39 +413,43 @@ function appendXMLNotifications(buffer, notifications, nodeName, exporting) {
 				});
 			}
 
-			const recipientsAttrs = {};
+			if(recipients[index]) {
+				const recipientsAttrs = {};
 
-			if (
-				recipients[index]?.receptionType &&
-				recipients[index]?.receptionType.some(
-					(receptionType) => receptionType !== ''
-				)
-			) {
-				recipientsAttrs.receptionType = recipients[index].receptionType;
-			}
-
-			if (!recipientsAttrs.receptionType && receptionType?.[0]) {
-				recipientsAttrs.receptionType = receptionType[0];
-			}
-
-			recipients[index]?.roleType?.forEach((item, roleTypeIndex) => {
-				if (item === 'depot' || item === 'asset library') {
-					recipients[index].roleType[roleTypeIndex] = roleTypeName;
+				if (
+					recipients[index]?.receptionType &&
+					recipients[index]?.receptionType.some(
+						(receptionType) => receptionType !== ''
+					)
+				) {
+					recipientsAttrs.receptionType = recipients[index].receptionType;
 				}
-			});
-
-			if (
-				isObject(recipients[index]) &&
-				!isObjectEmpty(recipients[index])
-			) {
-				appendXMLAssignments(
-					buffer,
-					recipients[index],
-					exporting,
-					'recipients',
-					recipientsAttrs
-				);
+	
+				if (!recipientsAttrs.receptionType && receptionType?.[0]) {
+					recipientsAttrs.receptionType = receptionType[0];
+				}
+	
+				recipients[index]?.roleType?.forEach((item, roleTypeIndex) => {
+					if (item === 'depot' || item === 'asset library') {
+						recipients[index].roleType[roleTypeIndex] = roleTypeName;
+					}
+				});
+	
+				if (
+					isObject(recipients[index]) &&
+					!isObjectEmpty(recipients[index])
+				) {
+					appendXMLAssignments(
+						buffer,
+						recipients[index],
+						exporting,
+						'recipients',
+						recipientsAttrs
+					);
+				}
 			}
+
+			
 
 			if (executionType) {
 				buffer.push(

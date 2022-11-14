@@ -19,6 +19,7 @@ const populateNotificationsData = (initialElements, setElements) => {
 
 		if (isNode(element) && element.data.notifications) {
 			const recipients = element.data.notifications.recipients;
+			
 			recipients.map((recipient, index) => {
 				if (recipient?.assignmentType?.[0] === 'roleId') {
 					retrieveRolesBy('roleId', recipient.roleId)
