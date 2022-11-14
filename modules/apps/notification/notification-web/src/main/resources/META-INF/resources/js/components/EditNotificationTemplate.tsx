@@ -32,17 +32,17 @@ import {
 import {fetch} from 'frontend-js-web';
 import React, {useEffect, useState} from 'react';
 
+import {defaultLanguageId} from '../constants';
 import {Attachments} from './Attachments';
 import {DefinitionOfTerms} from './DefinitionOfTerms';
 
 import './EditNotificationTemplate.scss';
+import FreemarkerEditorSidebarContent from './FreemarkerEditorSidebarContent';
 
 const HEADERS = new Headers({
 	'Accept': 'application/json',
 	'Content-Type': 'application/json',
 });
-
-const defaultLanguageId = Liferay.ThemeDisplay.getDefaultLanguageId();
 
 interface LabelValueObject {
 	label: string;
@@ -219,14 +219,12 @@ export default function EditNotificationTemplate({
 			});
 
 			window.location.assign(document.referrer);
-		}
-		else if (response.status === 404) {
+		} else if (response.status === 404) {
 			openToast({
 				message: Liferay.Language.get('an-error-occurred'),
 				type: 'danger',
 			});
-		}
-		else {
+		} else {
 			openToast({
 				message: Liferay.Language.get('an-error-occurred'),
 				type: 'danger',
@@ -253,8 +251,7 @@ export default function EditNotificationTemplate({
 				},
 			} as TEmailRecipients,
 		];
-	}
-	else {
+	} else {
 		recipientInitialValue = [];
 	}
 
@@ -403,8 +400,7 @@ export default function EditNotificationTemplate({
 					}
 				}
 			);
-		}
-		else {
+		} else {
 			setTemplateTitle(
 				Liferay.Language.get('untitled-notification-template')
 			);
@@ -437,8 +433,7 @@ export default function EditNotificationTemplate({
 						value: item.userScreenName,
 					};
 				});
-			}
-			else {
+			} else {
 				multiSelectItems = recipientList.map((item) => {
 					return {
 						label: item.roleName,
@@ -965,6 +960,9 @@ export default function EditNotificationTemplate({
 										) : (
 											<>
 												<CodeEditor
+													CustomSidebarContent={
+														FreemarkerEditorSidebarContent
+													}
 													mode="freemarker"
 													onChange={(
 														template,
@@ -978,7 +976,21 @@ export default function EditNotificationTemplate({
 															},
 														})
 													}
-													sidebarElements={[]}
+													sidebarElements={[
+														{
+															items: [
+																{
+																	content:
+																		'element_key',
+																	helpText:
+																		'HelpText',
+																	label:
+																		'Element label',
+																},
+															],
+															label: 'PANEL',
+														},
+													]}
 													value={
 														values
 															.freemarkerTemplate

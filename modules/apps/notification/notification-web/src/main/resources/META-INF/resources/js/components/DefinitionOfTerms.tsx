@@ -20,10 +20,10 @@ import {
 	filterArrayByQuery,
 	onActionDropdownItemClick,
 } from '@liferay/object-js-components-web';
-import {createResourceURL, fetch} from 'frontend-js-web';
 import React, {useEffect, useMemo, useState} from 'react';
 
-const defaultLanguageId = Liferay.ThemeDisplay.getDefaultLanguageId();
+import {defaultLanguageId} from '../constants';
+import {setEntityFieldsUtil} from '../utils';
 
 export function DefinitionOfTerms({baseResourceURL}: IProps) {
 	const [objectDefinitions, setObjectDefinitions] = useState<
@@ -45,20 +45,6 @@ export function DefinitionOfTerms({baseResourceURL}: IProps) {
 			setObjectDefinitions(items);
 		});
 	}, []);
-
-	const getEntityFields = async (objectDefinition: ObjectDefinition) => {
-		const response = await fetch(
-			createResourceURL(baseResourceURL, {
-				objectDefinitionId: objectDefinition.id,
-				p_p_resource_id:
-					'/notification_templates/notification_template_terms',
-			}).toString()
-		);
-
-		const responseJSON: [] = await response.json();
-
-		setEntityFields(responseJSON);
-	};
 
 	const copyObjectFieldTerm = ({itemData}: {itemData: Item}) => {
 		navigator.clipboard.writeText(itemData.term);
@@ -89,7 +75,11 @@ export function DefinitionOfTerms({baseResourceURL}: IProps) {
 					label={Liferay.Language.get('entity')}
 					onChangeQuery={setQuery}
 					onSelectItem={(item: ObjectDefinition) => {
-						getEntityFields(item);
+						setEntityFieldsUtil(
+							baseResourceURL,
+							item,
+							setEntityFields
+						);
 						setSelectedEntity(item);
 					}}
 					query={query}
@@ -150,7 +140,7 @@ interface IProps {
 	baseResourceURL: string;
 }
 
-interface Item {
+export interface Item {
 	name: string;
 	term: string;
 }
