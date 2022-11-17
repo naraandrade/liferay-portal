@@ -18,4 +18,5 @@ import {CustomSidebarContentProps} from '@liferay/object-js-components-web';
 export default function FreemarkerEditorSidebarContent({
 	elements,
 	handleElementClick,
+	...otherProps
 }: CustomSidebarContentProps): JSX.Element;

@@ -24,10 +24,10 @@ export interface SidebarCategory {
 	items: SidebarElement[];
 	label: string;
 }
-declare type elementClickFunction = (item: SidebarElement) => void;
 export interface CustomSidebarContentProps {
 	elements?: SidebarCategory[];
-	handleElementClick: elementClickFunction;
+	handleElementClick: (item: SidebarElement) => void;
+	otherProps?: unknown;
 }
 interface IProps {
 	CustomSidebarContent?: (
@@ -35,10 +35,12 @@ interface IProps {
 	) => React.ReactNode;
 	editorRef: React.RefObject<CodeMirror.Editor>;
 	elements?: SidebarCategory[];
+	otherProps?: unknown;
 }
 export declare function Sidebar({
 	CustomSidebarContent,
 	editorRef,
 	elements,
+	otherProps,
 }: IProps): JSX.Element;
 export {};

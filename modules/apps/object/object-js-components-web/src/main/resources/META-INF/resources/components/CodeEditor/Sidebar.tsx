@@ -31,11 +31,10 @@ export interface SidebarCategory {
 	label: string;
 }
 
-type elementClickFunction = (item: SidebarElement) => void;
-
 export interface CustomSidebarContentProps {
 	elements?: SidebarCategory[];
-	handleElementClick: elementClickFunction;
+	handleElementClick: (item: SidebarElement) => void;
+	otherProps?: unknown;
 }
 
 interface IProps {
@@ -44,9 +43,15 @@ interface IProps {
 	) => React.ReactNode;
 	editorRef: React.RefObject<CodeMirror.Editor>;
 	elements?: SidebarCategory[];
+	otherProps?: unknown;
 }
 
-export function Sidebar({CustomSidebarContent, editorRef, elements}: IProps) {
+export function Sidebar({
+	CustomSidebarContent,
+	editorRef,
+	elements,
+	otherProps,
+}: IProps) {
 	const handleClick = (item: SidebarElement) =>
 		editorRef.current?.replaceSelection(item.content);
 
@@ -55,25 +60,24 @@ export function Sidebar({CustomSidebarContent, editorRef, elements}: IProps) {
 			<div className="px-3">
 				<h5 className="my-3">{Liferay.Language.get('elements')}</h5>
 
-				{CustomSidebarContent &&
-					CustomSidebarContent({
-						elements,
-						handleElementClick: handleClick,
-					})}
-
-				{!CustomSidebarContent &&
-					elements?.map(({items, label}) => (
-						<Collapsible key={label} label={label}>
-							{items.map((item) => (
-								<Element
-									helpText={item.helpText}
-									key={item.label}
-									label={item.label}
-									onClick={() => handleClick(item)}
-								/>
-							))}
-						</Collapsible>
-					))}
+				{CustomSidebarContent
+					? CustomSidebarContent({
+							elements,
+							handleElementClick: handleClick,
+							otherProps,
+					  })
+					: elements?.map(({items, label}) => (
+							<Collapsible key={label} label={label}>
+								{items.map((item) => (
+									<Element
+										helpText={item.helpText}
+										key={item.label}
+										label={item.label}
+										onClick={() => handleClick(item)}
+									/>
+								))}
+							</Collapsible>
+					  ))}
 			</div>
 		</div>
 	);

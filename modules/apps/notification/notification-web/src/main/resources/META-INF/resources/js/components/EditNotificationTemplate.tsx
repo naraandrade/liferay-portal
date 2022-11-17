@@ -37,6 +37,7 @@ import {Attachments} from './Attachments';
 import {DefinitionOfTerms} from './DefinitionOfTerms';
 
 import './EditNotificationTemplate.scss';
+import FreemarkerEditorSidebarContent from './FreemarkerEditorSidebarContent';
 
 const HEADERS = new Headers({
 	'Accept': 'application/json',
@@ -966,6 +967,9 @@ export default function EditNotificationTemplate({
 										) : (
 											<>
 												<CodeEditor
+													CustomSidebarContent={
+														FreemarkerEditorSidebarContent
+													}
 													mode="freemarker"
 													onChange={(
 														template,
