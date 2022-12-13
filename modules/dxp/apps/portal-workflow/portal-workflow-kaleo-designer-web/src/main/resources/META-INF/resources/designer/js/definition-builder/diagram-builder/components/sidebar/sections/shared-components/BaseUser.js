@@ -33,7 +33,7 @@ const BaseUser = ({
 	updateSelectedItem = () => {},
 	userId = null,
 }) => {
-	const [search, setSearch] = useState(null);
+	const [search, setSearch] = useState('');
 	const [networkStatus, setNetworkStatus] = useState(4);
 	const [user, setUser] = useState({
 		emailAddress,
@@ -81,15 +81,14 @@ const BaseUser = ({
 		if (!temp[notificationIndex][index]) {
 			temp[notificationIndex][index] = [];
 		}
+
 		temp[notificationIndex][index] = user.screenName === '';
 
 		return {...errors, user: temp};
 	};
 
 	useEffect(() => {
-		if (search !== null) {
-			setErrors(checkSearchErrors(errors, user));
-		}
+		setErrors(checkSearchErrors(errors, user));
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [search, user]);
