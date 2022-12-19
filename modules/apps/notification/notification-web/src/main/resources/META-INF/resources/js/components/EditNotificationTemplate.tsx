@@ -289,7 +289,7 @@ export default function EditNotificationTemplate({
 		type: notificationTemplateType,
 	};
 
-	const {errors, setValues, values} = useForm({
+	const {errors, setValues, validateSubmit, values} = useForm({
 		initialValues,
 		onSubmit,
 		validate,
@@ -502,7 +502,7 @@ export default function EditNotificationTemplate({
 				onGetEntity={() =>
 					API.getNotificationTemplateById(notificationTemplateId)
 				}
-				onSubmit={() => onSubmit(values)}
+				onSubmit={validateSubmit}
 				portletNamespace={portletNamespace}
 				showEntityDetails={notificationTemplateId !== 0}
 			/>
