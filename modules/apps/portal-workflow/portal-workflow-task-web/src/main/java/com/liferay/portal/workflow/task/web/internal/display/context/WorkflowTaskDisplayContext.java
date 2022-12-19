@@ -85,6 +85,7 @@ import java.util.Objects;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
+import javax.portlet.PortletPreferences;
 import javax.portlet.PortletURL;
 
 import javax.servlet.http.HttpServletRequest;
@@ -376,6 +377,23 @@ public class WorkflowTaskDisplayContext {
 			"orderByType",
 			Objects.equals(getOrderByType(), "asc") ? "desc" : "asc"
 		).buildString();
+	}
+
+	public long getDisplayStyleGroupId(PortletPreferences portletPreferences) {
+		if (_displayStyleGroupId != 0) {
+			return _displayStyleGroupId;
+		}
+
+		_displayStyleGroupId = GetterUtil.getLong(portletPreferences.getValue("displayStyleGroupId", null));
+
+		if (_displayStyleGroupId <= 0) {
+			ThemeDisplay themeDisplay =
+			_workflowTaskRequestHelper.getThemeDisplay();
+
+			_displayStyleGroupId = themeDisplay.getScopeGroupId();
+		}
+
+		return _displayStyleGroupId;
 	}
 
 	public String getTaglibEditURL(WorkflowTask workflowTask)
@@ -1027,6 +1045,7 @@ public class WorkflowTaskDisplayContext {
 
 	private final Format _dateFormatDateTime;
 	private String _displayStyle;
+	private Long _displayStyleGroupId;
 	private final HttpServletRequest _httpServletRequest;
 	private final LiferayPortletRequest _liferayPortletRequest;
 	private final LiferayPortletResponse _liferayPortletResponse;
