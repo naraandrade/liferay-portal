@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<root>
+    <template>
+        <template-key>workflow-tasks</template-key>
+        <name>portlet-display-template-name-workflow-task</name>
+        <description>portlet-display-template-description-workflow-task</description>
+        <language>ftl</language>
+        <script-file>com/liferay/portal/workflow/task/web/portlet/display/template/dependencies/portlet_display_template_multi_column_layout.ftl</script-file>
+        <cacheable>false</cacheable>
+    </template>
+</root>

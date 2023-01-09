@@ -26,6 +26,19 @@ portletDisplay.setShowBackIcon(false);
 
 <liferay-util:include page="/toolbar.jsp" servletContext="<%= application %>" />
 
-<clay:container-fluid>
-	<%@ include file="/workflow_tasks.jspf" %>
-</clay:container-fluid>
+<liferay-ddm:template-renderer
+    className="<%= WorkflowTask.class.getName() %>"
+    contextObjects='<%=
+        HashMapBuilder.<String, Object>put(
+            "workflowTaskDisplayContext", workflowTaskDisplayContext
+        ).build()
+    %>'
+    displayStyle="<%= WorkflowTaskPortletUtil.getDisplayStyle(portletPreferences) %>"
+    displayStyleGroupId="<%= workflowTaskDisplayContext.getDisplayStyleGroupId(portletPreferences) %>"
+    entries="<%= workflowTaskDisplayContext.getWorkflowTask() %>"
+>
+    <clay:container-fluid>
+        <%@ include file="/workflow_tasks.jspf" %>
+    </clay:container-fluid>
+
+</liferay-ddm:template-renderer>
