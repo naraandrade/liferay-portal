@@ -78,8 +78,12 @@ const BaseRoleType = ({
 		retrieveAccountRoles(accountEntryId)
 			.then((response) => response.json())
 			.then(({items}) => {
-				const roles = items.map((item) => {
-					return {roleName: item.displayName, roleType: 'Account'};
+				const roles = items.map(({displayName, key}) => {
+					return {
+						roleKey: key,
+						roleName: displayName,
+						roleType: 'Account',
+					};
 				});
 
 				setAccountRoles(roles);
@@ -136,6 +140,7 @@ const BaseRoleType = ({
 			}
 
 			roles[roleType].push({
+				roleKey: item.key,
 				roleName: item.name,
 				roleType,
 			});
