@@ -13,6 +13,7 @@
  */
 
 import ClayAlert from '@clayui/alert';
+import ClayLink from '@clayui/link';
 import {
 	API,
 	Card,
@@ -50,8 +51,7 @@ export default function EditRelationship({
 					'the-object-relationship-was-updated-successfully'
 				),
 			});
-		}
-		catch ({message}) {
+		} catch ({message}) {
 			openToast({message: message as string, type: 'danger'});
 		}
 	};
@@ -85,12 +85,23 @@ export default function EditRelationship({
 			<Card title={Liferay.Language.get('basic-info')}>
 				{values.reverse && (
 					<ClayAlert
-						displayType="warning"
-						title={`${Liferay.Language.get('warning')}:`}
+						displayType="info"
+						title={`${Liferay.Language.get('info')}:`}
 					>
-						{Liferay.Language.get(
-							'reverse-object-relationships-cannot-be-updated'
-						)}
+						Relationships cannot be update from the child object.
+						For editing or deleting it, go to 
+
+						<ClayLink
+							href={`/group/control_panel/manage?p_p_id=com_liferay_object_web_internal_object_definitions_portlet_ObjectDefinitionsPortlet&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view
+							&_com_liferay_object_web_internal_object_definitions_portlet_ObjectDefinitionsPortlet_mvcRenderCommandName=%2Fobject_definitions%2Fedit_object_definition&_com_liferay_object_web_internal_object_definitions_portlet_ObjectDefinitionsPortlet_objectDefinitionId=${values.objectDefinitionId2}
+							&_com_liferay_object_web_internal_object_definitions_portlet_ObjectDefinitionsPortlet_screenNavigationCategoryKey=relationships&p_p_auth=W9Ol47TX`}
+							rel="noopener"
+							target="_blank"
+						>
+							{` ${values.objectDefinitionName2} > Relationships`}
+						</ClayLink>
+
+						.
 					</ClayAlert>
 				)}
 
