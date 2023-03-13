@@ -214,12 +214,17 @@ export function parseNotifications(node) {
 			'template-language'
 		);
 
-		if (item.assignees) {
-			notifications.recipients[index] = {
-				assignmentType: ['taskAssignees'],
-			};
+		if (!notifications.recipients[index]) {
+			notifications.recipients[index] = [];
 		}
-		else if (item['user']) {
+
+		if (item.assignees) {
+			notifications.recipients[index].push({
+				assignmentType: ['taskAssignees'],
+			});
+		}
+
+		if (item['user']) {
 			if (item['user'].some((item) => item['email-address'])) {
 				const emailAddress = [];
 
@@ -227,10 +232,10 @@ export function parseNotifications(node) {
 					emailAddress.push(item['email-address']);
 				});
 
-				notifications.recipients[index] = {
+				notifications.recipients[index].push({
 					assignmentType: ['user'],
 					emailAddress,
-				};
+				});
 			}
 
 			if (item['user'].some((item) => item['user-id'])) {
@@ -240,10 +245,10 @@ export function parseNotifications(node) {
 					userId.push(item['user-id']);
 				});
 
-				notifications.recipients[index] = {
+				notifications.recipients[index].push({
 					assignmentType: ['user'],
 					userId,
-				};
+				});
 			}
 
 			if (item['user'].some((item) => item['screen-name'])) {
@@ -253,25 +258,25 @@ export function parseNotifications(node) {
 					screenName.push(item['screen-name']);
 				});
 
-				notifications.recipients[index] = {
+				notifications.recipients[index].push({
 					assignmentType: ['user'],
 					screenName,
-				};
+				});
 			}
 		}
 		else if (item['role-type']) {
-			notifications.recipients[index] = {
+			notifications.recipients[index].push({
 				assignmentType: ['roleType'],
 				autoCreate: item['auto-create'],
 				roleKey: item['role-name'],
 				roleType: item['role-type'],
-			};
+			});
 		}
 		else if (item['role-id']) {
-			notifications.recipients[index] = {
+			notifications.recipients[index].push({
 				assignmentType: ['roleId'],
 				roleId: item['role-id'][0],
-			};
+			});
 		}
 		else if (item['scripted-recipient']) {
 			const scriptedRecipient = item['scripted-recipient'][0];
@@ -279,16 +284,17 @@ export function parseNotifications(node) {
 			const script = scriptedRecipient.script;
 			const scriptLanguage = scriptedRecipient['script-language'];
 
-			notifications.recipients[index] = {
+			notifications.recipients[index].push({
 				assignmentType: ['scriptedRecipient'],
 				script: [script],
 				scriptLanguage: scriptLanguage || [DEFAULT_LANGUAGE],
-			};
+			});
 		}
-		else {
-			notifications.recipients[index] = {
+
+		if (!notifications.recipients[index].length) {
+			notifications.recipients[index].push({
 				assignmentType: ['user'],
-			};
+			});
 		}
 	});
 

@@ -49,6 +49,8 @@ DeserializeUtil.prototype = {
 
 		instance.definition.forEachField((tagName, fieldData) => {
 			fieldData.results.forEach((node) => {
+				console.log('node', node);
+
 				if (node.actions?.length) {
 					node.notifications = node.actions.filter((item) => {
 						if (item.template) {
@@ -168,7 +170,7 @@ DeserializeUtil.prototype = {
 
 						if (Array.isArray(transition.labels)) {
 							transition.labels?.map((itemLabel) => {
-								Object.entries(itemLabel).map(
+								Object.entries(itemLabel[0]).map(
 									([key, value]) => {
 										label[key] = replaceTabSpaces(
 											removeNewLine(value)

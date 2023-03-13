@@ -140,9 +140,9 @@ function getLocationValue(field, context) {
 												childContent[item.tagName] = [];
 											}
 
-											childContent[
-												item.tagName
-											] = itemContent;
+											childContent[item.tagName].push(
+												itemContent
+											);
 										}
 
 										break;
