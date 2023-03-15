@@ -3,8 +3,10 @@ import ClayTable from '@clayui/table';
 import swapVert from '../../assets/icons/swap-vert.svg';
 
 import './DashboardTable.scss';
+
+import React, {ReactNode} from 'react';
+
 import {DashboardEmptyTable} from './DashboardEmptyTable';
-import {DashboardTableRow} from './DashboardTableRow';
 
 export type AppProps = {
 	image: string;
@@ -18,19 +20,22 @@ export type AppProps = {
 	updatedResponsible: string;
 	version: string;
 };
-interface DashboardTableProps {
-	items: AppProps[];
+
+interface DashboardTableProps<T> {
+	children: (item: T) => ReactNode;
 	emptyStateMessage: {
 		description1: string;
 		description2: string;
 		title: string;
 	};
+	items: T[];
 }
 
-export function DashboardTable({
+export function DashboardTable<T>({
+	children,
 	emptyStateMessage,
 	items,
-}: DashboardTableProps) {
+}: DashboardTableProps<T>) {
 	const {description1, description2, title} = emptyStateMessage;
 
 	if (!items.length) {
@@ -92,8 +97,10 @@ export function DashboardTable({
 				</ClayTable.Head>
 
 				<ClayTable.Body>
-					{items.map((item) => (
-						<DashboardTableRow item={item} key={item.name} />
+					{items.map((item, index) => (
+						<React.Fragment key={index}>
+							{children(item)}
+						</React.Fragment>
 					))}
 				</ClayTable.Body>
 			</ClayTable>

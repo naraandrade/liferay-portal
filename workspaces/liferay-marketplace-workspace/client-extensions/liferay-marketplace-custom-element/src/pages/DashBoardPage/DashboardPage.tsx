@@ -3,7 +3,6 @@ import {Dispatch, SetStateAction, useState} from 'react';
 import {DashboardNavigation} from '../../components/DashboardNavigation/DashboardNavigation';
 import {
 	AppProps,
-	DashboardTable,
 } from '../../components/DashboardTable/DashboardTable';
 import {Footer} from '../../components/Footer/Footer';
 import {Header} from '../../components/Header/Header';
@@ -24,6 +23,7 @@ type DashBoardPageProps = {
 	accountLogo: string;
 	accountTitle: string;
 	buttonMessage: string;
+	childRenderComponent: JSX.Element;
 	dashboardNavigationItems: DashboardListItems[];
 	items: AppProps[];
 	messages: {
@@ -43,8 +43,8 @@ export function DashboardPage({
 	accountLogo,
 	accountTitle,
 	buttonMessage,
+	childRenderComponent,
 	dashboardNavigationItems,
-	items,
 	messages,
 	setDashboardNavigationItems,
 }: DashBoardPageProps) {
@@ -86,10 +86,7 @@ export function DashboardPage({
 								</a>
 							</div>
 
-							<DashboardTable
-								emptyStateMessage={messages.emptyStateMessage}
-								items={items}
-							/>
+							{childRenderComponent}
 						</div>
 					)}
 				</div>

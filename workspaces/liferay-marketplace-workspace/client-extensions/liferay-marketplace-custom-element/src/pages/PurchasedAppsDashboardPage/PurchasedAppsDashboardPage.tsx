@@ -1,7 +1,8 @@
 import {useEffect, useState} from 'react';
 
 import accountLogo from '../../assets/icons/mainAppLogo.svg';
-import {AppProps} from '../../components/DashboardTable/DashboardTable';
+import {AppProps, DashboardTable} from '../../components/DashboardTable/DashboardTable';
+import {DashboardTableRow} from '../../components/DashboardTable/DashboardTableRow';
 import {getOrders} from '../../utils/api';
 import {DashboardPage} from '../DashBoardPage/DashboardPage';
 import {initialDashboardNavigationItems} from './PurchasedDashboardPageUtil';
@@ -10,6 +11,20 @@ export function PurchasedAppsDashboardPage() {
 	const [orders, setOrders] = useState<AppProps[]>(Array<AppProps>());
 	const [dashboardNavigationItems, setDashboardNavigationItems] = useState(
 		initialDashboardNavigationItems
+	);
+
+	const childRenderDashboardTable = () : JSX.Element => (
+		<DashboardTable<AppProps>
+			emptyStateMessage={messages.emptyStateMessage}
+			items={orders}
+		>
+			{(item) => (
+				<DashboardTableRow
+					item={item}
+					key={item.name}
+				/>
+			)}
+		</DashboardTable>
 	);
 
 	const messages = {
@@ -37,10 +52,10 @@ export function PurchasedAppsDashboardPage() {
 			accountLogo={accountLogo}
 			accountTitle="Hourglass"
 			buttonMessage="Add Apps"
+			childRenderComponent={childRenderDashboardTable()}
 			dashboardNavigationItems={dashboardNavigationItems}
 			items={orders}
 			messages={messages}
-			setDashboardNavigationItems={setDashboardNavigationItems}
-		></DashboardPage>
+			setDashboardNavigationItems={setDashboardNavigationItems}/>
 	);
 }
