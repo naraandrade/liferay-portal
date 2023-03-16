@@ -1,6 +1,5 @@
+import ClayIcon from '@clayui/icon';
 import ClayTable from '@clayui/table';
-
-import swapVert from '../../assets/icons/swap-vert.svg';
 
 import './DashboardTable.scss';
 
@@ -21,6 +20,11 @@ export type AppProps = {
 	version: string;
 };
 
+export type TableHeaders = {
+	iconSymbol?: string;
+	title: string;
+}[];
+
 interface DashboardTableProps<T> {
 	children: (item: T) => ReactNode;
 	emptyStateMessage: {
@@ -29,12 +33,14 @@ interface DashboardTableProps<T> {
 		title: string;
 	};
 	items: T[];
+	tableHeaders: TableHeaders;
 }
 
 export function DashboardTable<T>({
 	children,
 	emptyStateMessage,
 	items,
+	tableHeaders,
 }: DashboardTableProps<T>) {
 	const {description1, description2, title} = emptyStateMessage;
 
@@ -51,49 +57,19 @@ export function DashboardTable<T>({
 		return (
 			<ClayTable borderless className="dashboard-table-container">
 				<ClayTable.Head>
-					<ClayTable.Cell headingCell>
-						<div className="dashboard-table-header-name">
-							<span className="dashboard-table-header-text">
-								Name
-							</span>
+					{tableHeaders.map((tableHeader) => (
+						<ClayTable.Cell headingCell key={tableHeader.title}>
+							<div className="dashboard-table-header-name">
+								<span className="dashboard-table-header-text">
+									{tableHeader.title}
+								</span>
 
-							<img
-								alt="Swap Vert"
-								className="dashboard-table-header-name-icon"
-								src={swapVert}
-							/>
-						</div>
-					</ClayTable.Cell>
-
-					<ClayTable.Cell headingCell>
-						<span className="dashboard-table-header-text">
-							Version
-						</span>
-					</ClayTable.Cell>
-
-					<ClayTable.Cell headingCell>
-						<span className="dashboard-table-header-text">
-							Type
-						</span>
-					</ClayTable.Cell>
-
-					<ClayTable.Cell headingCell>
-						<span className="dashboard-table-header-text">
-							Last Updated
-						</span>
-					</ClayTable.Cell>
-
-					<ClayTable.Cell headingCell>
-						<span className="dashboard-table-header-text">
-							Rating
-						</span>
-					</ClayTable.Cell>
-
-					<ClayTable.Cell headingCell>
-						<span className="dashboard-table-header-text">
-							Status
-						</span>
-					</ClayTable.Cell>
+								{tableHeader.iconSymbol && (
+									<ClayIcon symbol={tableHeader.iconSymbol} />
+								)}
+							</div>
+						</ClayTable.Cell>
+					))}
 				</ClayTable.Head>
 
 				<ClayTable.Body>

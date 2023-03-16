@@ -25,6 +25,7 @@ type DashBoardPageProps = {
 	buttonMessage: string;
 	childRenderComponent: JSX.Element;
 	dashboardNavigationItems: DashboardListItems[];
+	dashboardTableHeaders?: TableHeaders;
 	items: AppProps[];
 	messages: {
 		description: string;
