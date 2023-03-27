@@ -84,6 +84,8 @@ export function GetAppModal({
 		};
 
 		await patchOrderByERC(cartCheckoutResponse.orderUUID, newOrderStatus);
+
+		onClose();
 	}
 
 	const freeApp = Number(app.price) === 0;
