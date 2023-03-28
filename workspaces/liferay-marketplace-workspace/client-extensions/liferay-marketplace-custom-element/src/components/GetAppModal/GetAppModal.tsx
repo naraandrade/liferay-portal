@@ -47,7 +47,9 @@ export function GetAppModal({
 
 		const skuResponse = await getProductSKU({appProductId: app.id});
 
-		const defaultSku = skuResponse.items.find(({sku}) => sku === 'default');
+		console.log('skus', skuResponse.items);
+
+		const sku = skuResponse.items[0];
 
 		const newCart: Partial<Cart> = {
 			accountId: account.id as number,
@@ -64,7 +66,7 @@ export function GetAppModal({
 					settings: {
 						maxQuantity: 1,
 					},
-					skuId: defaultSku?.id as number,
+					skuId: sku.id as number,
 				},
 			],
 			currencyCode: channel.currencyCode,
