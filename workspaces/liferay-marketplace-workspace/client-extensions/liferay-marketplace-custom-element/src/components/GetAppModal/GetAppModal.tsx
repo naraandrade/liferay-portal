@@ -3,6 +3,7 @@ import ClayIcon from '@clayui/icon';
 import ClayModal, {useModal} from '@clayui/modal';
 import {useEffect, useState} from 'react';
 
+import {Liferay} from '../../liferay/liferay';
 import {
 	getAccountInfo,
 	getChannels,
@@ -27,11 +28,10 @@ interface App {
 }
 
 interface GetAppModalProps {
-	appId: number;
 	handleClose: () => void;
 }
 
-export function GetAppModal({appId, handleClose}: GetAppModalProps) {
+export function GetAppModal({handleClose}: GetAppModalProps) {
 	const {observer, onClose} = useModal({
 		onClose: handleClose,
 	});
@@ -74,7 +74,7 @@ export function GetAppModal({appId, handleClose}: GetAppModalProps) {
 			setChannel(channel);
 
 			const app = await getDeliveryProduct({
-				appId,
+				appId: Liferay.MarketplaceCustomerFlow.appId,
 				channelId: channel.id,
 			});
 
@@ -101,7 +101,7 @@ export function GetAppModal({appId, handleClose}: GetAppModalProps) {
 
 			setAccount(currentAccount);
 
-			const skuResponse = await getProductSKU({appProductId: appId});
+			const skuResponse = await getProductSKU({appProductId: Liferay.MarketplaceCustomerFlow.appId});
 
 			const sku = skuResponse.items[0];
 
