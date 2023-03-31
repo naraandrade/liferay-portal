@@ -1,8 +1,10 @@
 import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
-import ClayModal, {useModal} from '@clayui/modal';
+import ClayModal, {ClayModalProvider, useModal} from '@clayui/modal';
+import {Observer} from '@clayui/modal/lib/types';
 import {useEffect, useState} from 'react';
 
+import {Liferay} from '../../liferay/liferay';
 import {
 	getAccountInfo,
 	getChannels,
@@ -28,13 +30,11 @@ interface App {
 
 interface GetAppModalProps {
 	appId: number;
-	handleClose: () => void;
+	observer: Observer;
+	onClose: () => void;
 }
 
-export function GetAppModal({appId, handleClose}: GetAppModalProps) {
-	const {observer, onClose} = useModal({
-		onClose: handleClose,
-	});
+function GetAppModal({appId, observer, onClose}: GetAppModalProps) {
 	const [account, setAccount] = useState<AccountBrief>();
 	const [app, setApp] = useState<App>({
 		createdBy: '',
@@ -274,3 +274,34 @@ export function GetAppModal({appId, handleClose}: GetAppModalProps) {
 		</ClayModal>
 	);
 }
+
+interface ModalWithProviderProps extends React.HTMLAttributes<HTMLElement> {
+	appId: number;
+}
+
+export default function ModalWithProvider({appId} : ModalWithProviderProps) {
+	const [visibleModal, setVisibleModal] = useState<boolean>(false);
+	const {observer, onClose} = useModal({
+		onClose: () => setVisibleModal(false),
+	});
+
+	useEffect(() => {
+		Liferay.on('showGetAppModal', () => setVisibleModal(true));
+
+		return () => {
+			Liferay.detach('showGetAppModal', () => setVisibleModal(true));
+		};
+	}, []);
+
+	return (
+		<ClayModalProvider>
+			{visibleModal && (
+				<GetAppModal
+					appId={appId}
+					observer={observer}
+					onClose={onClose}
+				/>
+			)}
+		</ClayModalProvider>
+	);
+};

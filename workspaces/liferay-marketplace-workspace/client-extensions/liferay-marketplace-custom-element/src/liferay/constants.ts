@@ -8,7 +8,7 @@ export function getIconSpriteMap() {
 }
 
 export function getCompanyId() {
-	Liferay.ThemeDisplay.getCompanyId();
+	return Liferay.ThemeDisplay.getCompanyId();
 }
 
 export function Service() {
