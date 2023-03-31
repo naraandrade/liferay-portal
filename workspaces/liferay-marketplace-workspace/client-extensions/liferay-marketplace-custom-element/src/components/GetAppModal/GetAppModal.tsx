@@ -4,7 +4,7 @@ import ClayModal, {ClayModalProvider, useModal} from '@clayui/modal';
 import {Observer} from '@clayui/modal/lib/types';
 import {useEffect, useState} from 'react';
 
-import {Liferay} from '../../liferay/liferay.js';
+import {Liferay} from '../../liferay/liferay';
 import {
 	getAccountInfo,
 	getChannels,
