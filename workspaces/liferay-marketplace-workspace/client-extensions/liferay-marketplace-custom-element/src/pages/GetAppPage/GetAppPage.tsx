@@ -1,17 +1,29 @@
 import ClayButton from '@clayui/button';
 import {useState} from 'react';
 
+import {CustomerGateModal} from '../../components/CustomerGateModal/CustomerGateModal';
 import {GetAppModal} from '../../components/GetAppModal/GetAppModal';
+import {Liferay} from '../../liferay/liferay';
 
-export default function GetAppPage() {
+interface GetAppPageProps {
+	userCustomerChecker: boolean;
+}
+export default function GetAppPage({userCustomerChecker}: GetAppPageProps) {
 	const [showModal, setShowModal] = useState(false);
 
 	return (
 		<>
 			<ClayButton onClick={() => setShowModal(true)}>Get App</ClayButton>
-
-			{showModal && (
+			{userCustomerChecker &&
+			Liferay.ThemeDisplay.isSignedIn() &&
+			showModal ? (
 				<GetAppModal handleClose={() => setShowModal(false)} />
+			) : (
+				showModal && (
+					<CustomerGateModal
+						handleClose={() => setShowModal(false)}
+					/>
+				)
 			)}
 		</>
 	);
