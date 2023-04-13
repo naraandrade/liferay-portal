@@ -23,7 +23,7 @@ export async function getCatalogId() {
 	return response.items[0].id;
 }
 
-export async function publisherUserChecker() {
+export async function userAccountChecker(verifiedAccounts: string[]) {
 	const response = await getUserAccountsById();
 
 	if (response.ok) {
@@ -35,8 +35,7 @@ export async function publisherUserChecker() {
 
 				const accountGroupPublisher = accountGroup.some(
 					(currentAccountGroup) =>
-						currentAccountGroup.name === 'Business Publisher' ||
-						currentAccountGroup.name === 'Individual Publisher'
+						verifiedAccounts.includes(currentAccountGroup.name)
 				);
 
 				return accountGroupPublisher;
