@@ -231,7 +231,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 								name: string;
 							}) => customField.name === 'CatalogId'
 						);
-	
+
 						return catalogIdField?.customValue.data == catalogId;
 					}
 				}
@@ -405,7 +405,6 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 
 										<span className="get-app-modal-body-content-app-info-version">
 											{appVersion} by{' '}
-
 											{accountPublisher?.name}
 										</span>
 									</div>
