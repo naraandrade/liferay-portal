@@ -95,8 +95,13 @@ export function NextStepPage() {
 					<NewAppPageFooterButtons
 						backButtonText="Go Back to Dashboard"
 						continueButtonText="Continue Configuration"
-						onClickBack={() => window.location.href = `${window.location.origin}/web/guest/publisher-dashboard`}
-						onClickContinue={() => window.location.href = 'https://console.liferay.cloud/'}
+						onClickBack={() =>
+							(window.location.href = `${window.location.origin}/publisher-dashboard`)
+						}
+						onClickContinue={() =>
+							(window.location.href =
+								'https://console.liferay.cloud/')
+						}
 					/>
 
 					<div className="next-step-page-link">
