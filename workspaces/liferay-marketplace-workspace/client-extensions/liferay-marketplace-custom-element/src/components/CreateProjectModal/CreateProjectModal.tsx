@@ -104,7 +104,6 @@ export function CreateProjectModal({
 					projectOrderType?.externalReferenceCode,
 				orderTypeId: projectOrderType?.id as number,
 				orderStatus: 1,
-				marketplaceOrderType: projectOrderType?.externalReferenceCode,
 			};
 
 			const orderResponse = await postOrder(newOrder);
