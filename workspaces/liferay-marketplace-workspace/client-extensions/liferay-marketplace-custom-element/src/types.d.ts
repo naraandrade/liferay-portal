@@ -9,7 +9,7 @@ type Account = {
 
 type CustomField = {
 	customValue: {
-		data: string;
+		data: string | string[];
 	};
 	dataType?: string;
 	name: string;
