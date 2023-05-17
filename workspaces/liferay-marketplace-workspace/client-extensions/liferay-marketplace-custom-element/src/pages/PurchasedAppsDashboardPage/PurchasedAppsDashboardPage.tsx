@@ -1,7 +1,6 @@
 import {ClayPaginationBarWithBasicItems} from '@clayui/pagination-bar';
 import {useEffect, useState} from 'react';
 
-import {showAccountImage} from '../../utils/util';
 import {DashboardNavigation} from '../../components/DashboardNavigation/DashboardNavigation';
 import {DashboardMemberTableRow} from '../../components/DashboardTable/DashboardMemberTableRow';
 import {DashboardTable} from '../../components/DashboardTable/DashboardTable';
@@ -9,14 +8,19 @@ import {PurchasedAppsDashboardTableRow} from '../../components/DashboardTable/Pu
 import {MemberProfile} from '../../components/MemberProfile/MemberProfile';
 import {getCompanyId} from '../../liferay/constants';
 import {
+	getAccountInfoFromCommerce,
 	getAccounts,
 	getChannels,
 	getMyUserAccount,
-	getAccountInfoFromCommerce,
 	getPlacedOrders,
+	getProductById,
 	getSKUCustomFieldExpandoValue,
 	getUserAccounts,
 } from '../../utils/api';
+import {
+	getThumbnailByProductAttachment,
+	showAccountImage,
+} from '../../utils/util';
 import {DashboardPage} from '../DashBoardPage/DashboardPage';
 import {
 	AccountBriefProps,
@@ -35,7 +39,6 @@ import {
 import './PurchasedAppsDashboardPage.scss';
 
 export interface PurchasedAppProps {
-	image: string;
 	name: string;
 	orderId: number;
 	project?: string;
@@ -43,6 +46,7 @@ export interface PurchasedAppProps {
 	purchasedBy: string;
 	purchasedDate: string;
 	type: string;
+	thumbnail: string;
 	version: string;
 }
 
@@ -211,8 +215,15 @@ export function PurchasedAppsDashboardPage() {
 						skuId: placeOrderItem.skuId,
 					});
 
+					const product = await getProductById({
+						appId: placeOrderItem.productId,
+					});
+
+					const orderThumbnail = getThumbnailByProductAttachment(
+						product.attachments
+					);
+
 					return {
-						image: placeOrderItem.thumbnail,
 						name: placeOrderItem.name,
 						orderId: order.id,
 						provisioning: order.orderStatusInfo.label_i18n,
@@ -221,8 +232,8 @@ export function PurchasedAppsDashboardPage() {
 						type: placeOrderItem.subscription
 							? 'Subscription'
 							: 'Perpetual',
-						version:
-							Object.keys(version).length === 0 ? '' : version,
+						thumbnail: orderThumbnail as string,
+						version: !Object.keys(version).length ? '' : version,
 					};
 				})
 			);

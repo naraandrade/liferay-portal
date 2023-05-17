@@ -1,8 +1,6 @@
 import {ClayPaginationBarWithBasicItems} from '@clayui/pagination-bar';
 import {useEffect, useState} from 'react';
 
-import {showAccountImage} from '../../utils/util';
-
 import {DashboardNavigation} from '../../components/DashboardNavigation/DashboardNavigation';
 import {DashboardMemberTableRow} from '../../components/DashboardTable/DashboardMemberTableRow';
 import {
@@ -19,6 +17,7 @@ import {
 	getProducts,
 	getUserAccounts,
 } from '../../utils/api';
+import {showAccountImage} from '../../utils/util';
 import {AccountDetailsPage} from '../AccountDetailsPage/AccountDetailsPage';
 import {
 	DashboardListItems,
@@ -266,6 +265,7 @@ export function PublishedAppsDashboardPage() {
 					appList.items.forEach((product, index: number) => {
 						if (product.catalogId === accountCatalogId) {
 							newAppList.push({
+								attachments: product.attachments,
 								catalogId: product.catalogId,
 								externalReferenceCode:
 									product.externalReferenceCode,
@@ -292,16 +292,17 @@ export function PublishedAppsDashboardPage() {
 
 					setCommerceAccount(commerceAccountResponse);
 
-					const newDashboardNavigationItems = dashboardNavigationItems.map(navigationItems => {
-						if (navigationItems.itemName === 'apps') {
-							return {
-								...navigationItems,
-								items: newAppList.slice(0,4),
-							};
-						}
+					const newDashboardNavigationItems =
+						dashboardNavigationItems.map((navigationItems) => {
+							if (navigationItems.itemName === 'apps') {
+								return {
+									...navigationItems,
+									items: newAppList.slice(0, 4),
+								};
+							}
 
-						return navigationItems;
-					})
+							return navigationItems;
+						});
 
 					setDashboardNavigationItems(newDashboardNavigationItems);
 					setAppTotalCount(newAppList.length);

@@ -73,6 +73,29 @@ export async function userAccountChecker(verifiedAccounts: string[]) {
 	return false;
 }
 
+export function getThumbnailByProductAttachment(
+	attachments: Partial<ProductAttachment>[]
+): string | undefined {
+	if (!Array.isArray(attachments)) {
+		return undefined;
+	}
+
+	const findThumbnailWithAppIcon = (
+		attachment: Partial<ProductAttachment>
+	): boolean => {
+		const customField = attachment.customFields?.find(
+			({customValue, name}) =>
+				name === 'App Icon' && customValue?.data?.[0] === 'Yes'
+		);
+
+		return !!customField;
+	};
+
+	const thumbnail = attachments.find(findThumbnailWithAppIcon);
+
+	return thumbnail?.src;
+}
+
 export function getProductVersionFromSpecifications(
 	specifications: ProductSpecification[]
 ) {

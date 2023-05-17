@@ -6,8 +6,6 @@ import {useCallback, useEffect, useState} from 'react';
 
 import {getCompanyId} from '../../liferay/constants';
 import {Liferay} from '../../liferay/liferay';
-import {showAccountImage} from '../../utils/util';
-
 import {
 	getAccountAddressesFromCommerce,
 	getAccounts,
@@ -25,6 +23,11 @@ import {
 	postCartByChannelId,
 	postCheckoutCart,
 } from '../../utils/api';
+import {
+	getThumbnailByProductAttachment,
+	showAccountImage,
+	showAppImage,
+} from '../../utils/util';
 import {AccountSelector} from './AccountSelector';
 
 import './GetAppModal.scss';
@@ -32,6 +35,7 @@ import {SelectPaymentMethod} from './SelectPaymentMethod';
 import {StepTracker} from './StepTracker';
 
 interface App {
+	attachments: ProductAttachment[];
 	createdBy: string;
 	id: number;
 	name: {en_US: string} | string;
@@ -65,6 +69,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 	const [accountPublisher, setAccountPublisher] = useState<Account>();
 	const [accounts, setAccounts] = useState<AccountBrief[]>();
 	const [app, setApp] = useState<App>({
+		attachments: [],
 		createdBy: '',
 		id: 0,
 		name: '',
@@ -254,7 +259,10 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 							(customField) => customField.name === 'CatalogId'
 						);
 
-						return catalogIdField?.customValue.data == String(catalogId);
+						return (
+							catalogIdField?.customValue.data ==
+							String(catalogId)
+						);
 					}
 				}
 			);
@@ -450,6 +458,8 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 		}
 	};
 
+	const thumbnail = getThumbnailByProductAttachment(app.attachments);
+
 	return (
 		<div className="modal-open">
 			<ClayModal observer={observer}>
@@ -514,7 +524,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 									<img
 										alt="App Image"
 										className="get-app-modal-body-content-image"
-										src={app.urlImage.replace(
+										src={showAppImage(thumbnail).replace(
 											Liferay.ThemeDisplay.getPortalURL().replace(
 												'http',
 												'https'

@@ -421,7 +421,7 @@ export async function getPlacedOrders(
 	if (page && pageSize) {
 		url =
 			url +
-			`?nestedFields=placedOrderItems&page=${page}&pageSize=${pageSize}`;
+			`?nestedFields=placedOrderItems,attachments&page=${page}&pageSize=${pageSize}`;
 	}
 
 	const response = await fetch(url, {headers, method: 'GET'});
@@ -463,6 +463,19 @@ export async function getProduct({
 		headers,
 		method: 'GET',
 	});
+
+	return (await response.json()) as Product;
+}
+
+export async function getProductById({appId}: {appId: number}) {
+	const response = await fetch(
+		`${baseURL}/o/headless-commerce-admin-catalog/v1.0/products/${appId}?nestedFields=attachments
+		`,
+		{
+			headers,
+			method: 'GET',
+		}
+	);
 
 	return (await response.json()) as Product;
 }
