@@ -12,8 +12,9 @@ import {UploadLogo} from '../../components/UploadLogo/UploadLogo';
 import {useAppContext} from '../../manage-app-state/AppManageState';
 import {TYPES} from '../../manage-app-state/actionTypes';
 import {
+	addExpandoValue,
 	createApp,
-	createImage,
+	createAttachment,
 	getCategories,
 	getVocabularies,
 	updateApp,
@@ -21,6 +22,7 @@ import {
 import {submitBase64EncodedFile} from '../../utils/util';
 
 import './DefineAppProfilePage.scss';
+import {getCompanyId} from '../../liferay/constants';
 
 interface DefineAppProfilePageProps {
 	onClickBack: () => void;
@@ -255,9 +257,6 @@ export function DefineAppProfilePage({
 							appName,
 							catalogId,
 						});
-					}
-
-					if (!appERC) {
 						product = await response.json();
 
 						dispatch({
@@ -275,11 +274,22 @@ export function DefineAppProfilePage({
 					}
 
 					if (appLogo) {
-						submitBase64EncodedFile({
-							appERC: product.externalReferenceCode,
+						const attachmentId = await submitBase64EncodedFile({
+							appERC: appERC ?? product.externalReferenceCode,
 							file: appLogo.file,
-							requestFunction: createImage,
+							requestFunction: createAttachment,
 							title: appLogo.fileName,
+						});
+
+						addExpandoValue({
+							attributeValues: {
+								'App Icon': 'Yes',
+							},
+							className:
+								'com.liferay.commerce.product.model.CPAttachmentFileEntry',
+							classPK: attachmentId as number,
+							companyId: Number(getCompanyId()),
+							tableName: 'CUSTOM_FIELDS',
 						});
 					}
 
