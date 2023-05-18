@@ -79,7 +79,8 @@ export function CreateProjectModal({
 			const orderTypes = await getOrderTypes();
 
 			const projectOrderType = orderTypes.find(
-				({name}) => name['en_US'] === 'Project - 60 days'
+				({externalReferenceCode}) =>
+					externalReferenceCode === 'PROJECT60'
 			);
 
 			const cart: Partial<Cart> = {
@@ -106,16 +107,8 @@ export function CreateProjectModal({
 				orderTypeId: projectOrderType?.id as number,
 			};
 
-			let newCart: Partial<Cart> = {};
-
-			let cartResponse;
-
-			newCart = {
-				...cart,
-			};
-
-			cartResponse = await postCartByChannelId({
-				cartBody: newCart,
+			const cartResponse = await postCartByChannelId({
+				cartBody: cart,
 				channelId: currentChannel.id,
 			});
 

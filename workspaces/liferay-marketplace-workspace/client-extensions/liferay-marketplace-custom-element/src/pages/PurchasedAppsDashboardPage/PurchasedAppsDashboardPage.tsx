@@ -12,6 +12,7 @@ import {
 	baseURL,
 	getAccountInfoFromCommerce,
 	getAccounts,
+	getAllPlacedOrders,
 	getChannels,
 	getMyUserAccount,
 	getPlacedOrders,
@@ -41,6 +42,7 @@ import appsIcon from '../../assets/icons/apps_fill_icon.svg';
 import membersIcon from '../../assets/icons/person_fill_icon.svg';
 
 import './PurchasedAppsDashboardPage.scss';
+import {splitArrayIntoChunks} from '../../utils/arrayUtil';
 
 export interface PurchasedAppProps {
 	image: string;
@@ -55,7 +57,7 @@ export interface PurchasedAppProps {
 }
 
 interface PurchasedAppTable {
-	items: PurchasedAppProps[];
+	items: PurchasedAppProps[][];
 	pageSize: number;
 	totalCount: number;
 }
@@ -91,6 +93,14 @@ const solutionMessages = {
 	},
 	title: 'My Solutions',
 };
+
+function filterAppPlacedOrders(placedOrders: PlacedOrder[]) {
+	return placedOrders.filter(
+		({orderTypeExternalReferenceCode}) =>
+			orderTypeExternalReferenceCode === 'CLOUDAPP' ||
+			orderTypeExternalReferenceCode === 'DXPAPP'
+	);
+}
 
 export function PurchasedAppsDashboardPage() {
 	const [accounts, setAccounts] = useState<Account[]>(initialAccountState);
@@ -151,57 +161,69 @@ export function PurchasedAppsDashboardPage() {
 					purchasedAppTable.pageSize
 				);
 
+				const allPlacedOrders = await getAllPlacedOrders(
+					selectedAccount?.id || 50307,
+					channel.id
+				);
+
 				const commerceAccountResponse =
 					await getAccountInfoFromCommerce(selectedAccount.id);
 
 				setCommerceAccount(commerceAccountResponse);
 
-				const filteredAppOrders = placedOrders.items.filter(
-					({orderTypeExternalReferenceCode}) =>
-						orderTypeExternalReferenceCode === 'CLOUDAPP' ||
-						orderTypeExternalReferenceCode === 'DXPAPP'
+				const filteredAllAppOrders =
+					filterAppPlacedOrders(allPlacedOrders);
+				const paginatedAppOrders = splitArrayIntoChunks<PlacedOrder>(
+					filteredAllAppOrders,
+					7
 				);
 
-				const filteredSolutionsOrders = placedOrders.items.filter(
+				const filteredSolutionsOrders = placedOrders.filter(
 					({orderTypeExternalReferenceCode}) =>
 						orderTypeExternalReferenceCode === 'SOLUTION30'
 				);
 
 				const newAppOrderItems = await Promise.all(
-					filteredAppOrders.map(async (order) => {
-						const [placeOrderItem] = order.placedOrderItems;
+					paginatedAppOrders.map(async (placedOrderItem) => {
+						return await Promise.all(
+							placedOrderItem.map(async (order) => {
+								const [placeOrderItem] = order.placedOrderItems;
 
-						const date = new Date(order.createDate);
-						const options: Intl.DateTimeFormatOptions = {
-							day: 'numeric',
-							month: 'short',
-							year: 'numeric',
-						};
-						const formattedDate = date.toLocaleDateString(
-							'en-US',
-							options
+								const date = new Date(order.createDate);
+								const options: Intl.DateTimeFormatOptions = {
+									day: 'numeric',
+									month: 'short',
+									year: 'numeric',
+								};
+								const formattedDate = date.toLocaleDateString(
+									'en-US',
+									options
+								);
+
+								const version =
+									await getSKUCustomFieldExpandoValue({
+										companyId: Number(getCompanyId()),
+										customFieldName: 'version',
+										skuId: placeOrderItem.skuId,
+									});
+
+								return {
+									image: placeOrderItem.thumbnail,
+									name: placeOrderItem.name,
+									orderId: order.id,
+									provisioning:
+										order.orderStatusInfo.label_i18n,
+									purchasedBy: order.author,
+									purchasedDate: formattedDate,
+									type: placeOrderItem.subscription
+										? 'Subscription'
+										: 'Perpetual',
+									version: !Object.keys(version).length
+										? ''
+										: version,
+								};
+							})
 						);
-
-						const version = await getSKUCustomFieldExpandoValue({
-							companyId: Number(getCompanyId()),
-							customFieldName: 'version',
-							skuId: placeOrderItem.skuId,
-						});
-
-						return {
-							image: placeOrderItem.thumbnail,
-							name: placeOrderItem.name,
-							orderId: order.id,
-							provisioning: order.orderStatusInfo.label_i18n,
-							purchasedBy: order.author,
-							purchasedDate: formattedDate,
-							type: placeOrderItem.subscription
-								? 'Subscription'
-								: 'Perpetual',
-							version: !Object.keys(version).length
-								? ''
-								: version,
-						};
 					})
 				);
 
@@ -211,7 +233,7 @@ export function PurchasedAppsDashboardPage() {
 					return {
 						...previousPurchasedAppTable,
 						items: newAppOrderItems,
-						totalCount: placedOrders.totalCount,
+						totalCount: filteredAllAppOrders.length,
 					};
 				});
 
@@ -375,7 +397,7 @@ export function PurchasedAppsDashboardPage() {
 					<DashboardTable<PurchasedAppProps>
 						emptyStateMessage={appMessages.emptyStateMessage}
 						icon={appsIcon}
-						items={purchasedAppTable.items}
+						items={purchasedAppTable.items[page - 1]}
 						tableHeaders={tableHeaders}
 					>
 						{(item) => (

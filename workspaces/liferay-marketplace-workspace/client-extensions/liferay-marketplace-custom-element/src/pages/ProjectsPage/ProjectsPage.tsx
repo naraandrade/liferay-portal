@@ -66,12 +66,12 @@ export function ProjectsPage({
 					(channel) => channel.name === 'Marketplace Channel'
 				) ?? channels[0];
 
-			const {items} = await getPlacedOrders(
+			const placedOrders = await getPlacedOrders(
 				selectedAccount.id,
 				marketplaceChannel.id
 			);
 
-			const filteredOrders = items.filter(
+			const filteredOrders = placedOrders.filter(
 				({orderTypeExternalReferenceCode}) =>
 					orderTypeExternalReferenceCode === 'PROJECT60'
 			);
