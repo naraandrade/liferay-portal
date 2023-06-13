@@ -1,0 +1,20 @@
+.lfr__object-web-view-object-definitions {
+	display: flex;
+	justify-content: center;
+
+	&-card-header {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+	}
+
+	&-model-list-container {
+		margin: 1.5rem;
+		width: 256px;
+	}
+
+	&-model-list-header {
+		display: flex;
+		justify-content: space-between;
+	}
+}

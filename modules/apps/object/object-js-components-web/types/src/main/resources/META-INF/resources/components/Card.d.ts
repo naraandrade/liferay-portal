@@ -16,9 +16,15 @@ import React from 'react';
 import './Card.scss';
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 	disabled?: boolean;
-	title: string;
+	header?: JSX.Element;
+	title?: string;
 	tooltip?: ITooltip | null;
-	viewMode?: 'inline' | 'no-children' | 'no-margin' | 'no-padding';
+	viewMode?:
+		| 'inline'
+		| 'no-header-border'
+		| 'no-children'
+		| 'no-margin'
+		| 'no-padding';
 }
 interface ITooltip {
 	content: string;
@@ -28,6 +34,7 @@ export declare function Card({
 	children,
 	className,
 	disabled,
+	header,
 	title,
 	tooltip,
 	viewMode,

@@ -20,9 +20,10 @@ import './Card.scss';
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 	disabled?: boolean;
-	title: string;
+	header?: JSX.Element;
+	title?: string;
 	tooltip?: ITooltip | null;
-	viewMode?: 'inline' | 'no-children' | 'no-margin' | 'no-padding';
+	viewMode?: 'inline' | 'no-header-border' | 'no-children' | 'no-margin' | 'no-padding';
 }
 
 interface ITooltip {
@@ -34,6 +35,7 @@ export function Card({
 	children,
 	className,
 	disabled,
+	header,
 	title,
 	tooltip,
 	viewMode,
@@ -41,6 +43,7 @@ export function Card({
 }: CardProps) {
 	const inline = viewMode === 'inline';
 	const noChildren = viewMode === 'no-children';
+	const noHeaderBorder = viewMode === 'no-header-border';
 	const noMargin = viewMode === 'no-margin';
 	const noPadding = viewMode === 'no-padding';
 
@@ -61,29 +64,37 @@ export function Card({
 					{inline ? (
 						title
 					) : (
-						<div className="lfr-objects__card-header">
-							<h3
-								className={classNames(
-									'lfr-objects__card-title',
-									{
-										'lfr-objects__card-title--disabled': disabled,
-									}
-								)}
-							>
-								{title}
-							</h3>
+						<div className={classNames("lfr-objects__card-header", {
+							'lfr-objects__card-header--no-border': noHeaderBorder,
+						})}>
+							{header ? (
+								header
+							) : (
+								<>
+									<h3
+										className={classNames(
+											'lfr-objects__card-title',
+											{
+												'lfr-objects__card-title--disabled': disabled,
+											}
+										)}
+									>
+										{title}
+									</h3>
 
-							{tooltip && (
-								<span
-									className="ml-2"
-									data-tooltip-align="top"
-									title={tooltip.content}
-								>
-									<ClayIcon
-										className="lfr-objects__card-header-tooltip-icon"
-										symbol={tooltip.symbol}
-									/>
-								</span>
+									{tooltip && (
+										<span
+											className="ml-2"
+											data-tooltip-align="top"
+											title={tooltip.content}
+										>
+											<ClayIcon
+												className="lfr-objects__card-header-tooltip-icon"
+												symbol={tooltip.symbol}
+											/>
+										</span>
+									)}
+								</>
 							)}
 						</div>
 					)}

@@ -20,15 +20,28 @@
 ViewObjectDefinitionsDisplayContext viewObjectDefinitionsDisplayContext = (ViewObjectDefinitionsDisplayContext)request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT);
 %>
 
-<frontend-data-set:headless-display
-	apiURL="<%= viewObjectDefinitionsDisplayContext.getAPIURL() %>"
-	creationMenu="<%= viewObjectDefinitionsDisplayContext.getCreationMenu() %>"
-	fdsActionDropdownItems="<%= viewObjectDefinitionsDisplayContext.getFDSActionDropdownItems() %>"
-	formName="fm"
-	id="<%= ObjectDefinitionsFDSNames.OBJECT_DEFINITIONS %>"
-	propsTransformer="js/components/FDSPropsTransformer/ObjectDefinitionFDSPropsTransformer"
-	style="fluid"
-/>
+<div>
+	<react:component
+		module="js/components/ViewObjectDefinitions"
+		props='<%=
+			HashMapBuilder.<String, Object>put(
+				"apiURL", viewObjectDefinitionsDisplayContext.getAPIURL()
+			).put(
+				"creationMenu", viewObjectDefinitionsDisplayContext.getCreationMenu()
+			).put(
+				"formName", "fm"
+			).put(
+				"id", ObjectDefinitionsFDSNames.OBJECT_DEFINITIONS
+			).put(
+				"items", viewObjectDefinitionsDisplayContext.getFDSActionDropdownItems()
+			).put(
+				"style", "fluid"
+			).put(
+				"url", viewObjectDefinitionsDisplayContext.getEditObjectDefinitionURL()
+			).build()
+		%>'
+	/>
+</div>
 
 <div id="<portlet:namespace />addObjectDefinition">
 	<react:component
