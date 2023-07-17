@@ -241,10 +241,31 @@ portletDisplay.setURLBack(backURL);
 								})
 								.then((response) => {
 									if (response && response.title) {
-										Liferay.Util.openToast({
-											message: response.title,
-											type: 'danger',
-										});
+										for (let i = 0; i < 14; i++) {
+											const portletBody = document.querySelector('.portlet-body');
+
+											const testElement = document.createElement("div");
+
+											testElement.className = "alert alert-danger";
+											testElement.setAttribute("role", "alert");
+
+											testElement.insertAdjacentHTML(
+												'afterbegin',
+												"<span class='alert-indicator'/><strong class='lead'>Error:</strong>"
+											);
+
+
+											const errorMessage = response.title;
+
+											testElement.insertAdjacentHTML("beforeend", errorMessage);
+
+											portletBody?.insertAdjacentElement(
+												'afterbegin',
+												testElement
+											);
+										}	
+										
+										scroll(0, 0);
 									}
 								});
 						}
