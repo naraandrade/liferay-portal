@@ -5,29 +5,25 @@
 
 import React from 'react';
 
-const markerEndId = 'arrowclosed';
+const markerEndId = 'customMarker';
 
 export default function MarkerEndDefinition({color}) {
 	return (
 		<defs>
 			<marker
 				className="react-flow__arrowhead"
+				fill="none"
 				id={markerEndId}
 				markerHeight="8"
 				markerWidth="20"
 				orient="auto"
-				refX="0"
-				refY="0"
-				viewBox="-5 -5 10 10"
+				refX="20"
+				refY="9"
+				viewBox="0 0 9 19"
 			>
-				<polyline
-					fill={color}
-					points="-4,-3 0,0 -4,3 -4,-3"
-					stroke={color}
-					strokeLinecap="round"
-					strokeLinejoin="round"
-					strokeWidth="1"
-				/>
+				<rect fill="#0B5FFF" height="18" rx="1" width="2" x="10" y="0.5" />
+
+				<path d="M1 17.5L8 9.5L1 1.5" stroke="#0B5FFF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"/>
 			</marker>
 		</defs>
 	);
