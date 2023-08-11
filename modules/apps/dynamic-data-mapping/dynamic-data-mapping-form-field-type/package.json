@@ -5,6 +5,7 @@
 		"axios": "0.24.0",
 		"clay-icon": "2.24.1",
 		"data-engine-js-components-web": "*",
+		"dompurify": "2.3.3",
 		"frontend-js-web": "*",
 		"leaflet": "1.7.1",
 		"metal-component": "2.16.8",
