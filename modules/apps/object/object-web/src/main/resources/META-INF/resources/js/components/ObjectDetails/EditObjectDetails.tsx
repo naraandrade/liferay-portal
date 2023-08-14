@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
+import {TreeView} from '@clayui/core';
 import ClayPanel from '@clayui/panel';
 import {
 	API,
@@ -11,6 +12,8 @@ import {
 	openToast,
 } from '@liferay/object-js-components-web';
 import React, {useEffect, useState} from 'react';
+import {DndProvider} from 'react-dnd';
+import {HTML5Backend} from 'react-dnd-html5-backend';
 
 import ObjectManagementToolbar from '../ObjectManagementToolbar';
 import {ConfigurationContainer} from './ConfigurationContainer';
@@ -23,6 +26,7 @@ import {useObjectDetailsForm} from './useObjectDetailsForm';
 import './ObjectDetails.scss';
 import {AccountRestrictionContainer} from './AccountRestrictionContainer';
 import {ExternalDataSourceContainer} from './ExternalDataSourceContainer';
+import SidebarItem from './SidebarItem';
 import {TranslationsContainer} from './TranslationsContainer';
 
 export type KeyValuePair = {
@@ -201,6 +205,55 @@ export default function EditObjectDetails({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [objectDefinitionId]);
 
+	const [treeViewItems, setTreeViewItems] = useState<TreeViewItem[]>([
+		{
+			children: [
+				{id: 'oHobbit', name: 'O Hobbit', type: 'treeViewItem'},
+				{
+					id: 'aSociedadeDoAnel',
+					name: 'A Sociedade do Anel',
+					type: 'treeViewItem',
+				},
+				{
+					id: 'asDuasTorres',
+					name: 'As Duas Torres',
+					type: 'treeViewItem',
+				},
+				{
+					id: 'oRetornoDoRei',
+					name: 'O Retorno do Rei',
+					type: 'treeViewItem',
+				},
+			],
+			id: 'lordOfTheRingsBooks',
+			name: 'Lord of the Rings books',
+			type: 'treeViewItem',
+		},
+		{
+			id: 'cart2',
+			name: 'Cart2',
+			type: 'treeViewItem',
+		},
+	]);
+
+	const fixedItems: TreeViewItem[] = [
+		{id: 'author', index: 0, name: 'Author', type: 'treeViewItem'},
+		{
+			id: 'singleContainer',
+			index: 1,
+			name: 'Single Container',
+			type: 'treeViewItem',
+		},
+	];
+
+	type TreeViewItem = {
+		children?: TreeViewItem[];
+		id: string;
+		index?: number;
+		name: string;
+		type: string;
+	};
+
 	return (
 		<>
 			<div className="lfr-objects__object-definition-details-management-toolbar">
@@ -225,6 +278,90 @@ export default function EditObjectDetails({
 					system={values.system as boolean}
 				/>
 			</div>
+
+			<DndProvider backend={HTML5Backend} context={window}>
+				<div className="d-flex">
+					<TreeView
+						dragAndDrop
+						items={treeViewItems}
+						onItemMove={(item, parentItem, index) => {
+
+							// Add external item to its respective position inside treeViewItems
+							// TO DO: only execute the following code if the item is external because right now it's impacting the behavior for moving internal items
+
+							const newTreeViewItems = treeViewItems;
+
+							const updateParentItem = (
+								array: TreeViewItem[]
+							) => {
+								const parent = array.find(
+									(arrayItem) =>
+										arrayItem.id === parentItem.id
+								);
+
+								if (parent) {
+									const parentIndex = array.findIndex(
+										(arrayItem) =>
+											arrayItem.id === parentItem.id
+									);
+
+									parent.children?.splice(
+										index.previous,
+										0,
+										item
+									);
+
+									array[parentIndex] = parent;
+								}
+								else {
+									const allItemsWithChildren = array.map(
+										(arrayItem) => arrayItem.children
+									);
+
+									if (allItemsWithChildren.length) {
+										allItemsWithChildren.forEach((i) =>
+											updateParentItem(i!)
+										);
+									}
+								}
+							};
+
+							updateParentItem(newTreeViewItems);
+
+							setTreeViewItems(newTreeViewItems);
+
+							return false;
+						}}
+					>
+						{(item: TreeViewItem) => (
+							<TreeView.Item key={item.id}>
+								<TreeView.ItemStack>
+									{item.name}
+								</TreeView.ItemStack>
+
+								<TreeView.Group items={item.children}>
+									{({id, name}) => (
+										<TreeView.Item key={id}>
+											{name}
+										</TreeView.Item>
+									)}
+								</TreeView.Group>
+							</TreeView.Item>
+						)}
+					</TreeView>
+
+					<TreeView dragAndDrop items={fixedItems}>
+						{({id, index, name, type}: TreeViewItem) => (
+							<SidebarItem
+								id={id}
+								index={index}
+								name={name}
+								type={type}
+							/>
+						)}
+					</TreeView>
+				</div>
+			</DndProvider>
 
 			<div className="lfr-objects__object-definition-details">
 				<Sheet title={Liferay.Language.get('basic-information')}>
