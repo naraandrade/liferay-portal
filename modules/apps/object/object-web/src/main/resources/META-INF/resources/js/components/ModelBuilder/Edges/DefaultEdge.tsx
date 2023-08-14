@@ -12,6 +12,7 @@ import {
 	useStoreState,
 } from 'react-flow-renderer';
 
+import {ObjectRelationshipEdgeData} from '../types';
 import {getEdgeParams} from '../utils';
 import ManyMarkerEnd from './ManyMarkerEnd';
 import OneMarkerEnd from './OneMarkerEnd';
@@ -22,7 +23,7 @@ export default function DefaultEdge({
 	target,
 	style = {},
 	data,
-}: EdgeProps) {
+}: EdgeProps<ObjectRelationshipEdgeData>) {
 	const nodes = useStoreState((state) => state.nodes);
 
 	const sourceNode = useMemo(() => nodes.find((n) => n.id === source), [
@@ -40,32 +41,34 @@ export default function DefaultEdge({
 
 	const {sourcePos, sx, sy, targetPos, tx, ty} = getEdgeParams(
 		sourceNode,
-		targetNode
+		data?.sourceY as number,
+		targetNode,
+		data?.targetY as number
 	);
 
 	const edgePath = getSmoothStepPath({
 		sourcePosition: sourcePos,
 		sourceX: sx,
-		sourceY: sy + data.sourceY,
+		sourceY: sy,
 		targetPosition: targetPos,
 		targetX: tx,
-		targetY: ty + data.targetY,
+		targetY: ty,
 	});
 
 	const reverseEdgePath = getSmoothStepPath({
 		sourcePosition: targetPos,
 		sourceX: tx,
-		sourceY: ty + data.targetY,
+		sourceY: ty,
 		targetPosition: sourcePos,
 		targetX: sx,
-		targetY: sy + data.sourceY,
+		targetY: sy,
 	});
 
 	const [edgeCenterX, edgeCenterY] = getEdgeCenter({
 		sourceX: sx,
-		sourceY: sy + data.sourceY,
+		sourceY: sy,
 		targetX: tx,
-		targetY: ty + data.targetY,
+		targetY: ty,
 	});
 
 	return (
@@ -78,7 +81,7 @@ export default function DefaultEdge({
 				className="react-flow__edge-path"
 				d={edgePath}
 				id={id}
-				markerEnd={`url(#${data.markerEndId})`}
+				markerEnd={`url(#${data?.markerEndId})`}
 				style={{
 					...style,
 					stroke: '#0B5FFF',
@@ -90,7 +93,7 @@ export default function DefaultEdge({
 				className="react-flow__edge-path"
 				d={reverseEdgePath}
 				id={id + 'reverse'}
-				markerEnd={`url(#${data.markerStartId})`}
+				markerEnd={`url(#${data?.markerStartId})`}
 				style={{
 					...style,
 					stroke: '#0B5FFF',
@@ -99,7 +102,7 @@ export default function DefaultEdge({
 			/>
 
 			<EdgeText
-				label={data.label}
+				label={data?.label}
 				labelBgBorderRadius={4}
 				labelBgPadding={[8, 5]}
 				labelBgStyle={{

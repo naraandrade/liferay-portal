@@ -10,6 +10,8 @@ import {ArrowHeadType, Node, Position, XYPosition} from 'react-flow-renderer';
 
 function getNodeIntersection(
 	intersectionNode: Node,
+	sourceIncrementY: number,
+	targetIncrementY: number,
 	targetNode: Node
 ): XYPosition {
 
@@ -26,9 +28,9 @@ function getNodeIntersection(
 	const h = intersectionNodeHeight / 2;
 
 	const x2 = intersectionNodePosition.x + w;
-	const y2 = intersectionNodePosition.y + h;
+	const y2 = intersectionNodePosition.y + sourceIncrementY + h;
 	const x1 = targetPosition.x + w;
-	const y1 = targetPosition.y + h;
+	const y1 = targetPosition.y + targetIncrementY + h;
 
 	const xx1 = (x1 - x2) / (2 * w) - (y1 - y2) / (2 * h);
 	const yy1 = (x1 - x2) / (2 * w) + (y1 - y2) / (2 * h);
@@ -43,10 +45,14 @@ function getNodeIntersection(
 
 // returns the position (top,right,bottom or right) passed node compared to the intersection point
 
-function getEdgePosition(node: Node, intersectionPoint: XYPosition) {
+function getEdgePosition(
+	intersectionPoint: XYPosition,
+	node: Node,
+	nodeIncrementY: number
+) {
 	const n = {...node.__rf.position, ...node.__rf};
 	const nx = Math.round(n.x);
-	const ny = Math.round(n.y);
+	const ny = Math.round(n.y + nodeIncrementY);
 	const px = Math.round(intersectionPoint.x);
 	const py = Math.round(intersectionPoint.y);
 
@@ -68,12 +74,37 @@ function getEdgePosition(node: Node, intersectionPoint: XYPosition) {
 
 // returns the parameters (sx, sy, tx, ty, sourcePos, targetPos) you need to create an edge
 
-export function getEdgeParams(source: Node, target: Node) {
-	const sourceIntersectionPoint = getNodeIntersection(source, target);
-	const targetIntersectionPoint = getNodeIntersection(target, source);
+export function getEdgeParams(
+	source: Node,
+	sourceIncrementY: number,
+	target: Node,
+	targetIncrementY: number
+) {
+	const sourceIntersectionPoint = getNodeIntersection(
+		source,
+		sourceIncrementY,
+		targetIncrementY,
+		target
+	);
 
-	const sourcePos = getEdgePosition(source, sourceIntersectionPoint);
-	const targetPos = getEdgePosition(target, targetIntersectionPoint);
+	const targetIntersectionPoint = getNodeIntersection(
+		target,
+		sourceIncrementY,
+		targetIncrementY,
+		source
+	);
+
+	const sourcePos = getEdgePosition(
+		sourceIntersectionPoint,
+		source,
+		sourceIncrementY
+	);
+
+	const targetPos = getEdgePosition(
+		targetIntersectionPoint,
+		target,
+		targetIncrementY
+	);
 
 	return {
 		sourcePos,
