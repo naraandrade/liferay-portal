@@ -20,6 +20,7 @@ import './Diagram.scss';
 import React, {useCallback} from 'react';
 
 import DefaultEdge from '../Edges/DefaultEdge';
+import SelfEdge from '../Edges/SelfEdge';
 import {useFolderContext} from '../ModelBuilderContext/objectFolderContext';
 import {TYPES} from '../ModelBuilderContext/typesEnum';
 
@@ -29,6 +30,7 @@ const NODE_TYPES = {
 
 const EDGE_TYPES = {
 	default: DefaultEdge,
+	self: SelfEdge,
 };
 
 function DiagramBuilder() {

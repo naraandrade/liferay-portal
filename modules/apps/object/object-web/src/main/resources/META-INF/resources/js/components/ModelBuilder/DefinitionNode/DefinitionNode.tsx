@@ -77,7 +77,6 @@ export function DefinitionNode({
 
 			<Handle
 				className="lfr-objects__model-builder-node-handle"
-				hidden
 				id={name}
 				position={Position.Left}
 				style={{
@@ -87,6 +86,20 @@ export function DefinitionNode({
 					width: '12px',
 				}}
 				type="source"
+			/>
+
+			<Handle
+				className="lfr-objects__model-builder-node-handle"
+				id="handleLeft"
+				position={Position.Left}
+				type="source"
+			/>
+
+			<Handle
+				className="lfr-objects__model-builder-node-handle"
+				id="handleRight"
+				position={Position.Right}
+				type="target"
 			/>
 		</div>
 	);

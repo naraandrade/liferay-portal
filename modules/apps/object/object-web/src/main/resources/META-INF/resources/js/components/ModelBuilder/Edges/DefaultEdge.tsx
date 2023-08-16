@@ -39,7 +39,7 @@ export default function DefaultEdge({
 		return null;
 	}
 
-	const {sourcePos, sx, sy, targetPos, tx, ty} = getEdgeParams(
+	const {sourcePos, sourceX, sourceY, targetPos, targetX, targetY} = getEdgeParams(
 		sourceNode,
 		data?.sourceY as number,
 		targetNode,
@@ -48,27 +48,27 @@ export default function DefaultEdge({
 
 	const edgePath = getSmoothStepPath({
 		sourcePosition: sourcePos,
-		sourceX: sx,
-		sourceY: sy,
+		sourceX,
+		sourceY,
 		targetPosition: targetPos,
-		targetX: tx,
-		targetY: ty,
+		targetX,
+		targetY,
 	});
 
 	const reverseEdgePath = getSmoothStepPath({
 		sourcePosition: targetPos,
-		sourceX: tx,
-		sourceY: ty,
+		sourceX,
+		sourceY,
 		targetPosition: sourcePos,
-		targetX: sx,
-		targetY: sy,
+		targetX,
+		targetY,
 	});
 
 	const [edgeCenterX, edgeCenterY] = getEdgeCenter({
-		sourceX: sx,
-		sourceY: sy,
-		targetX: tx,
-		targetY: ty,
+		sourceX,
+		sourceY,
+		targetX,
+		targetY,
 	});
 
 	return (

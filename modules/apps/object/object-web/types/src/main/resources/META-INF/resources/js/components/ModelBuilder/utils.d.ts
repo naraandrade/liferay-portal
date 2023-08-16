@@ -11,11 +11,11 @@ export declare function getEdgeParams(
 	targetIncrementY: number
 ): {
 	sourcePos: Position;
-	sx: number;
-	sy: number;
+	sourceX: number;
+	sourceY: number;
 	targetPos: Position;
-	tx: number;
-	ty: number;
+	targetX: number;
+	targetY: number;
 };
 export declare function createElements(): (
 	| {

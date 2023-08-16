@@ -112,10 +112,21 @@ export function objectFolderReducer(state: TState, action: TAction) {
 											},
 											id: `reactflow__edge-object-relationship-${relationship.name}-parent-${relationship.objectDefinitionExternalReferenceCode1}-child-${relationship.objectDefinitionExternalReferenceCode2}`,
 											source: `${objectDefinition.name}`,
-											sourceHandle: `${objectDefinition.name}`,
+											sourceHandle:
+												objectDefinition.name ===
+												relationship.objectDefinitionName2
+													? 'handleLeft'
+													: `${objectDefinition.name}`,
 											target: `${relationship.objectDefinitionName2}`,
-											targetHandle: `${relationship.objectDefinitionName2}`,
-											type: 'floating',
+											targetHandle: objectDefinition.name ===
+											relationship.objectDefinitionName2
+												? 'handleRight'
+												: `${relationship.objectDefinitionName2}`,
+											type:
+												objectDefinition.name ===
+												relationship.objectDefinitionName2
+													? 'self'
+													: 'default',
 										});
 									}
 								}
