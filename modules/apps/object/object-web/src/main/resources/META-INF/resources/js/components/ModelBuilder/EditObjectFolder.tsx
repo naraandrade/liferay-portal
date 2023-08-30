@@ -5,6 +5,7 @@
 
 import {API, getLocalizableLabel} from '@liferay/object-js-components-web';
 import React, {useEffect, useState} from 'react';
+import {FlowElement} from 'react-flow-renderer';
 
 import {KeyValuePair} from '../ObjectDetails/EditObjectDetails';
 import {TDeletionType} from '../ObjectRelationship/EditRelationship';
@@ -30,7 +31,13 @@ export default function EditObjectFolder({
 	siteKeyValuePair,
 }: EditObjectFolder) {
 	const [
-		{rightSidebarType, selectedObjectFolder, storages, viewApiURL},
+		{
+			elements,
+			rightSidebarType,
+			selectedObjectFolder,
+			storages,
+			viewApiURL,
+		},
 		dispatch,
 	] = useObjectFolderContext();
 
@@ -208,7 +215,11 @@ export default function EditObjectFolder({
 			)}
 
 			<Header
-				hasDraftObjectDefinitions={false}
+				hasDraftObjectDefinitions={elements.some(
+					(element) =>
+						(element as FlowElement<ObjectDefinitionNodeData>).data
+							?.status?.code === 2
+				)}
 				objectFolder={selectedObjectFolder}
 				setShowModal={setShowModal}
 			/>
