@@ -32,9 +32,6 @@ const CustomObjectFolderWrapper: React.FC<CustomObjectFolderWrapperProps> = ({
 	storages,
 	viewApiURL,
 }) => {
-	const urlParams = new URLSearchParams(window.location.search);
-	const objectFolderName = urlParams.get('objectFolderName');
-
 	return (
 		<ReactFlowProvider>
 			<ObjectFolderContextProvider
@@ -49,7 +46,6 @@ const CustomObjectFolderWrapper: React.FC<CustomObjectFolderWrapperProps> = ({
 				<EditObjectFolder
 					companyKeyValuePair={companyKeyValuePair}
 					deletionTypes={deletionTypes}
-					objectFolderName={objectFolderName ?? ''}
 					siteKeyValuePair={siteKeyValuePair}
 				/>
 			</ObjectFolderContextProvider>

@@ -16,8 +16,10 @@ export declare function ObjectFolderReducer(
 			showChangesSaved: boolean;
 			baseResourceURL: string;
 			editObjectDefinitionURL: string;
+			isLoadingObjectFolder: boolean;
 			objectDefinitionPermissionsURL: string;
 			objectDefinitions: ObjectDefinition[];
+			objectFolderName: string;
 			objectFolders: ObjectFolder[];
 			rightSidebarType: RightSidebarType;
 			selectedObjectDefinitionNode: Node<ObjectDefinitionNodeData>;
@@ -30,9 +32,11 @@ export declare function ObjectFolderReducer(
 			elements: any;
 			baseResourceURL: string;
 			editObjectDefinitionURL: string;
+			isLoadingObjectFolder: boolean;
 			leftSidebarItems: LeftSidebarItemType[];
 			objectDefinitionPermissionsURL: string;
 			objectDefinitions: ObjectDefinition[];
+			objectFolderName: string;
 			objectFolders: ObjectFolder[];
 			rightSidebarType: RightSidebarType;
 			selectedObjectDefinitionNode: Node<ObjectDefinitionNodeData>;

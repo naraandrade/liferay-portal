@@ -78,6 +78,18 @@ export type TAction =
 	  }
 	| {
 			payload: {
+				isLoadingObjectFolder: boolean;
+			};
+			type: TYPES.SET_LOADING_OBJECT_FOLDER;
+	  }
+	| {
+			payload: {
+				objectFolderName: string;
+			};
+			type: TYPES.SET_OBJECT_FOLDER_NAME;
+	  }
+	| {
+			payload: {
 				edges: Edge<ObjectRelationshipEdgeData>[];
 				nodes: Node<ObjectDefinitionNodeData>[];
 				selectedObjectRelationshipId: string;
@@ -110,9 +122,11 @@ export type TState = {
 	baseResourceURL: string;
 	editObjectDefinitionURL: string;
 	elements: Elements<ObjectDefinitionNodeData | ObjectRelationshipEdgeData>;
+	isLoadingObjectFolder: boolean;
 	leftSidebarItems: LeftSidebarItemType[];
 	objectDefinitionPermissionsURL: string;
 	objectDefinitions: ObjectDefinition[];
+	objectFolderName: string;
 	objectFolders: ObjectFolder[];
 	rightSidebarType: RightSidebarType;
 	selectedObjectDefinitionNode: Node<ObjectDefinitionNodeData>;
