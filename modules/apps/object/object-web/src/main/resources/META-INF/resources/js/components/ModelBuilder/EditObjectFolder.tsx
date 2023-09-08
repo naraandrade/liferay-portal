@@ -237,10 +237,7 @@ export default function EditObjectFolder({
 				setShowModal={setShowModal}
 			/>
 			<div className="lfr-objects__model-builder-diagram-container">
-				<LeftSidebar
-					selectedObjectFolderName={selectedObjectFolder.name}
-					setShowModal={setShowModal}
-				/>
+				<LeftSidebar setShowModal={setShowModal} />
 
 				<Diagram setShowModal={setShowModal} />
 
